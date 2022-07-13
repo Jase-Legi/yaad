@@ -1,0 +1,119 @@
+.bigText{
+	font-size:50px;
+}
+
+.welcomeBox{
+    max-width:1400px;
+    width: calc(100%-80px);
+    height: auto;
+    min-width: auto;
+    padding: 20px;
+    margin: 0px auto;
+    display:flex;
+    background-color: black;
+}
+
+.welcomeBoxElement{
+    height: 20vw;
+    width: 20vw;
+    max-width: 20vw;
+    min-width: 150px;
+    min-height: 150px;
+    margin: auto;
+    position: relative;
+    background-color: #999;
+    overflow: hidden;
+    border-radius: 20px;
+}
+
+.title{
+    font-size:.75em;
+}
+
+.contractBox{
+    height:50px;
+    width:fit-content;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    margin: 0px 10px 0px 0px;
+    border: solid #222 1px;
+    border-radius: 5px;
+    padding: 0px 10px;
+}
+
+.contractBox > img{
+    height:20px;
+    margin: 15px 5px;
+}
+
+.contractBox > span {
+    color: #fff;
+    height: 100%;
+    line-height: 20px;
+    margin: 15px 0px;
+}
+
+@media (max-width: 399px){
+    .welcomeBoxElement{
+        width: 75vw !important;
+        height: 75vw !important;
+        min-width: 75vw !important;
+        min-height: 75vw !important;
+        margin:10px auto;
+    }
+    .welcomeBox{
+        max-width:1400px;
+        width: calc(100%-80px);
+        height: auto;
+        padding: 10px;
+        margin: 0px auto;
+        display:flexbox;
+        flex-flow:wrap;
+        background-color: black;
+    }
+}
+
+@media (max-width: 600px) and (min-width:400px){
+    .welcomeBoxElement{
+        width: 41vw !important;
+        height: 41vw !important;
+        min-width: 41vw !important;
+        min-height: 41vw !important;
+        margin:10px auto;
+    }
+    .welcomeBox{
+        width: calc(100%-40px);
+        height: auto;
+        padding: 10px;
+        margin: 0px auto;
+        display:flexbox;
+        flex-flow:wrap;
+        background-color: black;
+    }
+}
+
+@media (min-width: 601px) and (max-width:750px){
+    .welcomeBoxElement{
+        height: 20vw;
+        width: 20vw;
+        max-width: 20vw;
+        min-width: 100px;
+        min-height: 100px;
+        margin: auto;
+        position: relative;
+        background-color: #999;
+        overflow: hidden;
+        border-radius: 20px;
+    }
+    .welcomeBox{
+        max-width:1400px;
+        width: calc(100%-80px);
+        height: auto;
+        padding: 20px;
+        margin: 0px auto;
+        display:flexbox;
+        flex-flow:wrap;
+        background-color: black;
+    }
+}
