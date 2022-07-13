@@ -2,7 +2,7 @@
   "name": "yaad",
   "version": "0.1.0",
   "private": true,
-  "main": "app.js",
+  "main": "/server/app.js",
   "dependencies": {
     "@openzeppelin/contracts": "^4.7.0",
     "@pinata/sdk": "^1.1.26",
