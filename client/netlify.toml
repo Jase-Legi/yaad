@@ -1,5 +1,5 @@
 [build]
-    base = '/'
+    base = '/client'
     functions = '/functions/'
     command = 'echo default context'
     publish = 'build/'
