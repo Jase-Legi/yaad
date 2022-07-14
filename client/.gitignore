@@ -9,7 +9,6 @@
 /coverage
 /functions
 /.netlify
-netlify.toml
 /package-lock.json
 .env
 # production
