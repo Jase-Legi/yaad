@@ -6,7 +6,7 @@
     "dependencies": {
     },
     "scripts": {
-      "server": "cd server && npm install && npm run start",
+      "start": "cd server && npm install && npm run start",
       "dev": "cd server  && npm run dev"
     },
     "repository": {
