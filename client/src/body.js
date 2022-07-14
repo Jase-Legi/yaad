@@ -653,7 +653,7 @@ function Body(props){
                     </form>
                     <label className='popupBoxEleDetailsLabel' id='createSingleBoxPreview' htmlFor="createSingleAssetUpld" onClick={()=>{document.querySelector('#single_asset').click()}}>
                         <div className='popupBoxEleDetails'>
-                            <img src={state.data["createbox"].path} style={{objectFit:"cover", height: "100%", width:"100%"}} alt=""/>
+                            <img src={baseServerUri+state.data["createbox"].path} style={{objectFit:"cover", height: "100%", width:"100%"}} alt=""/>
                         </div>
                     </label>
                     <form  action={baseServerUri+"createone"} method="post" encType="multipart/form-data" >
@@ -1757,7 +1757,7 @@ function Body(props){
 
                         while (indxx < state.data["createbox"].layers[props.obj.key].traits.length){
                             
-                            boxcont.push(<div key={indxx} className='LayerUpldContentBx'><div className='LayerUpldContent'><img style={{backgroundColor: '#222'}} src={state.data["createbox"].layers[props.obj.key].traits[indxx].path} alt=''/><div className='traitName'><input className='traitNameBox' id={"traitName_"+indxx} placeholder={state.data["createbox"].layers[props.obj.key].traits[indxx].trait_name} type="text" name='name' onChange={setTrait} /><img className='edit-trait-img-svg' style={{cursor:"pointer"}} id={'delele_'+indxx} src='./del-icon.svg' alt='Edit layer' onClick={delTrait}/></div></div></div>)
+                            boxcont.push(<div key={indxx} className='LayerUpldContentBx'><div className='LayerUpldContent'><img style={{backgroundColor: '#222'}} src={baseServerUri+state.data["createbox"].layers[props.obj.key].traits[indxx].path} alt=''/><div className='traitName'><input className='traitNameBox' id={"traitName_"+indxx} placeholder={state.data["createbox"].layers[props.obj.key].traits[indxx].trait_name} type="text" name='name' onChange={setTrait} /><img className='edit-trait-img-svg' style={{cursor:"pointer"}} id={'delele_'+indxx} src='./del-icon.svg' alt='Edit layer' onClick={delTrait}/></div></div></div>)
 
                             indxx++;
                         }
@@ -1919,7 +1919,7 @@ function Body(props){
 
                             while (indxx < state.data["createbox"].background.length){
                             
-                                bgstack.push(<div key={indxx} className='BG_UpldContentBx'><div className='BG_UpldContent'><img style={{backgroundColor: '#222'}} src={state.data["createbox"].background[indxx].path} alt=''/><DaInput data={{class:'traitName', typeClass:'BG_traitNameBox', typeId:"BGName_"+indxx, placeholder:state.data["createbox"].background[indxx].trait_name, type:'text', name:'name', onChange:setBGTrait }}/></div><Buttonz data={{class:"delBG", id:'deleteBGUpldContentBx_'+indxx, value:'X', func: delBG}} /></div>)
+                                bgstack.push(<div key={indxx} className='BG_UpldContentBx'><div className='BG_UpldContent'><img style={{backgroundColor: '#222'}} src={baseServerUri+state.data["createbox"].background[indxx].path} alt=''/><DaInput data={{class:'traitName', typeClass:'BG_traitNameBox', typeId:"BGName_"+indxx, placeholder:state.data["createbox"].background[indxx].trait_name, type:'text', name:'name', onChange:setBGTrait }}/></div><Buttonz data={{class:"delBG", id:'deleteBGUpldContentBx_'+indxx, value:'X', func: delBG}} /></div>)
     
                                 indxx++;
                             }
