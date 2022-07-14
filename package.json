@@ -7,7 +7,7 @@
     },
     "scripts": {
         "start": "(cd ./server && npm start)",
-        "heroku-postbuild": "cd server && npm install && npm start",
+        "heroku-postbuild": "cd ./server && npm run install && npm start",
         "dev": "(cd ./server && npm run dev)"
     },
     "repository": {
