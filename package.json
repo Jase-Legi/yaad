@@ -6,8 +6,8 @@
     "dependencies": {
     },
     "scripts": {
-      "start": "cd server && npm install && npm run start",
-      "dev": "cd server  && npm run dev"
+      "start": "cd server && npm run start",
+      "dev": "cd server && npm run dev"
     },
     "repository": {
       "type": "git",
