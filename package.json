@@ -6,7 +6,7 @@
     "dependencies": {
     },
     "scripts": {
-      "start": "cd server && npm run start",
+      "server": "cd server && npm install && npm run start",
       "dev": "cd server  && npm run dev"
     },
     "repository": {
@@ -35,10 +35,6 @@
     "license": "ISC",
     "bugs": {
       "url": "https://github.com/Jase-Legi/JasonLegi/issues"
-    },
-    "engines": {
-      "node": "17.x",
-      "npm": "8.x"
     }
   }
   
