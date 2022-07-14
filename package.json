@@ -6,7 +6,7 @@
     "dependencies": {
     },
     "scripts": {
-      "start": "npm --prefix server run start",
+      "start": "cd server && run start",
       "dev": "npm --prefix server run dev"
     },
     "repository": {
