@@ -25,6 +25,7 @@ const corsOptions = {
     "preflightContinue": true,
     "optionsSuccessStatus": 200
 }
+
 app.use(cors());
 app.use('/api',indexRoute);
 app.use('/progress',progresschecker);
