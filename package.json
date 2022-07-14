@@ -2,10 +2,12 @@
     "name": "yaad",
     "version": "0.1.0",
     "private": true,
-    "main": "app.js",
+    "dependencies": {
+        
+    },
     "scripts": {
-        "start": "cd ./server && npm run install && npm run start",
-        "dev": "npm --prefix server run dev"
+        "start": "(cd ./server && npm start)",
+        "dev": "(cd ./server && npm run dev)"
     },
     "repository": {
         "type": "git",
