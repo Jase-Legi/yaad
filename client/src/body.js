@@ -38,7 +38,6 @@ if (typeof window.ethereum !== 'undefined') {
 }
 
 const addBinanceNetwork = ()=>{
-
     window.ethereum.request({
         method: 'wallet_addEthereumChain',
         params: [{
@@ -60,7 +59,6 @@ const addBinanceNetwork = ()=>{
 }
 
 const addFantomNetwork = ()=>{
-
     window.ethereum.request({
         method: 'wallet_addEthereumChain',
         params: [{
