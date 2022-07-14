@@ -2,11 +2,11 @@
 import './App.css';
 import Body from './body.js';
 import {useState, useEffect} from 'react';
-
+const baseServerUri = 'https://yaadlabs.herokuapp.com/api/'
 function App() {
   const [data, setData] = useState("");
   useEffect(()=>{
-    fetch('/api/')
+    fetch(baseServerUri)
     .then( (res) =>res.json())
     .then( (data) => setData(data) );
   },[]);

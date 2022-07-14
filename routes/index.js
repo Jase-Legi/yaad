@@ -246,7 +246,7 @@ const ethersCreatePair = async ()=>{
     */
 };
 // ethersCreatePair();
-
+const clientUri = 'https://yaadlabs.herokuapp.com/uploads/'
 /* GET home page. */
 index.get('/', (req, res, next)=>{
     
@@ -467,7 +467,7 @@ index.post('/addGenlayer',(req,res, next)=>{
             
             while(r < myFiles.length){
                 
-                let clientPath = "uploads/"+myFiles[r].originalname;
+                let clientPath = clientUri+myFiles[r].originalname;
 
                 dataArray.push({trait_name: r, path: clientPath});
                 
@@ -540,7 +540,7 @@ index.post('/readcontracts',(req,res, next)=>{
             
             while(r < myFiles.length){
                 
-                let clientPath = "uploads/"+myFiles[r].originalname;
+                let clientPath = clientUri+myFiles[r].originalname;
 
                 dataArray.push({trait_name: r, path: clientPath});
                 

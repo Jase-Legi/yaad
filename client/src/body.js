@@ -6,7 +6,7 @@ import {providers, Contract, utils, BigNumber, HDNode} from "ethers";
 // import {readFileSync, createReadStream, unlinkSync, existsSync, writeFileSync} from "fs";
 import yaadtokenAbi from './contracts/Yaad.json';
 // import legitokenAbi from './contracts/Legi.json';
-const baseServerUri = ''
+const baseServerUri = 'https://yaadlabs.herokuapp.com/api/'
 let provider = null;
 
 let signer = null;
@@ -504,7 +504,7 @@ function Body(props){
                 </button>
                 <label className='popupBoxEle' id='createBox'>
                     <span>Single NFT</span>
-                    <form action="/api/upldSingle" method="post" id='createSingleAssetUpld' encType="multipart/form-data">
+                    <form action={baseServerUri+'upldSingle'} method="post" id='createSingleAssetUpld' encType="multipart/form-data">
                         <input type="file" id='single_asset' name='single_asset' accept="image/*,video/*,audio/*,webgl/*" style={{opacity:100, zIndex:1}} onChange={handlesingleUload} hidden/>
                     </form>
                 </label>
@@ -648,7 +648,7 @@ function Body(props){
             return(
                 <div>
                     <MsgBox/>
-                    <form action="/api/upldSingle" method="post" id='createSingleAssetUpld' encType="multipart/form-data">
+                    <form action={baseServerUri+"upldSingle"} method="post" id='createSingleAssetUpld' encType="multipart/form-data">
                         <input type="file" id='single_asset' name='single_asset' accept="image/*,video/*,audio/*,webgl/*,.glb,.gltf" style={{opacity:100, zIndex:1}} onChange={state.data["createbox"].func} hidden/>
                     </form>
                     <label className='popupBoxEleDetailsLabel' id='createSingleBoxPreview' htmlFor="createSingleAssetUpld" onClick={()=>{document.querySelector('#single_asset').click()}}>
@@ -656,7 +656,7 @@ function Body(props){
                             <img src={state.data["createbox"].path} style={{objectFit:"cover", height: "100%", width:"100%"}} alt=""/>
                         </div>
                     </label>
-                    <form  action="/api/createone" method="post" encType="multipart/form-data" >
+                    <form  action={baseServerUri+"createone"} method="post" encType="multipart/form-data" >
                         <input className='popupBoxTextEle' placeholder='Name' type="text" name='name' id='singleNFTName' onChange={function(event){if(event.target.value !== ""){ event.target.classList.remove('errorbox'); if(event.target.parentNode.children[Array.from(event.target.parentNode.children).indexOf(event.target)+1].tagName === 'SPAN'){event.target.parentNode.children[Array.from(event.target.parentNode.children).indexOf(event.target)+1].remove();}}}} style={{opacity:100, zIndex:1}} />
                         <textarea className='popupBoxTextAreaEle' placeholder='Description' type="text" name='desc' id='singleNFTName'  style={{opacity:100, zIndex:1}} ></textarea>
                         <input className='popupBoxTextEle' placeholder='Collection' type="text" name='collection' id='singleNFTName'  style={{opacity:100, zIndex:1}} />
@@ -905,7 +905,7 @@ function Body(props){
                 
             }
             
-            await fetch('/api/addGenlayer', {method:"post", body:imgbody})
+            await fetch(baseServerUri+'addGenlayer', {method:"post", body:imgbody})
             .then((res)=> res.json())
             .then((piss)=>{
                 if(piss.error){
@@ -1033,7 +1033,7 @@ function Body(props){
                     boddy.append('values', JSON.stringify(delVal))
                     // let boddy = {index:state.temp_value.index, values: delVal};
 
-                    await fetch('/api/delLayer', {method:"post", body: boddy,})
+                    await fetch(baseServerUri+'delLayer', {method:"post", body: boddy,})
                     .then((res)=> res.json())
                     .then((piss)=>{
 
@@ -1419,7 +1419,7 @@ function Body(props){
             
             console.log(`state: ${JSON.stringify(state.data["createbox"])}`);
             
-            await fetch('/api/generate', {method:"post", body,})
+            await fetch(baseServerUri+'generate', {method:"post", body,})
             .then((res)=>{
                 // console.log(``);
                 if(res.status === 503){
@@ -1704,7 +1704,7 @@ function Body(props){
                     boddy.append('value', JSON.stringify(delVal))
                     // let boddy = {index:state.temp_value.index, values: delVal};
 
-                    await fetch('/api/delTrait', {method:"post", body: boddy,})
+                    await fetch(baseServerUri+'delTrait', {method:"post", body: boddy,})
                     .then((res)=> res.json())
                     .then((piss)=>{
 
@@ -1876,7 +1876,7 @@ function Body(props){
                 boddy.append('value', JSON.stringify(delVal))
                 // let boddy = {index:state.temp_value.index, values: delVal};
     
-                await fetch('/api/delTrait', {method:"post", body: boddy,})
+                await fetch(baseServerUri+'delTrait', {method:"post", body: boddy,})
                 .then((res)=> res.json())
                 .then((piss)=>{
     
