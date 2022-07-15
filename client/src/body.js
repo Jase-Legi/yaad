@@ -1409,6 +1409,7 @@ function Body(props){
                 return false;
             
             }
+
             body.append('currentState', state.currsubState["createbox"])
 
             state.data["createbox"].account = conntd;
@@ -1417,7 +1418,7 @@ function Body(props){
             
             console.log(`state: ${JSON.stringify(state.data["createbox"])}`);
             
-            await fetch(baseServerUri+'api/generate', {method:"POST", body, mode: 'cors'})
+            await fetch(baseServerUri+'api/generate', {method:"POST", body,})
             .then((res)=>{
                 console.log(`generate response: ${res}`);
                 if(res.status === 503){

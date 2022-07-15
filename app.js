@@ -19,6 +19,15 @@ const pinataSDK = require('@pinata/sdk');
 require('dotenv').config();
 const PORT = process.env.PORT || 5000;
 
+const corsOptions = {
+    "origin": '*',
+    "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+    "preflightContinue": true,
+    "optionsSuccessStatus": 200
+}
+
+app.use(cors(corsOptions));
+
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use('/api',indexRoute);
@@ -32,8 +41,8 @@ app.use(express.urlencoded({ extended: true}));
 
 // This application level middleware prints incoming requests to the servers console, useful to see incoming requests
 app.use((req, res, next) => {
-  console.log(`Request_Endpoint: ${req.method} ${req.url}`);
-  next();
+    console.log(`Request_Endpoint: ${req.method} ${req.url}`);
+    next();
 });
 
   
@@ -55,15 +64,6 @@ if ( process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
 if (process.env.NODE_ENV === 'dev') {
     app.use(express.static(join(__dirname, 'client/public')));
 }
-
-const corsOptions = {
-    "origin": 'https://yaadlabs.com',
-    "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
-    "preflightContinue": true,
-    "optionsSuccessStatus": 200
-}
-
-app.use(cors(corsOptions));
 
 // const uri = process.env.MONGO_DB_URI;
 // const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
