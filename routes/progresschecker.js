@@ -1,6 +1,5 @@
 const express = require('express');
 const index = express();
-const cors = require('cors');
 require('dotenv').config();
 const pinataSDK = require('@pinata/sdk');
 const multer  = require('multer');
@@ -22,15 +21,6 @@ const wBNB = process.env.WBNB;
 const pairAddy = process.env.PAIR_ADDY;
 const checkDirectory = require('../utils/checkdir');
 const generator = require('../utils/generator');
-
-const corsOptions = {
-    "origin": 'https://yaadlabs.com',
-    "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
-    "preflightContinue": true,
-    "optionsSuccessStatus": 200
-}
-
-index.use(cors(corsOptions));
 
 index.get("/generator/:addi", (req, res, next) => {
 

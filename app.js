@@ -1,6 +1,16 @@
 const express = require('express');
 let app = express();
 
+let cors = require('cors');
+
+const corsOptions = {
+    "origin": 'https://yaadlabs.com',
+    "optionsSuccessStatus": 200
+}
+
+app.options('*',cors(corsOptions));
+// app.options('*', cors());
+
 const {createReadStream} = require("fs");
 const {join, resolve} =require("path");
 const bodyParser = require('body-parser');
