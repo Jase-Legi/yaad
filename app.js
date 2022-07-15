@@ -33,7 +33,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.options('/api/generate', cors(corsOptions));
+// app.options('/api/generate', cors(corsOptions));
 
 app.use('/api',indexRoute);
 app.use('/progress',progresschecker);
