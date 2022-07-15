@@ -1217,11 +1217,8 @@ index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTrait
                     let boody = { message: "success!", code: 7, sampleArray: res.locals.samples, possibleCombos: res.locals.possibleCombos, traitTypes: res.locals.traitTypes, };
                     // res.on('finish')
                     if(res.headersSent){
-                        res.writeHead(200, {
-                            'Content-Length': Buffer.byteLength(boody),
-                            'Content-Type': 'text/plain'
-                            })
-                            .end(boody);
+                        res.writeHead(200, { 'Content-Length': Buffer.byteLength(boody), 'Content-Type': 'application/json' })
+                        .end(boody);
                     }
                 }catch(err){
                     console.log(err.stack);

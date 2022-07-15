@@ -1448,6 +1448,7 @@ function Body(props){
                 return res.json();
             })
             .then((piss)=>{
+                console.log(`success message:: ${JSON.stringify(piss)}`);
                 if(piss.error){
                     
                     console.log("an error occured!");
