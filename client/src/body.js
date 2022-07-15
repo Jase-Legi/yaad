@@ -1419,22 +1419,22 @@ function Body(props){
             console.log(`state: ${JSON.stringify(state.data["createbox"])}`);
             // hideLoading();
             
-            fetch(baseServerUri+'api/generate', {method:"POST", body, mode: "cors"});
             temp_state = JSON.parse(JSON.stringify(state));
-                    temp_state.data["createbox"] =  {};
-                    temp_state.data["createbox"]["activeContract"] = null;
-                    temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
-                    temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
-                    temp_state.data["createbox"].account = state.data["createbox"].account;
-                    
-                    // temp_state.data["createbox"].samples = piss.sampleArray;
-                    // temp_state.data["createbox"].possibleCombos = piss.possibleCombos;
+            temp_state.data["createbox"] =  {};
+            temp_state.data["createbox"]["activeContract"] = null;
+            temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
+            temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
+            temp_state.data["createbox"].account = state.data["createbox"].account;
+            
+            // temp_state.data["createbox"].samples = piss.sampleArray;
+            // temp_state.data["createbox"].possibleCombos = piss.possibleCombos;
+            fetch(baseServerUri+'api/generate', {method:"POST", body,});
 
-                    changeState(temp_state);
+            changeState(temp_state);
 
-                    e.target.classList.remove('inactive');
+            e.target.classList.remove('inactive');
 
-                    hideLoading();
+            hideLoading();
         }
         
         const handleSol = async(e)=>{
