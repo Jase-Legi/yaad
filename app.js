@@ -17,16 +17,10 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const pinataSDK = require('@pinata/sdk');
 
 require('dotenv').config();
-const PORT = process.env.PORT || 5000
-app.use(bodyParser.urlencoded({extended: true}))
-const corsOptions = {
-    "origin": 'https://yaadlabs.com',
-    "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
-    "preflightContinue": true,
-    "optionsSuccessStatus": 200
-}
+const PORT = process.env.PORT || 5000;
 
-app.use(cors(corsOptions));
+app.use(bodyParser.urlencoded({extended: true}));
+
 app.use('/api',indexRoute);
 app.use('/progress',progresschecker);
 app.use(logger('dev'));
@@ -59,8 +53,17 @@ if ( process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
 }
 
 if (process.env.NODE_ENV === 'dev') {
-  app.use(express.static(join(__dirname, 'client/public')));
+    app.use(express.static(join(__dirname, 'client/public')));
 }
+
+const corsOptions = {
+    "origin": 'https://yaadlabs.com',
+    "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+    "preflightContinue": true,
+    "optionsSuccessStatus": 200
+}
+
+app.use(cors(corsOptions));
 
 // const uri = process.env.MONGO_DB_URI;
 // const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
