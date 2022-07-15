@@ -1212,6 +1212,7 @@ index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTrait
                 })()
 
                 let boody = { message: "success!", code: 7, sampleArray: samplez, possibleCombos: res.locals.possibleCombos, traitTypes: res.locals.traitTypes, };
+                // res.on('finish')
                 if(res.headersSent){
                     console.log(`res.headersSent: ${res.headersSent}`)
                     res.writeHead(200, {
