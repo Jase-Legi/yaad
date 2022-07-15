@@ -1,5 +1,15 @@
 const express = require('express');
 let app = express();
+
+const corsOptions = {
+    "origin": 'https://yaadlabs.com/',
+    "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+    "preflightContinue": true,
+    "optionsSuccessStatus": 200
+}
+
+app.use(cors(corsOptions));
+
 const {createReadStream} = require("fs");
 const {join, resolve} =require("path");
 const bodyParser = require('body-parser');
@@ -45,19 +55,48 @@ app.use((req, res, next) => {
 // });
 
 // This middleware informs the express application to serve our compiled React files
-// if ( process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' ) {
-//     app.use(express.static(join(__dirname, 'client/build')));
+if ( process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' ) {
+    app.use(express.static(join(__dirname, 'client/build')));
 
-//     app.get('*', function (req, res) {
-//         res.sendFile(join(__dirname, 'client/build', 'index.html'));
-//     });
-// }
+    app.get('*', function (req, res) {
+        res.sendFile(join(__dirname, 'client/build', 'index.html'));
+    });
+}
 
-// if (process.env.NODE_ENV === 'dev') {
-//     app.use(express.static(join(__dirname, 'client/public')));
-// }
+if (process.env.NODE_ENV === 'dev') {
+    app.use(express.static(join(__dirname, 'client/public')));
+}
 
-// let upldDir = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')?'client/build/uploads':'client/public/uploads';
+// const uri = process.env.MONGO_DB_URI;
+// const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+// (async function(){
+//   let db;
+//   const dbname = 'yaad';
+//   let client;
+//   try{
+//       client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+//       const connected = await client.connect();
+//       db = connected.db('yaad');
+//       const nftcoll = db.collection('nfts');
+      
+//   }catch(err){
+//       console.log(err.stack);
+//   }
+//   if(client){
+    
+//       db.listCollections().toArray((er,coll)=>{
+//           for(var i=0;i<coll.length;i++){
+//               console.log((i+1)+') collection name: '+coll[i].name);
+//               // db.collection(coll[i].name).drop((efr,tt)=>{
+//               //     if(efr) throw efr;
+//               // })
+//           }
+//       });
+//       // client.close();
+//   }
+// })()
+
+let upldDir = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')?'client/build/uploads':'client/public/uploads';
 
 app.listen(PORT,(err)=>{
     // if error then log it to the console
