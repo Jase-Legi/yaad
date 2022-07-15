@@ -1149,14 +1149,7 @@ const generate = async (req,res, next) => {
     return next();
 };
 
-let cors = require('cors');
-
-const corsOptions = {
-    "origin": 'https://yaadlabs.com',
-    "optionsSuccessStatus": 200
-}
-
-index.post('/generate',cors(corsOptions),  multer().none(), loopNpin, loopNpinBackground, mapTraitTypes, traitTypesPushNA, getAllPossibleCombos, shuffleCombo, insertBackground, pinTheJSON, getSamplesAndClearComboData, updateDB, (req,res, next)=>{
+index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTraitTypes, traitTypesPushNA, getAllPossibleCombos, shuffleCombo, insertBackground, pinTheJSON, getSamplesAndClearComboData, updateDB, (req,res, next)=>{
     try {
         let datat = JSON.parse(req.body.data);
         const account = req.body.account;
