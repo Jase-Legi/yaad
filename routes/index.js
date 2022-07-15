@@ -257,7 +257,7 @@ const corsOptions = {
     "optionsSuccessStatus": 200
 }
 // index.use(cors(corsOptions));
-index.options('*', cors(corsOptions));
+index.options('/', cors(corsOptions));
 
 index.get('/', (req, res, next)=>{
     
@@ -417,6 +417,7 @@ index.post('/createone', multer().none(), (req,res, next)=>{
         return res.json({error: {message: "An error occurred: "+error}});
     }
 });
+index.options('/addGenlayer', cors(corsOptions));
 
 index.post('/addGenlayer',(req,res, next)=>{
     try {
