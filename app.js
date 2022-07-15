@@ -9,7 +9,7 @@ const corsOptions = {
 }
 // index.use(cors(corsOptions));
 // app.options('*', cors());
-app.use(cors());
+app.use(cors(corsOptions));
 
 const {createReadStream} = require("fs");
 const {join, resolve} =require("path");
