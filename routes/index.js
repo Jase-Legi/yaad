@@ -701,64 +701,6 @@ let pinnit = async (pathh, options)=>{
     }
 };
 
-const drawimage = async (traitTypes, width, height, cap) => {
-    let sampleArray = [];
-    let gateway = 'https://gateway.pinata.cloud/ipfs/';
-    const canvas = createCanvas(width, height);
-    // const collectionName  = req.body.coll_name;
-
-    const ctx = canvas.getContext('2d');
-    let cap_it = (cap)?cap:traitTypes.length;
-    
-    for(let v = 0; v < cap_it; v++){
-
-        const  drawableTraits = traitTypes[v].filter(x=>  x.value !== 'N/A');
-        
-        for(let p = 0; p < drawableTraits.length; p++) {
-            console.log(`index ${p}, length: ${traitTypes.length}`);
-            let  val = drawableTraits[p];
-
-            // console.log(`traits ${JSON.stringify(drawableTraits[p])}`);
-
-            let  image = await loadImage(gateway+val.value);
-
-            ctx.drawImage(image, 0, 0, width, height);
-        }
-        
-        try {
-            const options = {
-                pinataMetadata:{
-                    name: `${v}`,
-                    keyvalues: {
-                    description: 'no',
-                    name: `${v}`
-                    }
-                },
-                pinataOptions: {
-                    cidVersion: 0
-                }
-            };
-
-            console.log(`storage path: ${upldDir}/${v}.png`);
-
-            writeFileSync(`${upldDir}/${v}.png`, canvas.toBuffer("image/png"));
-            
-            let pinned = await pinnit(`${upldDir}/${v}.png` , options);
-            
-            let metadataJSON = { name: `sample turd #${v}`, attributes: drawableTraits, path: pinned.IpfsHash};
-            
-            sampleArray.push(metadataJSON);
-
-        } catch (error) {
-            return {error,};
-        }
-
-    }
-    
-    return sampleArray;
-  
-};
-
 let loopNpin = async (req,res, next)=>{
     let collName = JSON.parse(req.body.data).coll_name;
     let layers = JSON.parse(req.body.data).layers;
@@ -1026,7 +968,73 @@ const updateDB = async (req, res, next)=>{
         }
         
     })()
+
     return next();
+};
+// drawimage(res.locals.comboz, 1000, 1000, 4)
+
+const drawimage = async (req, res, next) => {
+    const width = 1000;
+    const height = 1000;
+    let traitTypes = res.locals.comboz;
+    let cap = 4;
+    let sampleArray = [];
+    let gateway = 'https://gateway.pinata.cloud/ipfs/';
+    const canvas = createCanvas(width, height);
+    // const collectionName  = req.body.coll_name;
+
+    const ctx = canvas.getContext('2d');
+    let cap_it = (cap)?cap:traitTypes.length;
+    
+    for(let v = 0; v < cap_it; v++){
+
+        const  drawableTraits = traitTypes[v].filter(x=>  x.value !== 'N/A');
+        
+        for(let p = 0; p < drawableTraits.length; p++) {
+            console.log(`index ${p}, length: ${traitTypes.length}`);
+            let  val = drawableTraits[p];
+
+            // console.log(`traits ${JSON.stringify(drawableTraits[p])}`);
+
+            let  image = await loadImage(gateway+val.value);
+
+            ctx.drawImage(image, 0, 0, width, height);
+        }
+        
+        try {
+            const options = {
+                pinataMetadata:{
+                    name: `${v}`,
+                    keyvalues: {
+                    description: 'no',
+                    name: `${v}`
+                    }
+                },
+                pinataOptions: {
+                    cidVersion: 0
+                }
+            };
+
+            console.log(`storage path: ${upldDir}/${v}.png`);
+
+            writeFileSync(`${upldDir}/${v}.png`, canvas.toBuffer("image/png"));
+            
+            let pinned = await pinnit(`${upldDir}/${v}.png` , options);
+            
+            let metadataJSON = { name: `sample turd #${v}`, attributes: drawableTraits, path: pinned.IpfsHash};
+            
+            sampleArray.push(metadataJSON);
+
+        } catch (error) {
+            res.locals.samples = {error,};
+            return next();
+        }
+
+    }
+    
+    res.locals.samples = sampleArray;
+    return next();
+  
 };
 
 const generate = async (req,res, next) => {
@@ -1149,7 +1157,7 @@ const generate = async (req,res, next) => {
     return next();
 };
 
-index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTraitTypes, traitTypesPushNA, getAllPossibleCombos, shuffleCombo, insertBackground, pinTheJSON, getSamplesAndClearComboData, updateDB, (req,res, next)=>{
+index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTraitTypes, traitTypesPushNA, getAllPossibleCombos, shuffleCombo, insertBackground, pinTheJSON, getSamplesAndClearComboData, updateDB, drawimage, (req,res, next)=>{
     try {
         let datat = JSON.parse(req.body.data);
         const account = req.body.account;
@@ -1176,55 +1184,54 @@ index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTrait
             layer_to_swap: null
         }
     
-        drawimage(res.locals.comboz, 1000, 1000, 4).then((samplez) => {
+        // drawimage(res.locals.comboz, 1000, 1000, 4).then((samplez) => {
 
-            if (samplez.error) {
-                return res.json({ error: samplez.error });
-            } else {
-                (async function(){
-                    const uri = process.env.MONGO_DB_URI;
-                    let db; 
-                    let client;
-            
+        if (res.locals.samples.error) {
+            return res.json({ error: res.locals.samples.error });
+        } else {
+            console.log(`res.headersSent: ${res.headersSent}`)
+
+            (async function(){
+                const uri = process.env.MONGO_DB_URI;
+                let db; 
+                let client;
+        
+                
+                try{
+                    client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+                    const connected = await client.connect();
+                    db = connected.db('yaad');
                     
-                    try{
-                        client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-                        const connected = await client.connect();
-                        db = connected.db('yaad');
-                        
-                        const nftcoll = db.collection('nfts');
-            
-                        await nftcoll.updateOne(
-                            { "name": collectionName, "owner": account}, 
-                            { $set: 
-                                {
-                                    "data.samples": samplez,
-                                    "data.samplesGenerated" : 4,
-                                    "data.workState": "samples"
-                                }
+                    const nftcoll = db.collection('nfts');
+        
+                    await nftcoll.updateOne(
+                        { "name": collectionName, "owner": account}, 
+                        { $set: 
+                            {
+                                "data.samples": res.locals.samples,
+                                "data.samplesGenerated" : 4,
+                                "data.workState": "samples"
                             }
-                        );
-            
-                    }catch(err){
-                        console.log(err.stack);
+                        }
+                    );
+                    let boody = { message: "success!", code: 7, sampleArray: res.locals.samples, possibleCombos: res.locals.possibleCombos, traitTypes: res.locals.traitTypes, };
+                    // res.on('finish')
+                    if(res.headersSent){
+                        res.writeHead(200, {
+                            'Content-Length': Buffer.byteLength(boody),
+                            'Content-Type': 'text/plain'
+                            })
+                            .end(boody);
                     }
-                    
-                })()
-
-                let boody = { message: "success!", code: 7, sampleArray: samplez, possibleCombos: res.locals.possibleCombos, traitTypes: res.locals.traitTypes, };
-                // res.on('finish')
-                if(res.headersSent){
-                    console.log(`res.headersSent: ${res.headersSent}`)
-                    res.writeHead(200, {
-                        'Content-Length': Buffer.byteLength(boody),
-                        'Content-Type': 'text/plain'
-                      })
-                      .end(boody);
+                }catch(err){
+                    console.log(err.stack);
                 }
+                
+            })()
 
-                return res.json(boody);
-            }
-        });
+            return res.json(boody);
+        }
+        // });
 
     } catch (error) {
 
@@ -1233,58 +1240,5 @@ index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTrait
 
     }
 });
-
-// index.post('/drawSamples', multer().none(), loopNpin, generate, (req,res, next)=>{
-//     try {
-//         let datat = JSON.parse(req.body.data);
-//         const account = req.body.account;
-//         const collectionName = datat.coll_name;
-//         const currentState = req.body.currentState;
-//         // let sampleArray = [];
-//         let gateway = 'https://gateway.pinata.cloud/ipfs/'; //'https://gateway.pinata.cloud/ipfs/';//'https://ipfs.io/ipfs/'
-
-//         let stateCodes = {}; let comboz = []; const priorities = []; let bb = 0;
-    
-//         drawimage(res.locals.comboz, 1000, 1000).then((samplez) => {
-
-//             const uri = process.env.MONGO_DB_URI;
-
-//             (async function () {
-
-//                 let db; let client; const dbname = "yaad";
-                
-//                 try {
-                    
-//                     client = new MongoClient( uri, { useNewUrlParser: true, useUnifiedTopology: true } );
-//                     const connected = await client.connect();
-//                     db = connected.db("yaad");
-//                     const userColl = db.collection("users");
-//                     let insertThis = { account, collectionName, currentState,  status: { deployed: false, data: { message: "success!", code: 7,  possibleCombos: res.locals.possibleCombos, sampleArray: samplez, traitTypes: res.locals.traitTypes }, state: "paywall" } };
-
-//                     await userColl.updateOne( { account: account }, { $set: {"pending.$.PFP" : insertThis } }, { upsert: true, "arrayFilters":[{"ele.collectionName": collectionName}] } );
-//                 } catch (err) {
-//                     console.log(err.stack);
-//                     return res.json( { error: err } );
-//                 }
-//             })();
-
-//             // if(res.headersSent){
-//             //     next();
-//             // }
-
-//             if (samplez.error) {
-//                 return res.json({ error: samplez.error });
-//             } else {
-//                 return res.json( { message: "success!", code: 7, sampleArray: samplez, possibleCombos: res.locals.possibleCombos, traitTypes: res.locals.traitTypes, } );
-//             }
-//         });
-
-//     } catch (error) {
-
-//         // console.log(`money shot error: ${error}`);
-//         return res.json({error,});
-
-//     }
-// });
 
 module.exports = index;
