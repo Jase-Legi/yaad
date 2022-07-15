@@ -8,7 +8,8 @@ const corsOptions = {
     "optionsSuccessStatus": 200
 }
 // index.use(cors(corsOptions));
-app.options('*', cors());
+// app.options('*', cors());
+app.use(cors());
 
 const {createReadStream} = require("fs");
 const {join, resolve} =require("path");
