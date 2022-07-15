@@ -1417,7 +1417,7 @@ function Body(props){
             body.append('data',JSON.stringify(state.data["createbox"]));
             
             console.log(`state: ${JSON.stringify(state.data["createbox"])}`);
-            hideLoading();
+            // hideLoading();
             
             await fetch(baseServerUri+'api/generate', {method:"POST", body, mode: "no-cors"})
             .then((res)=>{

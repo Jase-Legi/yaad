@@ -257,7 +257,7 @@ const corsOptions = {
     "optionsSuccessStatus": 200
 }
 
-index.use(cors(corsOptions))
+index.use(cors(corsOptions));
 // index.options('*', cors());
 
 index.get('/', (req, res, next)=>{
