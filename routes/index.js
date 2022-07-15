@@ -1037,6 +1037,45 @@ const drawimage = async (req, res, next) => {
   
 };
 
+const updateDBAgain = async (req, res, next)=>{
+    const datat = JSON.parse(req.body.data)
+    const collectionName = datat.coll_name;
+    const account = req.body.account;
+    
+
+    (async function(){
+        const uri = process.env.MONGO_DB_URI;
+        let db; 
+        let client;
+        
+        try{
+            client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+            const connected = await client.connect();
+            db = connected.db('yaad');
+            
+            const nftcoll = db.collection('nfts');
+
+            await nftcoll.updateOne(
+                { "name": collectionName, "owner": account}, 
+                { $set: 
+                    {
+                        "data.samples": res.locals.samples,
+                        "data.samplesGenerated" : 4,
+                        "data.workState": "samples"
+                    }
+                }
+            );
+            
+        }catch(err){
+            console.log(err.stack);
+            return next();
+        }
+        
+    })()
+
+    return next();
+};
+
 const generate = async (req,res, next) => {
     
     const cap = 5;
@@ -1187,46 +1226,19 @@ index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTrait
         // drawimage(res.locals.comboz, 1000, 1000, 4).then((samplez) => {
 
         if (res.locals.samples.error) {
-            return res.json({ error: res.locals.samples.error });
+            // return res.json({ error: res.locals.samples.error });
+            res.writeHead(200, { 'Content-Length': Buffer.byteLength(boody), 'Content-Type': 'application/json' })
+                .end({ error: res.locals.samples.error });
         } else {
-            console.log(`res.headersSent: ${res.headersSent}`)
+            console.log(`res.headersSent: ${res.headersSent}`);
+            let boody = { message: "success!", code: 7, sampleArray: res.locals.samples, possibleCombos: res.locals.possibleCombos, traitTypes: res.locals.traitTypes, };
+            // res.on('finish')
+            // if(res.headersSent){
+                res.writeHead(200, { 'Content-Length': Buffer.byteLength(boody), 'Content-Type': 'application/json' })
+                .end(boody);
+            // }
 
-            (async function(){
-                const uri = process.env.MONGO_DB_URI;
-                let db; 
-                let client;
-        
-                
-                try{
-                    client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-                    const connected = await client.connect();
-                    db = connected.db('yaad');
-                    
-                    const nftcoll = db.collection('nfts');
-        
-                    await nftcoll.updateOne(
-                        { "name": collectionName, "owner": account}, 
-                        { $set: 
-                            {
-                                "data.samples": res.locals.samples,
-                                "data.samplesGenerated" : 4,
-                                "data.workState": "samples"
-                            }
-                        }
-                    );
-                    let boody = { message: "success!", code: 7, sampleArray: res.locals.samples, possibleCombos: res.locals.possibleCombos, traitTypes: res.locals.traitTypes, };
-                    // res.on('finish')
-                    if(res.headersSent){
-                        res.writeHead(200, { 'Content-Length': Buffer.byteLength(boody), 'Content-Type': 'application/json' })
-                        .end(boody);
-                    }
-                }catch(err){
-                    console.log(err.stack);
-                }
-                
-            })()
-
-            return res.json(boody);
+            // return res.json(boody);
         }
         // });
 
