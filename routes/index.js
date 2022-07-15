@@ -1,5 +1,5 @@
 const express = require('express');
-// const cors = require('cors');
+const cors = require('cors');
 const index = express();
 
 require('dotenv').config();
@@ -250,6 +250,15 @@ const ethersCreatePair = async ()=>{
 // ethersCreatePair();
 const clientUri = 'https://yaadlabs.herokuapp.com/'
 /* GET home page. */
+const corsOptions = {
+    "origin": 'yaadlabs.com',
+    "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+    "preflightContinue": true,
+    "optionsSuccessStatus": 200
+}
+
+index.use(cors(corsOptions))
+// index.options('*', cors());
 
 index.get('/', (req, res, next)=>{
     

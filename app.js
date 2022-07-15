@@ -1,15 +1,5 @@
 const express = require('express');
-const cors = require('cors');
 let app = express();
-const corsOptions = {
-    "origin": 'https://yaadlabs.com',
-    "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
-    "preflightContinue": true,
-    "optionsSuccessStatus": 200
-}
-// index.use(cors(corsOptions));
-// app.options('*', cors());
-app.use(cors(corsOptions));
 
 const {createReadStream} = require("fs");
 const {join, resolve} =require("path");
