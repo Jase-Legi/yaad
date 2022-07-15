@@ -1,6 +1,7 @@
 const express = require('express');
+
 let app = express();
-const cors = require('cors');
+
 const {createReadStream} = require("fs");
 const {join, resolve} =require("path");
 const bodyParser = require('body-parser');
@@ -30,14 +31,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 
-const corsOptions = {
-    "origin": 'https://yaadlabs.com/',
-    "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
-    "preflightContinue": true,
-    "optionsSuccessStatus": 200
-}
 
-app.use(cors(corsOptions));
 
 // This application level middleware prints incoming requests to the servers console, useful to see incoming requests
 app.use((req, res, next) => {

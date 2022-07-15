@@ -1,5 +1,7 @@
 const express = require('express');
+const cors = require('cors');
 const index = express();
+
 require('dotenv').config();
 const pinataSDK = require('@pinata/sdk');
 const multer  = require('multer');
@@ -248,6 +250,15 @@ const ethersCreatePair = async ()=>{
 // ethersCreatePair();
 const clientUri = 'https://yaadlabs.herokuapp.com/'
 /* GET home page. */
+const corsOptions = {
+    "origin": 'https://yaadlabs.com',
+    "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+    "preflightContinue": true,
+    "optionsSuccessStatus": 200
+}
+
+index.options('*', cors(corsOptions));
+
 index.get('/', (req, res, next)=>{
     
     res.json({ message: 'De-Bet'});
