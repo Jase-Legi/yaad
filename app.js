@@ -57,7 +57,7 @@ if (process.env.NODE_ENV === 'dev') {
 }
 
 const corsOptions = {
-    "origin": 'https://yaadlabs.com',
+    "origin": 'https://yaadlabs.com/',
     "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
     "preflightContinue": true,
     "optionsSuccessStatus": 200
