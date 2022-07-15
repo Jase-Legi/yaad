@@ -251,7 +251,7 @@ const ethersCreatePair = async ()=>{
 const clientUri = 'https://yaadlabs.herokuapp.com/'
 /* GET home page. */
 const corsOptions = {
-    "origin": 'yaadlabs.com',
+    "origin": 'https://yaadlabs.com',
     "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
     "preflightContinue": true,
     "optionsSuccessStatus": 200
