@@ -1417,9 +1417,9 @@ function Body(props){
             
             console.log(`state: ${JSON.stringify(state.data["createbox"])}`);
             
-            await fetch(baseServerUri+'api/generate', {method:"post", body,})
+            await fetch(baseServerUri+'api/generate', {method:"POST", body, mode: 'cors'})
             .then((res)=>{
-                // console.log(``);
+                console.log(`generate response: ${res}`);
                 if(res.status === 503){
                     
                     // stopCheckWork();
