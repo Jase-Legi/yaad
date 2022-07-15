@@ -1419,22 +1419,71 @@ function Body(props){
             console.log(`state: ${JSON.stringify(state.data["createbox"])}`);
             // hideLoading();
             
-            temp_state = JSON.parse(JSON.stringify(state));
-            temp_state.data["createbox"] =  {};
-            temp_state.data["createbox"]["activeContract"] = null;
-            temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
-            temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
-            temp_state.data["createbox"].account = state.data["createbox"].account;
-            
-            // temp_state.data["createbox"].samples = piss.sampleArray;
-            // temp_state.data["createbox"].possibleCombos = piss.possibleCombos;
-            fetch(baseServerUri+'api/generate', {method:"POST", body,});
+            await fetch(baseServerUri+'api/generate', {method:"POST", body, mode: "no-cors"})
+            .then((res)=>{
+                console.log(`generate response: ${res}`);
+                if(res.status === 503){
+                    
+                    // stopCheckWork();
 
-            changeState(temp_state);
+                    // console.log(`success message: ${piss.message}, JSON::: ${JSON.stringify(piss.sampleArray)}`);
+                    // the love of money is the root of all evil
+                    temp_state = JSON.parse(JSON.stringify(state));
+                    temp_state.data["createbox"] =  {};
+                    temp_state.data["createbox"]["activeContract"] = null;
+                    temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
+                    temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
+                    temp_state.data["createbox"].account = state.data["createbox"].account;
+                    
+                    // temp_state.data["createbox"].samples = piss.sampleArray;
+                    // temp_state.data["createbox"].possibleCombos = piss.possibleCombos;
 
-            e.target.classList.remove('inactive');
+                    changeState(temp_state);
 
-            hideLoading();
+                    e.target.classList.remove('inactive');
+
+                    hideLoading();
+                    
+                }
+                return res.json();
+            })
+            .then((piss)=>{
+                if(piss.error){
+                    
+                    console.log("an error occured!");
+                    console.log(piss.error.message);
+                    hideLoading();
+                    // return changeState(temp_state);
+                
+                }else{
+                    
+                    console.log(`success message: ${piss.message}, JSON::: ${JSON.stringify(piss.sampleArray)}`);
+                    
+                    temp_state = JSON.parse(JSON.stringify(state));
+                    
+                    temp_state.data["createbox"] =  {};
+
+                    temp_state.data["createbox"]["activeContract"] = null;
+
+                    temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
+
+                    temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
+
+                    temp_state.data["createbox"].traitTypes = piss.sampleArray;
+
+                    temp_state.data["createbox"].samples = piss.sampleArray;
+
+                    temp_state.data["createbox"].possibleCombos = piss.possibleCombos;
+
+                    changeState(temp_state);
+
+                    e.target.classList.remove('inactive');
+
+                    hideLoading(); 
+                    // return closeLayerOptionsBox();
+                    // console.log(`Uploaded successfully: \n addy: ${piss.response.address}\n collection: ${piss.response.coll_name}\n layer name: ${piss.response.layer_name}\n files info: ${piss.response.data}`);
+                }
+            });
         }
         
         const handleSol = async(e)=>{

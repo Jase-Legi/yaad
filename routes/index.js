@@ -1177,10 +1177,6 @@ index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTrait
         }
     
         drawimage(res.locals.comboz, 1000, 1000, 4).then((samplez) => {
-            
-            // if(res.headersSent){
-            //     next();
-            // }
 
             if (samplez.error) {
                 return res.json({ error: samplez.error });
@@ -1214,8 +1210,18 @@ index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTrait
                     }
                     
                 })()
-                
-                return res.json( { message: "success!", code: 7, sampleArray: samplez, possibleCombos: res.locals.possibleCombos, traitTypes: res.locals.traitTypes, } );
+
+                let boody = { message: "success!", code: 7, sampleArray: samplez, possibleCombos: res.locals.possibleCombos, traitTypes: res.locals.traitTypes, };
+                if(res.headersSent){
+                    console.log(`res.headersSent: ${res.headersSent}`)
+                    res.writeHead(200, {
+                        'Content-Length': Buffer.byteLength(boody),
+                        'Content-Type': 'text/plain'
+                      })
+                      .end(boody);
+                }
+
+                return res.json(boody);
             }
         });
 
