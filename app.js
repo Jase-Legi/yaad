@@ -5,6 +5,8 @@ let cors = require('cors');
 
 const corsOptions = {
     "origin": 'https://yaadlabs.com',
+    "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+    "preflightContinue": true,
     "optionsSuccessStatus": 200
 }
 
