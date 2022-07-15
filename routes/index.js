@@ -256,8 +256,8 @@ const corsOptions = {
     "preflightContinue": true,
     "optionsSuccessStatus": 200
 }
-
-index.options('*', cors());
+index.use(cors(corsOptions));
+// index.options('*', cors());
 
 index.get('/', (req, res, next)=>{
     
