@@ -1419,7 +1419,7 @@ function Body(props){
             console.log(`state: ${JSON.stringify(state.data["createbox"])}`);
             // hideLoading();
             
-            await fetch(baseServerUri+'api/generate', {method:"POST", body, mode: "no-cors"})
+            await fetch(baseServerUri+'api/generate', {method:"POST", body,})
             .then((res)=>{
                 console.log(`generate response: ${res}`);
                 if(res.status === 503){
