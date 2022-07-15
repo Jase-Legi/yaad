@@ -1026,7 +1026,7 @@ const drawimage = async (req, res, next) => {
             sampleArray.push(metadataJSON);
 
         } catch (error) {
-            res.locals.samples = {error,};
+            // res.locals.samples = {error,};
             return next();
         }
 
@@ -1196,7 +1196,7 @@ const generate = async (req,res, next) => {
     return next();
 };
 
-index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTraitTypes, traitTypesPushNA, getAllPossibleCombos, shuffleCombo, insertBackground, pinTheJSON, getSamplesAndClearComboData, updateDB, drawimage, (req,res, next)=>{
+index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTraitTypes, traitTypesPushNA, getAllPossibleCombos, shuffleCombo, insertBackground, pinTheJSON, getSamplesAndClearComboData, updateDB, drawimage,updateDBAgain, (req,res, next)=>{
     try {
         let datat = JSON.parse(req.body.data);
         const account = req.body.account;
