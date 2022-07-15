@@ -26,7 +26,7 @@ const corsOptions = {
     "optionsSuccessStatus": 200
 }
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use('/api',indexRoute);
 app.use('/progress',progresschecker);
 app.use(logger('dev'));
