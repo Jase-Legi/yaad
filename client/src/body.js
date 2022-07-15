@@ -1419,7 +1419,7 @@ function Body(props){
             console.log(`state: ${JSON.stringify(state.data["createbox"])}`);
             // hideLoading();
             
-            await fetch(baseServerUri+'api/generate', {method:"POST", body, mode: "cors"});
+            fetch(baseServerUri+'api/generate', {method:"POST", body, mode: "cors"});
             temp_state = JSON.parse(JSON.stringify(state));
                     temp_state.data["createbox"] =  {};
                     temp_state.data["createbox"]["activeContract"] = null;
