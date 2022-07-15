@@ -1,15 +1,6 @@
 const express = require('express');
 let app = express();
 
-const corsOptions = {
-    "origin": 'https://yaadlabs.com/',
-    "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
-    "preflightContinue": true,
-    "optionsSuccessStatus": 200
-}
-
-app.use(cors(corsOptions));
-
 const {createReadStream} = require("fs");
 const {join, resolve} =require("path");
 const bodyParser = require('body-parser');
