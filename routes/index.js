@@ -1225,11 +1225,6 @@ index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTrait
     
         // drawimage(res.locals.comboz, 1000, 1000, 4).then((samplez) => {
 
-        if (res.locals.samples.error) {
-            // return res.json({ error: res.locals.samples.error });
-            res.writeHead(200, { 'Content-Length': Buffer.byteLength(boody), 'Content-Type': 'application/json' })
-                .end({ error: res.locals.samples.error });
-        } else {
             console.log(`res.headersSent: ${res.headersSent}`);
             let boody = { message: "success!", code: 7, sampleArray: res.locals.samples, possibleCombos: res.locals.possibleCombos, traitTypes: res.locals.traitTypes, };
             // res.on('finish')
@@ -1239,7 +1234,6 @@ index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTrait
             // }
 
             // return res.json(boody);
-        }
         // });
 
     } catch (error) {
