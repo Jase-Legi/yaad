@@ -1229,14 +1229,14 @@ index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTrait
     
         // drawimage(res.locals.comboz, 1000, 1000, 4).then((samplez) => {
 
-            let boody = (!res.locals.samples)? res.locals.errors: { message: "success!", code: 7, sampleArray: res.locals.samples, possibleCombos: res.locals.possibleCombos, traitTypes: res.locals.traitTypes, };
+            let boody = (!res.locals.samples)? JSON.stringify(res.locals.errors): JSON.stringify({ message: "success!", code: 7, sampleArray: res.locals.samples, possibleCombos: res.locals.possibleCombos, traitTypes: res.locals.traitTypes, });
             // res.on('finish')
             if(res.locals.errors){
-                res.writeHead(503, { 'Content-Length': Buffer.byteLength(JSON.stringify(boody)), 'Content-Type': 'application/json' })
-                .end(JSON.stringify(boody));
+                res.writeHead(503, { 'Content-Length': Buffer.byteLength(boody), 'Content-Type': 'application/json' })
+                .end(boody);
             }else{
                 res.writeHead(200, { 'Content-Length': Buffer.byteLength(JSON.stringify(boody)), 'Content-Type': 'application/json' })
-                .end(JSON.stringify(boody));
+                .end(boody);
             }
 
             // return res.json(boody);
