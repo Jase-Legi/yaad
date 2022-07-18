@@ -1235,7 +1235,7 @@ index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTrait
                 res.writeHead(503, { 'Content-Length': Buffer.byteLength(boody), 'Content-Type': 'application/json' })
                 .end(boody);
             }else{
-                res.writeHead(200, { 'Content-Length': Buffer.byteLength(JSON.stringify(boody)), 'Content-Type': 'application/json' })
+                res.writeHead(200, { 'Content-Length': Buffer.byteLength(boody), 'Content-Type': 'application/json' })
                 .end(boody);
             }
 
@@ -1245,7 +1245,9 @@ index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTrait
     } catch (error) {
 
         // console.log(`money shot error: ${error}`);
-        return res.json({error,});
+        res.writeHead(200, { 'Content-Length': Buffer.byteLength(JSON.stringify({error})), 'Content-Type': 'application/json' })
+                .end(JSON.stringify({error}));
+        // return res.json({error,});
 
     }
 });
