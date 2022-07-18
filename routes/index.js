@@ -974,6 +974,7 @@ const updateDB = async (req, res, next)=>{
 // drawimage(res.locals.comboz, 1000, 1000, 4)
 
 const drawimage = async (req, res, next) => {
+    res.locals.errors = []
     const width = 1000;
     const height = 1000;
     let traitTypes = res.locals.comboz;
@@ -1026,7 +1027,7 @@ const drawimage = async (req, res, next) => {
             sampleArray.push(metadataJSON);
 
         } catch (error) {
-            // res.locals.samples = {error,};
+            res.locals.errors.push(error);
             return next();
         }
 
@@ -1069,6 +1070,8 @@ const updateDBAgain = async (req, res, next)=>{
             
         }catch(err){
             console.log(err.stack);
+            res.locals.errors.push(error);
+
             return next();
         }
         
@@ -1226,12 +1229,15 @@ index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTrait
     
         // drawimage(res.locals.comboz, 1000, 1000, 4).then((samplez) => {
 
-            let boody = { message: "success!", code: 7, sampleArray: res.locals.samples, possibleCombos: res.locals.possibleCombos, traitTypes: res.locals.traitTypes, };
+            let boody = (!res.locals.samples)? res.locals.errors: { message: "success!", code: 7, sampleArray: res.locals.samples, possibleCombos: res.locals.possibleCombos, traitTypes: res.locals.traitTypes, };
             // res.on('finish')
-            // if(res.headersSent){
-            res.writeHead(200, { 'Content-Length': Buffer.byteLength(JSON.stringify(boody)), 'Content-Type': 'text/plain' })
-            .end(JSON.stringify(boody));
-            // }
+            if(res.locals.errors){
+                res.writeHead(503, { 'Content-Length': Buffer.byteLength(JSON.stringify(boody)), 'Content-Type': 'application/json' })
+                .end(JSON.stringify(boody));
+            }else{
+                res.writeHead(200, { 'Content-Length': Buffer.byteLength(JSON.stringify(boody)), 'Content-Type': 'application/json' })
+                .end(JSON.stringify(boody));
+            }
 
             // return res.json(boody);
         // });
