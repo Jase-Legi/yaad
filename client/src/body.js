@@ -1419,10 +1419,25 @@ function Body(props){
             console.log(`state: ${JSON.stringify(state.data["createbox"])}`);
             // hideLoading();
             
-            let generateValue = await fetch(baseServerUri+'api/generate', {method:"POST", body,});
+            let generateValue = fetch(baseServerUri+'api/generate', {method:"POST", body,});
 
             console.log(`generate response: ${generateValue}`);
+            
+            temp_state = JSON.parse(JSON.stringify(state));
 
+            temp_state.data["createbox"] =  {};
+            temp_state.data["createbox"]["activeContract"] = null;
+            temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
+            temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
+            temp_state.data["createbox"].account = state.data["createbox"].account;
+            
+            // temp_state.data["createbox"].samples = piss.sampleArray;
+            // temp_state.data["createbox"].possibleCombos = piss.possibleCombos;
+
+            changeState(temp_state);
+
+            e.target.classList.remove('inactive');
+            hideLoading();
             // .then((res)=>{
             //     if(res.status === 503){
                     
