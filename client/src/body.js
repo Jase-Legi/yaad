@@ -2147,7 +2147,7 @@ function Body(props){
         return (
             <div className='welcomeBox'>
                 <div className="welcomeBoxElement">
-                    <button className='containerbox' onClick={changeState({state:'SelectCreateOption', data: { "createbox": state.data["createbox"], "bet": state.data["bet"] }, currsubState:{"createbox":state.currsubState["createbox"], "bet":state.currsubState["bet"]}})} >
+                    <button className='containerbox' onClick={()=>changeState({state:'SelectCreateOption', data: { "createbox": state.data["createbox"], "bet": state.data["bet"] }, currsubState:{"createbox":state.currsubState["createbox"], "bet":state.currsubState["bet"]}})} >
                         <div className='title'>
                             <h1>
                                 Create
