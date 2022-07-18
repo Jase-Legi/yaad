@@ -1419,72 +1419,74 @@ function Body(props){
             console.log(`state: ${JSON.stringify(state.data["createbox"])}`);
             // hideLoading();
             
-            await fetch(baseServerUri+'api/generate', {method:"POST", body,})
-            .then((res)=>{
-                console.log(`generate response: ${res}`);
-                if(res.status === 503){
-                    
-                    // stopCheckWork();
+            let generateValue = await fetch(baseServerUri+'api/generate', {method:"POST", body,});
 
-                    // console.log(`success message: ${piss.message}, JSON::: ${JSON.stringify(piss.sampleArray)}`);
-                    // the love of money is the root of all evil
-                    temp_state = JSON.parse(JSON.stringify(state));
-                    temp_state.data["createbox"] =  {};
-                    temp_state.data["createbox"]["activeContract"] = null;
-                    temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
-                    temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
-                    temp_state.data["createbox"].account = state.data["createbox"].account;
-                    
-                    // temp_state.data["createbox"].samples = piss.sampleArray;
-                    // temp_state.data["createbox"].possibleCombos = piss.possibleCombos;
+            console.log(`generate response: ${generateValue}`);
 
-                    changeState(temp_state);
-
-                    e.target.classList.remove('inactive');
-
-                    hideLoading();
+            // .then((res)=>{
+            //     if(res.status === 503){
                     
-                }
-                return res.json();
-            })
-            .then((piss)=>{
-                console.log(`success message:: ${JSON.stringify(piss)}`);
-                if(piss.error){
+            //         // stopCheckWork();
+
+            //         // console.log(`success message: ${piss.message}, JSON::: ${JSON.stringify(piss.sampleArray)}`);
+            //         // the love of money is the root of all evil
+            //         temp_state = JSON.parse(JSON.stringify(state));
+            //         temp_state.data["createbox"] =  {};
+            //         temp_state.data["createbox"]["activeContract"] = null;
+            //         temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
+            //         temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
+            //         temp_state.data["createbox"].account = state.data["createbox"].account;
                     
-                    console.log("an error occured!");
-                    console.log(piss.error.message);
-                    hideLoading();
-                    // return changeState(temp_state);
+            //         // temp_state.data["createbox"].samples = piss.sampleArray;
+            //         // temp_state.data["createbox"].possibleCombos = piss.possibleCombos;
+
+            //         changeState(temp_state);
+
+            //         e.target.classList.remove('inactive');
+
+            //         hideLoading();
+                    
+            //     }
+            //     return res.json();
+            // })
+            // .then((piss)=>{
+            //     console.log(`success message:: ${JSON.stringify(piss)}`);
+            //     if(piss.error){
+                    
+            //         console.log("an error occured!");
+            //         console.log(piss.error.message);
+            //         hideLoading();
+            //         // return changeState(temp_state);
                 
-                }else{
+            //     }else{
                     
-                    console.log(`success message: ${piss.message}, JSON::: ${JSON.stringify(piss.sampleArray)}`);
+            //         console.log(`success message: ${piss.message}, JSON::: ${JSON.stringify(piss.sampleArray)}`);
                     
-                    temp_state = JSON.parse(JSON.stringify(state));
+            //         temp_state = JSON.parse(JSON.stringify(state));
                     
-                    temp_state.data["createbox"] =  {};
+            //         temp_state.data["createbox"] =  {};
 
-                    temp_state.data["createbox"]["activeContract"] = null;
+            //         temp_state.data["createbox"]["activeContract"] = null;
 
-                    temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
+            //         temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
 
-                    temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
+            //         temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
 
-                    temp_state.data["createbox"].traitTypes = piss.sampleArray;
+            //         temp_state.data["createbox"].traitTypes = piss.sampleArray;
 
-                    temp_state.data["createbox"].samples = piss.sampleArray;
+            //         temp_state.data["createbox"].samples = piss.sampleArray;
 
-                    temp_state.data["createbox"].possibleCombos = piss.possibleCombos;
+            //         temp_state.data["createbox"].possibleCombos = piss.possibleCombos;
 
-                    changeState(temp_state);
+            //         changeState(temp_state);
 
-                    e.target.classList.remove('inactive');
+            //         e.target.classList.remove('inactive');
 
-                    hideLoading(); 
-                    // return closeLayerOptionsBox();
-                    // console.log(`Uploaded successfully: \n addy: ${piss.response.address}\n collection: ${piss.response.coll_name}\n layer name: ${piss.response.layer_name}\n files info: ${piss.response.data}`);
-                }
-            });
+            //         hideLoading(); 
+            //         // return closeLayerOptionsBox();
+            //         // console.log(`Uploaded successfully: \n addy: ${piss.response.address}\n collection: ${piss.response.coll_name}\n layer name: ${piss.response.layer_name}\n files info: ${piss.response.data}`);
+            //     }
+            // });
         }
         
         const handleSol = async(e)=>{
