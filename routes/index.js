@@ -1065,6 +1065,7 @@ const updateDBAgain = async (req, res, next)=>{
                     }
                 }
             );
+            console.log(`db updated: ${res.headersSent}`);
             
         }catch(err){
             console.log(err.stack);
@@ -1225,12 +1226,11 @@ index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTrait
     
         // drawimage(res.locals.comboz, 1000, 1000, 4).then((samplez) => {
 
-            console.log(`res.headersSent: ${res.headersSent}`);
             let boody = { message: "success!", code: 7, sampleArray: res.locals.samples, possibleCombos: res.locals.possibleCombos, traitTypes: res.locals.traitTypes, };
             // res.on('finish')
             // if(res.headersSent){
-                res.writeHead(200, { 'Content-Length': Buffer.byteLength(boody), 'Content-Type': 'application/json' })
-                .end(boody);
+            res.writeHead(200, { 'Content-Length': Buffer.byteLength(JSON.stringify(boody)), 'Content-Type': 'text/plain' })
+            .end(JSON.stringify(boody));
             // }
 
             // return res.json(boody);

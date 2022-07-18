@@ -2,9 +2,9 @@ const express = require('express');
 let app = express();
 
 let cors = require('cors');
-
+let daORigin = 'https://yaadlabs.com';
 const corsOptions = {
-    "origin": 'https://yaadlabs.com',
+    "origin": daORigin,
     "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
     "preflightContinue": true,
     "optionsSuccessStatus": 200
