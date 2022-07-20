@@ -413,16 +413,16 @@ function Body(props){
                         </div>		
                     </div>
         
-            <div className="nav">
-                <div className="nav__content">
-                    <ul className="nav__list" style={{cursor:"pointer"}}>
-                        <li className="nav__list-item_a" onClick={()=> changeState({state:"", data:{"createbox":"", "bet":""}, currsubState:{"createbox":"createbox", "bet":"bet"}} ) }> Home </li>
-                        <li className="nav__list-item_a" onClick={()=>changeState({state:'createbox', data: { "createbox": state.data["createbox"], "bet": state.data["bet"] }, currsubState:{"createbox":state.currsubState["createbox"], "bet":state.currsubState["bet"]}})}> Create </li>
-                        <li className="nav__list-item_a"> About </li>
-                    </ul>
+                    <div className="nav">
+                        <div className="nav__content">
+                            <ul className="nav__list" style={{cursor:"pointer"}}>
+                                <li className="nav__list-item_a" onClick={()=> changeState({state:"", data:{"createbox":"", "bet":""}, currsubState:{"createbox":"createbox", "bet":"bet"}} ) }> Home </li>
+                                <li className="nav__list-item_a" onClick={()=>changeState({state:'createbox', data: { "createbox": state.data["createbox"], "bet": state.data["bet"] }, currsubState:{"createbox":state.currsubState["createbox"], "bet":state.currsubState["bet"]}})}> Create </li>
+                                <li className="nav__list-item_a"> About </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            </div>
             )
         }
 
@@ -444,7 +444,7 @@ function Body(props){
                         Yaad
                     </span>
                 </div>
-                <SearchBar style={logoBox}></SearchBar>
+                {/* <SearchBar style={logoBox}/> */}
                 <Dropdown/>
             </header>
         );

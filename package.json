@@ -19,7 +19,7 @@
     "mongodb": "^4.8.0",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
-    "node-fetch": "^3.2.8",
+    "node-fetch": "^3.2.9",
     "solc": "^0.8.15"
   },
   "scripts": {

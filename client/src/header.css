@@ -13,8 +13,11 @@
 	max-width: 50px !important;
 	line-height: 50px;
 	height: auto !important;
+    float: right;
+    right: 0px;
+    position: absolute;
 	padding: 25px 10px 25px 0px;
-	display: block;
+	/* display: block; */
 	margin: 0px 0px 0px 0px !important;
 	border: 0px !important;
 	text-decoration: none !important;
