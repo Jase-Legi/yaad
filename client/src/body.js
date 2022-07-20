@@ -1422,7 +1422,7 @@ function Body(props){
             await fetch(`${baseServerUri}api/generate`, {method:"POST", body, mode:'cors'})
             .then((res)=>{
                 console.log(`generate response: ${res}`);
-                if(res.status === 503){
+                // if(res.status === 503){
                     
                     // stopCheckWork();
 
@@ -1444,8 +1444,8 @@ function Body(props){
 
                     hideLoading();
                     
-                }
-                return res.json();
+                // }
+                // return res.json();
             })
             .then((piss)=>{
                 console.log(`success message:: ${JSON.stringify(piss)}`);
