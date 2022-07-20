@@ -1758,7 +1758,7 @@ function Body(props){
 
                         while (indxx < state.data["createbox"].layers[props.obj.key].traits.length){
                             
-                            boxcont.push(<div key={indxx} className='LayerUpldContentBx'><div className='LayerUpldContent'><img style={{backgroundColor: '#222'}} src={baseServerUri+state.data["createbox"].layers[props.obj.key].traits[indxx].path} alt=''/><div className='traitName'><input className='traitNameBox' id={"traitName_"+indxx} placeholder={state.data["createbox"].layers[props.obj.key].traits[indxx].trait_name} type="text" name='name' onChange={setTrait} /><img className='edit-trait-img-svg' style={{cursor:"pointer"}} id={'delele_'+indxx} src='./del-icon.svg' alt='Edit layer' onClick={delTrait}/></div></div></div>)
+                            boxcont.push(<div key={indxx} className='LayerUpldContentBx'><div className='LayerUpldContent'><img style={{backgroundColor: '#222'}} src={baseServerUri+state.data["createbox"].layers[props.obj.key].traits[indxx].path} alt=''/><div className='traitName'><input className='traitNameBox' id={"traitName_"+indxx} placeholder={state.data["createbox"].layers[props.obj.key].traits[indxx].trait_name} type="text" name='name' onChange={setTrait} /><Buttonz data={{class:"edit-trait-img-svg", id:'delele_'+indxx, value:'X', func: delTrait}} /></div></div></div>)
 
                             indxx++;
                         }
