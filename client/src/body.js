@@ -1421,7 +1421,7 @@ function Body(props){
             
             await fetch(`${baseServerUri}api/generate`, {method:"POST", body, mode:'cors'})
             .then((res)=>{
-                console.log(`generate response: ${res}`);
+                console.log(`generate response: ${JSON.stringify(res)}`);
                 // if(res.status === 503){
                     
                     // stopCheckWork();
