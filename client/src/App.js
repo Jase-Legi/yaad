@@ -2,7 +2,13 @@
 import './App.css';
 import Body from './body.js';
 import {useState, useEffect} from 'react';
-const baseServerUri = 'https://yaadlabs.herokuapp.com/api/'
+
+const pumpum = window.location.host;
+
+let baseServerUri =(pumpum  === "localhost:3000")?'api/':'https://yaadlabs.herokuapp.com/';
+
+// const baseServerUri = 'https://yaadlabs.herokuapp.com/api/'
+
 function App() {
   const [data, setData] = useState("");
   useEffect(()=>{

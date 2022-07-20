@@ -1,8 +1,9 @@
 const express = require('express');
 let app = express();
+require('dotenv').config();
 
 let cors = require('cors');
-let daORigin = 'https://yaadlabs.com';
+let daORigin = (process.env.NODE_ENV === 'dev')?'http://localhost:3000':'https://yaadlabs.com';
 const corsOptions = {
     "origin": daORigin,
     "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
@@ -28,7 +29,6 @@ const progresschecker = require('./routes/progresschecker.js');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const pinataSDK = require('@pinata/sdk');
 
-require('dotenv').config();
 const PORT = process.env.PORT || 5000;
 
 app.use(bodyParser.urlencoded({extended: true}));

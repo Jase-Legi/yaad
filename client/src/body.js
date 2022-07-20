@@ -6,7 +6,11 @@ import {providers, Contract, utils, BigNumber, HDNode} from "ethers";
 // import {readFileSync, createReadStream, unlinkSync, existsSync, writeFileSync} from "fs";
 import yaadtokenAbi from './contracts/Yaad.json';
 // import legitokenAbi from './contracts/Legi.json';
-const baseServerUri = 'https://yaadlabs.herokuapp.com/'
+const pumpum = window.location.host;
+
+console.log(`hostname: ${pumpum}`);
+
+let baseServerUri = (pumpum  === "localhost:3000")?'./':'https://yaadlabs.herokuapp.com/';
 let provider = null;
 
 let signer = null;

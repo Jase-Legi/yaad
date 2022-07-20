@@ -797,6 +797,8 @@ h4{ font-family: tahoma; font-weight:bolder; }
     font-size:.75em;
     font-weight: 700;
     border-radius: 5px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
 }
 
 .traitNameBox{
@@ -822,10 +824,27 @@ h4{ font-family: tahoma; font-weight:bolder; }
 }
 
 .edit-trait-img-svg{
-    height: 14px;
-    width: 14px;
-    float:left;
-    padding: 3px;
+    height:20px;
+    width: 20px;
+    float: right;
+    color: #fff;
+    font-weight: bold;
+    border: #000 solid 1px;
+    background-color: rgb(48, 48, 48);
+    border-radius: 10px;
+    font-size: 10px;
+    cursor: pointer;
+    user-select: none;
+    align-items: center;
+    align-content: center;
+    vertical-align: middle;
+    line-height: normal;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0px;
+    text-align: center;
+    text-shadow: none;
 }
 
 .LayerUpldBox{
