@@ -5,7 +5,7 @@ import {useState, useEffect} from 'react';
 
 const pumpum = window.location.host;
 
-let baseServerUri =(pumpum  === "localhost:3000")?'api/':'https://yaadlabs.herokuapp.com/';
+let baseServerUri =(pumpum  === "localhost:3000")?'api/':'https://yaadlabs.herokuapp.com/api/';
 
 // const baseServerUri = 'https://yaadlabs.herokuapp.com/api/'
 
