@@ -1449,7 +1449,7 @@ function Body(props){
                     hideLoading();
                     
                 // }
-                // return res.json();
+                return res.json();
             })
             .then((piss)=>{
                 console.log(`success message:: ${JSON.stringify(piss)}`);
