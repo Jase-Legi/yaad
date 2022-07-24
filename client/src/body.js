@@ -5,6 +5,7 @@ import {useState, memo, useEffect} from 'react'; //useEffect
 import {providers, Contract, utils, BigNumber, HDNode} from "ethers";
 // import {readFileSync, createReadStream, unlinkSync, existsSync, writeFileSync} from "fs";
 import yaadtokenAbi from './contracts/Yaad.json';
+// import { response } from '../../routes';
 // import legitokenAbi from './contracts/Legi.json';
 const pumpum = window.location.host;
 
@@ -1422,16 +1423,14 @@ function Body(props){
             
             console.log(`state: ${JSON.stringify(state.data["createbox"])}`);
             // hideLoading();
-            
-            await fetch(`${baseServerUri}api/generate`, {method:"POST", body, mode:'cors'})
-            .then((res)=>{
-                console.log(`generate response: ${JSON.stringify(res)}`);
-                // if(res.status === 503){
-                    
-                    // stopCheckWork();
-
-                    // console.log(`success message: ${piss.message}, JSON::: ${JSON.stringify(piss.sampleArray)}`);
-                    // the love of money is the root of all evil
+            try {
+                await fetch(`${baseServerUri}api/generate`, {method:"POST", body, mode:'cors'})
+                .then((response)=>{
+                    console.log(` response type: ${response.type}, response status: ${response.status}, response headers: ${response.headers}, response url: ${response.url}, response ok: ${response.ok}`);
+                    if(response.ok){
+                        return response.json;
+                    }
+                    console.log(`generated: ${JSON.stringify(generate_it)}`);
                     temp_state = JSON.parse(JSON.stringify(state));
                     temp_state.data["createbox"] =  {};
                     temp_state.data["createbox"]["activeContract"] = null;
@@ -1439,56 +1438,81 @@ function Body(props){
                     temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
                     temp_state.data["createbox"].account = state.data["createbox"].account;
                     
-                    // temp_state.data["createbox"].samples = piss.sampleArray;
-                    // temp_state.data["createbox"].possibleCombos = piss.possibleCombos;
-
                     changeState(temp_state);
 
                     e.target.classList.remove('inactive');
 
                     hideLoading();
+                })
+                .then((res)=>{
+
+                })
+            } catch (error) {
+                console.log(`da try error is: ${error}`);
+            }
+            
+            // .then((res)=>{
+            //     console.log(`generate response: ${JSON.stringify(res)}`);
+            //     // if(res.status === 503){
                     
-                // }
-                return res.json();
-            })
-            .then((piss)=>{
-                console.log(`success message:: ${JSON.stringify(piss)}`);
-                if(piss.error){
+            //         // stopCheckWork();
                     
-                    console.log("an error occured!");
-                    console.log(piss.error.message);
-                    hideLoading();
-                    // return changeState(temp_state);
+            //         temp_state = JSON.parse(JSON.stringify(state));
+            //         temp_state.data["createbox"] =  {};
+            //         temp_state.data["createbox"]["activeContract"] = null;
+            //         temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
+            //         temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
+            //         temp_state.data["createbox"].account = state.data["createbox"].account;
+                    
+            //         changeState(temp_state);
+
+            //         e.target.classList.remove('inactive');
+
+            //         hideLoading();
+                    
+            //     // }
+            //     return res.json();
+            // })
+            // .then((piss)=>{
+            //     console.log(`success message:: ${JSON.stringify(piss)}`);
+            //     if(piss.error){
+                    
+            //         console.log("an error occured!");
+            //         console.log(piss.error.message);
+            //         hideLoading();
+            //         // return changeState(temp_state);
                 
-                }else{
+            //     }else{
                     
-                    console.log(`success message: ${piss.message}, JSON::: ${JSON.stringify(piss.sampleArray)}`);
+            //         console.log(`success message: ${piss.message}, JSON::: ${JSON.stringify(piss.sampleArray)}`);
                     
-                    temp_state = JSON.parse(JSON.stringify(state));
+            //         temp_state = JSON.parse(JSON.stringify(state));
                     
-                    temp_state.data["createbox"] =  {};
+            //         temp_state.data["createbox"] =  {};
 
-                    temp_state.data["createbox"]["activeContract"] = null;
+            //         temp_state.data["createbox"]["activeContract"] = null;
 
-                    temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
+            //         temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
 
-                    temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
+            //         temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
 
-                    temp_state.data["createbox"].traitTypes = piss.sampleArray;
+            //         temp_state.data["createbox"].traitTypes = piss.sampleArray;
 
-                    temp_state.data["createbox"].samples = piss.sampleArray;
+            //         temp_state.data["createbox"].samples = piss.sampleArray;
 
-                    temp_state.data["createbox"].possibleCombos = piss.possibleCombos;
+            //         temp_state.data["createbox"].possibleCombos = piss.possibleCombos;
 
-                    changeState(temp_state);
+            //         changeState(temp_state);
 
-                    e.target.classList.remove('inactive');
+            //         e.target.classList.remove('inactive');
 
-                    hideLoading(); 
-                    // return closeLayerOptionsBox();
-                    // console.log(`Uploaded successfully: \n addy: ${piss.response.address}\n collection: ${piss.response.coll_name}\n layer name: ${piss.response.layer_name}\n files info: ${piss.response.data}`);
-                }
-            });
+            //         hideLoading(); 
+            //         // return closeLayerOptionsBox();
+            //         // console.log(`Uploaded successfully: \n addy: ${piss.response.address}\n collection: ${piss.response.coll_name}\n layer name: ${piss.response.layer_name}\n files info: ${piss.response.data}`);
+            //     }
+            // });
+
+            
         }
         
         const handleSol = async(e)=>{
