@@ -257,6 +257,174 @@ index.get('/', (req, res, next)=>{
 });
 
 let upldDir = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')?'client/build/uploads':'client/public/uploads';
+let theDir = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')?'client'+sep+'build':'client'+sep+'public';
+
+
+const pinata = pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_API_SECRET);
+    
+pinata.testAuthentication().then((result) => {
+    
+    //handle successful authentication here
+    console.log(result);
+
+}).catch((err) => {
+    
+    //handle error here
+    console.log(err);
+
+});
+
+let checkJsonParse = (str)=>{
+    if(typeof(str) !== 'string') return [true];
+    // console.log(`str:: ${str}`);
+    try {
+        return [null, JSON.parse(str)];
+
+    } catch (error) {
+        
+        return [error];
+    }
+}
+
+let pinnit = async (pathh, options)=>{
+    
+    try {
+        // let pookie = ( typeof(pathh) === 'object' )? await pinata.pinJSONToIPFS( pathh, options ) : await pinata.pinFromFS( pathh , options);
+        if( typeof(pathh) !== 'object' ){
+            let pookie = await pinata.pinFromFS( pathh , options);
+            unlinkSync( pathh );
+            return pookie        
+        }else{
+            let pookie = await pinata.pinJSONToIPFS( pathh, options );
+            return pookie;
+        }
+    
+    } catch (error) {
+        
+        return {error,}
+    
+    }
+};
+
+index.post('/pinnit', multer().none(), async (req, res, next)=>{
+    // console.log(`req.body.path:::: ${req.body.path}`);
+
+    const [err, json_to_pin] = checkJsonParse(req.body.path);
+
+    // console.log(`json to pin:: ${JSON.stringify(json_to_pin)}\n\n`);
+    
+    let img_path = (!err)?json_to_pin:normalize(theDir+sep+req.body.path);
+    if(err)
+        console.log(`path is :${img_path}`)
+    let tha_options = req.body.the_options;
+    
+    // console.log(`options: ${tha_options}`);
+    try {
+        let pinned = await pinnit(img_path, tha_options);
+    
+        console.log(`pinned: ${JSON.stringify(pinned)}\n`);
+        
+        return res.json(pinned);
+
+    } catch (error) {
+        return res.json(error,)
+    }
+    
+});
+
+index.post('/drawimage', multer().none(), async (req, res, next)=>{
+
+    const [err, traits] = checkJsonParse(req.body.traits);
+    console.log(`traits: ${JSON.stringify(traits)}`);
+
+    // const optns = req.body.theoptions;
+
+    let gateway = 'https://gateway.pinata.cloud/ipfs/';
+
+    const width = parseInt(req.body.width);
+    const height = parseInt(req.body.height);
+    const imgIndex =  req.body.imgindex;
+    const collname =  req.body.collname;
+    const account =  req.body.account;
+
+    // const collectionName  = req.body.coll_name;
+    const canvas = createCanvas(width, height);
+    // const ctx = createCanvas(width, height).getContext('2d');
+    const ctx = canvas.getContext('2d');
+
+    console.log(`index:: ${imgIndex}`);
+
+    // let cap_it = traitTypes.length;
+
+    for(let p = 0; p < traits.length; p++) {
+        
+        let  val = traits[p];
+        
+        let  image = await loadImage(gateway+val.value);
+
+        ctx.drawImage(image, 0, 0, width, height);
+    }
+
+    console.log(`test if it makes it here 2`);
+
+    try {
+
+        writeFileSync(`${upldDir}/sample_${imgIndex}_${account}_${collname}.png`, canvas.toBuffer("image/png"));
+        console.log(`test if it makes it here`);
+
+        return res.json({path:`/uploads/sample_${imgIndex}_${account}_${collname}.png`});
+
+    } catch (error) {
+        throw error;
+        console.log(`draw error: ${error}`);
+        return res.json({error,})
+    }
+})
+
+index.post('/savenftcollection', multer().none(), async (req, res, next)=>{
+    const samples = JSON.parse(req.body.samples);
+    const datat = JSON.parse(req.body.data);
+    const collectionName = datat.collname;
+    const ipfs_uri  = req.body.ipfs_uri
+    const account = req.body.account;
+        
+    
+    (async function(){
+        const uri = process.env.MONGO_DB_URI;
+        let db; 
+        let client;
+        
+        try{
+            client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+            const connected = await client.connect();
+            db = connected.db('yaad');
+            
+            const nftcoll = db.collection('nfts');
+
+            await nftcoll.updateOne(
+                { "name": collectionName, "owner": account}, 
+                { $set: 
+                    {
+                        "uri": ipfs_uri,
+                        "data.samples": samples,
+                        "data.samplesGenerated" : 4,
+                        "data.workState": "samples",
+                        "data.pending": false 
+                    }
+                },
+                {upsert: true}
+            );
+            
+            client.close();
+            return res.json({message:"successfully created your project", code: 200});
+
+        }catch(err){
+            console.log(err.stack);
+            return res.json({error:err})
+        }
+        
+    })()
+})
 
 index.post('/upldSingle',(req,res, next)=>{
     try {
@@ -470,7 +638,7 @@ index.post('/addGenlayer',(req,res, next)=>{
             while(r < myFiles.length){
                 
                 let clientPath = "uploads/"+myFiles[r].originalname;
-
+// hjgh
                 dataArray.push({trait_name: r, path: clientPath});
                 
                 r++;
@@ -592,17 +760,18 @@ index.post('/delLayer', multer().none(), (req,res, next)=>{
 });
 
 index.post('/delTrait', multer().none(), (req,res, next)=>{
+    const address =(req.body.account)?req.body.account:null;
+    const trait = JSON.parse(req.body.value);
+    const indx = req.body.index;
+    
+    let delDir = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')?'client/build/':'client/public/';
+
+    const dapath = trait[0].path;
     try {
         
         checkDirectory(upldDir);
         
-        const address =(req.body.account)?req.body.account:null;
-        const trait = JSON.parse(req.body.value);
-        const indx = req.body.index;
         
-        let delDir = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')?'client/build/':'client/public/';
-
-        const dapath = trait[0].path;
         // console.log(`path ${n})${delDir}${dapath}`);
         unlinkSync(normalize(delDir+dapath));
         
@@ -610,25 +779,13 @@ index.post('/delTrait', multer().none(), (req,res, next)=>{
         return res.json({message:"deleted layer", response:{address,}});
 
     } catch (error) {
-        console.log(`thisssssssssssssssssss: ${error}`);
+        console.log(`thisssssssssssssssssss: ${error}, name: ${error.code}, stack: ${error.stack}`);
+        if(error.code === 'ENOENT'){
+            return res.json({message:"deleted layer", response:{address,}});
+        }
+
         return res.json({error,});
     }
-});
-
-let theDir = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')?'client'+sep+'build':'client'+sep+'public';
-
-const pinata = pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_API_SECRET);
-    
-pinata.testAuthentication().then((result) => {
-    
-    //handle successful authentication here
-    console.log(result);
-
-}).catch((err) => {
-    
-    //handle error here
-    console.log(err);
-
 });
 
 function shuffle(arra1) {
@@ -680,25 +837,6 @@ const getCases = (input, output, n, da_path)=>{
 
     }
 
-};
-
-let pinnit = async (pathh, options)=>{
-    try {
-        // let pookie = ( typeof(pathh) === 'object' )? await pinata.pinJSONToIPFS( pathh, options ) : await pinata.pinFromFS( pathh , options);
-        if( typeof(pathh) !== 'object' ){
-            let pookie = await pinata.pinFromFS( pathh , options);
-            unlinkSync( pathh );
-            return pookie        
-        }else{
-            let pookie = await pinata.pinJSONToIPFS( pathh, options );
-            return pookie;
-        }
-    
-    } catch (error) {
-        
-        return {error,}
-    
-    }
 };
 
 let loopNpin = async (req,res, next)=>{
@@ -904,6 +1042,7 @@ const pinTheJSON = async (req, res, next)=>{
     };
 
     let pinjson = await pinnit(res.locals.comboz, optns);
+
     res.locals.pinnedRes = pinjson;
 
     res.locals.possibleCombos = res.locals.comboz.length;
@@ -1038,7 +1177,7 @@ const drawimage = async (req, res, next) => {
   
 };
 
-const updateDBAgain = async (req, res, next)=>{
+const updateDBAgain = async (req, res, next)=>{ 
     const datat = JSON.parse(req.body.data)
     const collectionName = datat.coll_name;
     const account = req.body.account;

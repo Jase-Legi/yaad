@@ -130,7 +130,7 @@ text {
 h4{ font-family: tahoma; font-weight:bolder; }
 
 .inactive{
-    display: none !important; visibility: hidden; opacity: 0; width: 0px; height: 0px !important; overflow: hidden !important;
+    display: none !important; visibility: hidden !important; 
 }
 
 .active{
@@ -626,6 +626,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
 .layer-box-content{
     flex-grow: 2;
     height: fit-content;
+    height:70px;
     /* border-radius: 7.5px; */
     /* border-top:dotted rgb(61, 61, 61) 2px ; */
 }
@@ -633,17 +634,22 @@ h4{ font-family: tahoma; font-weight:bolder; }
 .deatail-edit-trait-box{
     height: fit-content;
     width: 100%;
+    max-width: 1000px;
+    position:relative;
+    border-radius: 5px;
+    z-index: 9999999;
+    background-color: rgb(11, 10, 12);
 }
 
 .generatorRightPanelLayerBox{
     cursor: default;
     letter-spacing: 0;
-    margin: 10px 0px 0px 0px;
-    height: 50px;
+    margin: 0px 0px 10px 0px;
+    height: 60px;
     width: 100%;
     box-sizing: border-box;
     padding: 0px;
-    background-color: #222;
+    background-color: rgb(30, 29, 31);
     color:#fff;
     border-radius: 7.5px;
     display: table;
@@ -1080,7 +1086,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     -ms-user-select: none !important;
     -moz-user-select: none !important;
     -webkit-user-select: nonse !important;
-    background-color: rgb(68, 68, 68, .5) !important;
+    background-color: rgba(97, 97, 97, 0.5) !important;
 }
 
 .betweenItem{

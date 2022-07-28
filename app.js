@@ -50,6 +50,49 @@ app.use((req, res, next) => {
   next();
 });
 
+const get_all_possible_combos = (input, output, n, da_path)=>{
+
+    da_path = (da_path === null || da_path === undefined)? []: da_path;
+
+    n = (n === null || n === undefined)? 0:n;
+
+    if(n < input.length){
+
+        // console.log(`running in the loop!`);
+        let current_item = input[n];
+        let gogo = 0;
+        
+        while(gogo < current_item.length){
+            // console.log(`running in the loop!`);
+            let val = current_item[gogo];
+
+            da_path.push(val);
+            console.log(`testerr!!!! n: ${n}, gogo:${gogo}\n`);
+            get_all_possible_combos(input, output, n+1, da_path);
+            console.log(`da_path before: ${JSON.stringify(da_path)}`);
+            da_path.pop();
+            console.log(`da_path after: ${JSON.stringify(da_path)}`);
+            gogo++;
+
+        }
+
+    }else{
+
+        output.push(da_path.slice());
+        console.log(`output: ${JSON.stringify(output)}`);
+
+    }
+    
+};
+
+let testInput = [
+    ['real', 'dlj'],
+    ['real45', 'dljsxs', 'ekkjheskjkkhw', 455, 409],
+    [69, 2]
+],
+testOutput = [];
+// get_all_possible_combos(testInput, testOutput);
+
 // This middleware informs the express application to serve our compiled React files
 if ( process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' ) {
     app.use(express.static(join(__dirname, 'client/build')));

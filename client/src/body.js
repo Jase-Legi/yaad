@@ -1,20 +1,14 @@
-import './body.css';
-import './App.css';
-import './header.css';
-import {useState, memo, useEffect} from 'react'; //useEffect
+import './body.css'; import './App.css'; import './header.css';
+
+import {useState, memo, useEffect, useRef} from 'react'; //useEffect
 import {providers, Contract, utils, BigNumber, HDNode} from "ethers";
-// import {readFileSync, createReadStream, unlinkSync, existsSync, writeFileSync} from "fs";
 import yaadtokenAbi from './contracts/Yaad.json';
-// import { response } from '../../routes';
+import { createCanvas, loadImage, canvas } from 'canvas';
 // import legitokenAbi from './contracts/Legi.json';
 const pumpum = window.location.host;
 
-console.log(`hostname: ${pumpum}`);
-
 let baseServerUri = (pumpum  === "localhost:3000")?'./':'https://yaadlabs.herokuapp.com/';
-let provider = null;
-
-let signer = null;
+let provider = null, signer = null;
 let intervalId;
 
 if (typeof window.ethereum !== 'undefined') {
@@ -83,8 +77,6 @@ const addFantomNetwork = ()=>{
 
     }) 
 }
-
-// const reader = new FileReader();
 
 // const tokenAddy = '0x5dDebA6Ef00bD641c198174dC153767C40a6C743';
 // const contract__addy = '0xcFDEb297643119cd58dB2e48BE7aBEA09B44F0D3';
@@ -169,6 +161,35 @@ function LoadingBox(props){
     )
 }
 
+const checkJsonParse = (str)=>{
+    if(typeof(str) !== 'string') return [true];
+    // console.log(`str:: ${str}`);
+    try {
+        return [null, JSON.parse(str)];
+
+    } catch (error) {
+        
+        return [error];
+    }
+}
+
+function shuffle(arra1) {
+  var ctr = arra1.length, temp, index;
+
+  // While there are elements in the array
+  while (ctr > 0) {
+      // Pick a random index
+      index = Math.floor(Math.random() * ctr);
+      // Decrease ctr by 1
+      ctr--;
+      // And swap the last element with it
+      temp = arra1[ctr];
+      arra1[ctr] = arra1[index];
+      arra1[index] = temp;
+  }
+  return arra1;
+}
+
 function Body(props){
 
     // hideLoading();
@@ -180,12 +201,18 @@ function Body(props){
 
     let [editState, setEditState] = useState(null);
 
-    const changeState = (val)=>{
+    let [scrollPosition, setScrollPosition] = useState(0);
+    
+    const changeState = (val, scrollval)=>{
         showLoading();
         let mounted = true;
         if(mounted){
             setState(val);
+            if(scrollval){
+                setScrollPosition(scrollval)
+            }
         }
+
         hideLoading();
         return ()=> mounted = false;
     }
@@ -434,6 +461,7 @@ function Body(props){
             backgroundColor: "black",
             fontFamily: "Circular, -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif"
         };
+        
         const logoBox = {
             
         };
@@ -713,7 +741,10 @@ function Body(props){
         };
 
         function handleAddLayer(e){
+
             showLoading();
+            let homeScrollValue = null;
+            
             if(e){
                 e.preventDefault();
                 console.log(`class:::: ${e.target.getAttribute('class')}`);
@@ -728,7 +759,10 @@ function Body(props){
                 temp_state.currsubState["createbox"] = (e.target.getAttribute('id') === 'selectBG')?"RandomGenerator-LayerOptions-BG-Upld":"RandomGenerator-LayerOptions";
                 
                 e.target.setAttribute('id','generatePfps');
-                
+
+                // if(document.getElementById('popup')){
+                //     homeScrollValue = document.getElementById('popup').scrollTop()
+                // }
                 return changeState(temp_state);
 
             }else{
@@ -740,7 +774,9 @@ function Body(props){
                 temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions";
                 
                 // e.target.setAttribute('id','generatePfps')
-                
+                // if(document.getElementById('popup')){
+                //     homeScrollValue = document.getElementById('popup').scrollTop()
+                // }
                 return changeState(temp_state);
             }
         }
@@ -1126,257 +1162,42 @@ function Body(props){
             
         }
         
-        let mouseUpFired;
-        
-        let initPositions = [];
-        
-        let elebox = document.getElementById('LayerGenBoxx');
-        
-        let initDivIndx = null; let newindex = null;
-
-        useEffect(()=>{
-
-            [].forEach.call(document.getElementsByClassName('generatorRightPanelLayerBox'), (element) => {
-
-                initPositions.push(element.getBoundingClientRect().top);
-
-            });
-            
-        },[elebox, initPositions])
-        
-        const layer_move_initializer = (event)=>{
-            
-            if(event.target.getAttribute('class') === 'generatorRightPanelLayerBox'){
-
-                mouseUpFired = false;
-                let div = event.target;
-
-                function swapSibling(node1, node2) {
-                    node1.parentNode.replaceChild(node1, node2);
-                    node1.parentNode.insertBefore(node2, node1); 
-                }
-                
-                let divWitdh = div.clientWidth;
-
-                if(event.type === 'mousedown' || event.type === 'touchstart'){
-                    let popup = document.getElementById('popup');
-                    popup.style.overflowY = 'hidden';
-                    if(mouseUpFired === true){
-                        
-                        return false;
-                    }
-
-                    div.classList.add("sortable-handler");
-
-                    let indexOfSelectedItem = [].indexOf.call(document.getElementsByClassName('generatorRightPanelLayerBox'), div);
-
-                    let arrayOfEles = document.getElementsByClassName('generatorRightPanelLayerBox');
-                    
-                    let centerofdiv = div.clientHeight/2;
-
-                    // console.log(`scroll height: ${document.getElementById('popup').scrollTop}, parent div location: ${div.parentNode.parentNode.getBoundingClientRect().top}`)
-
-                    div.style.width = divWitdh+'px';
-                    
-                    div.style.top = (event.type === 'touchstart')?((event.touches[0].clientY + document.getElementById('popup').scrollTop) - centerofdiv)+'px':((event.clientY + document.getElementById('popup').scrollTop) - centerofdiv)+'px';
-                    
-                    initDivIndx = indexOfSelectedItem;
-
-                    window.onmousemove = (e)=>{
-
-                        // console.log(`length:::>>> ${arrayOfEles[0]}`);
-                        
-                        if(mouseUpFired === false){
-
-                            div.style.top = ((e.clientY + document.getElementById('popup').scrollTop)- centerofdiv)+'px';
-                            
-                            initPositions.forEach((element, i) => {
-
-                                if(indexOfSelectedItem > i){
-                                    
-                                    if((div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) <= (element) && (div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) >= (element-60)){
-                                        
-                                        // console.log(`${arrayOfEles[i].parentNode.getAttribute('class')}, class name 1${div.parentNode.getAttribute('class')}`);
-                                        swapSibling(arrayOfEles[i].parentNode, div.parentNode);
-                                        
-                                        arrayOfEles[i+1].classList.add('betweenItem_two');
-
-                                        newindex = [].indexOf.call(document.getElementsByClassName('generatorRightPanelLayerBox'), div);
-
-                                        
-                                    }else{
-
-                                        arrayOfEles[i+1].classList.remove('betweenItem_two');
-                                    
-                                    }
-                                }
-
-                                if(indexOfSelectedItem < i){
-                                
-                                    if((div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) >= (element-60) && (div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) <= (element+60)){
-
-                                        swapSibling(div.parentNode,arrayOfEles[i].parentNode);
-
-                                        newindex = [].indexOf.call(document.getElementsByClassName('generatorRightPanelLayerBox'), div);
-
-                                        if(div !== arrayOfEles[i]){
-                                            
-                                            arrayOfEles[i].classList.add('betweenItem');
-                                        
-                                        }
-
-                                    }else{
-
-                                        arrayOfEles[i].classList.remove('betweenItem');
-                                    
-                                    }
-                                }
-
-                                if(indexOfSelectedItem === i){
-                                
-                                    if((div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) >= (element-60) && (div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) <= (element+60)){
-
-                                        console.log(`i: ${i} div index: ${indexOfSelectedItem}`);
-
-                                        // swapSibling(div.parentNode,arrayOfEles[i].parentNode);
-                                        
-                                        if(div !== arrayOfEles[i]){
-                                            
-                                            arrayOfEles[i].classList.add('betweenItem');
-                                        
-                                        }
-
-                                    }else{
-
-                                        arrayOfEles[i].classList.remove('betweenItem');
-                                    
-                                    }
-                                }
-
-                            });
-                            
-                        }
-                    }
-                    
-                    window.ontouchmove = (e)=>{
-
-                        if(mouseUpFired === false){
-
-                            div.style.top = ((e.touches[0].clientY + document.getElementById('popup').scrollTop)-centerofdiv)+'px';
-                            
-                            initPositions.forEach((element, i) => {
-                                if(indexOfSelectedItem > i){
-                                    if((div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) <= (element) && (div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) >= (element-60)){
-                                        
-                                        
-                                        swapSibling(arrayOfEles[i].parentNode, div.parentNode);
-                                        newindex = [].indexOf.call(document.getElementsByClassName('generatorRightPanelLayerBox'), div);
-                                        
-                                        arrayOfEles[i+1].classList.add('betweenItem_two');
-                                        
-                                    }else{
-
-                                        arrayOfEles[i+1].classList.remove('betweenItem_two');
-                                    
-                                    }
-                                }
-
-                                if(indexOfSelectedItem <= i){
-                                
-                                    if((div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) >= (element-60) && (div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) <= (element+60)){
-
-                                        swapSibling(div.parentNode,arrayOfEles[i].parentNode);
-                                        newindex = [].indexOf.call(document.getElementsByClassName('generatorRightPanelLayerBox'), div);
-                                        
-                                        if(div !== arrayOfEles[i]){
-                                            
-                                            arrayOfEles[i].classList.add('betweenItem');
-                                        
-                                        }
-
-                                    }else{
-
-                                        arrayOfEles[i].classList.remove('betweenItem');
-                                    
-                                    }
-                                }
-
-                            });
-                            
-                        }
-                    }
-                }
-            }
-        };
-
-        const layer_move_ender = (event)=>{
-            if(event.target.getAttribute('class') === 'generatorRightPanelLayerBox'){
-                showLoading();
-            }
-            mouseUpFired = true;
-            
-            if(event.type === 'mouseup' || event.type === 'touchend'){
-
-                let popup = document.getElementById('popup');
-
-                popup.style.overflowY = 'auto';
-
-                let div = event.target;
-                
-                div.classList.remove("sortable-handler");
-                
-                let arrayOfEles = document.getElementsByClassName('generatorRightPanelLayerBox');
-                let p = 0;
-
-                while ( p < arrayOfEles.length ) {
-
-                    arrayOfEles[p].classList.remove('betweenItem_two');
-                    
-                    arrayOfEles[p].classList.remove('betweenItem');
-
-                    p++;
-                }
-
-                mouseUpFired = true;
-
-                if(event.target.getAttribute('class') === 'generatorRightPanelLayerBox'){
-                    // console.log(`gun dung piss`);
-                    // console.log(`init index: ${initDivIndx}, new index:: ${newindex}`);
-                    
-                    let tempArray = state.data["createbox"].layers.splice(initDivIndx,1)[0];
-
-                    // console.log(`tempArray::: ${tempArray}`);
-                    
-                    state.data["createbox"].layers.splice(newindex, 0, tempArray);
-                    
-                    hideLoading();
-
-                    if(editState === null){
-                        changeEditState(undefined);
-                    }else{
-                        changeEditState(null);                           
-                    }
-                }
-                
-            }
-            
-        };
-
         const expandbox = (e)=>{
 
-            // showLoading();
+            showLoading();
 
             let ele = e.target;
-            // console.log(`big buddy class${)}`)
-            // ele.children[1].children[0].classList.toggle('rotateExpander');
-
+            
             let indx = [].indexOf.call(document.getElementsByClassName(ele.getAttribute('class')), ele);
 
-            document.getElementsByClassName('generatorRightPanelLayerBox-title-img')[indx].classList.toggle('rotateExpander');
 
-            document.getElementsByClassName('deatail-edit-trait-box')[indx].classList.toggle('inactive');
+            let me = 0;
+            while(me < document.getElementsByClassName('deatail-edit-trait-box').length){
+                if(me !== indx){
+                    if(!document.getElementsByClassName('deatail-edit-trait-box')[me].classList.contains('inactive')){
+                        document.getElementsByClassName('deatail-edit-trait-box')[me].classList.add('inactive');
+                    }
+                    if(!document.getElementsByClassName('generatorRightPanelLayerBox-title-img')[me].classList.contains('rotateExpander')){
+                        document.getElementsByClassName('generatorRightPanelLayerBox-title-img')[me].classList.remove('rotateExpander');
+                    }
+                }
+                me++;
+            }
 
-            // hideLoading();
+            if(document.getElementsByClassName('deatail-edit-trait-box')[indx].classList.contains('inactive')){
+
+                document.getElementsByClassName('generatorRightPanelLayerBox-title-img')[indx].classList.add('rotateExpander');
+
+                document.getElementsByClassName('deatail-edit-trait-box')[indx].classList.remove('inactive');
+
+            }else{
+
+                document.getElementsByClassName('generatorRightPanelLayerBox-title-img')[indx].classList.remove('rotateExpander');
+
+                document.getElementsByClassName('deatail-edit-trait-box')[indx].classList.add('inactive');
+            }
+
+            hideLoading();
         };
 
         const checkWorkInterval = (uurl, interval, callback)=>{
@@ -1421,35 +1242,358 @@ function Body(props){
             
             body.append('data',JSON.stringify(state.data["createbox"]));
             
-            console.log(`state: ${JSON.stringify(state.data["createbox"])}`);
+            // console.log(`state: ${JSON.stringify(state.data["createbox"])}`);
             // hideLoading();
-            try {
-                await fetch(`${baseServerUri}api/generate`, {method:"POST", body, mode:'cors'})
-                .then((response)=>{
-                    console.log(` response type: ${response.type}, response status: ${response.status}, response headers: ${response.headers}, response url: ${response.url}, response ok: ${response.ok}`);
-                    if(response.ok){
-                        return response.json;
-                    }
-                    console.log(`generated: ${JSON.stringify(generate_it)}`);
-                    temp_state = JSON.parse(JSON.stringify(state));
-                    temp_state.data["createbox"] =  {};
-                    temp_state.data["createbox"]["activeContract"] = null;
-                    temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
-                    temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
-                    temp_state.data["createbox"].account = state.data["createbox"].account;
+            const get_all_possible_combos =  async (input, output, n, da_path)=>{
+
+                da_path = (da_path === null || da_path === undefined)? []: da_path;
+            
+                n = (n === null || n === undefined)? 0:n;
+            
+                if(n < input.length){
+            
+                    // console.log(`running in the loop!`);
+                    let current_item = input[n];
+                    let gogo = 0;
                     
-                    changeState(temp_state);
+                    while(gogo < current_item.length){
+                        // console.log(`running in the loop!`);
+                        let val = current_item[gogo];
+            
+                        da_path.push(val);
+                        // console.log(`testerr!!!! n: ${n}, gogo:${gogo}`);
+                        get_all_possible_combos(input, output, n+1, da_path);
+                        // console.log(`da_path before: ${JSON.stringify(da_path)}\n\n`);
+                        da_path.pop();
+                        // console.log(`da_path after: ${JSON.stringify(da_path)}`);
+                        gogo++;
+            
+                    }
+            
+                }else{
+            
+                    output.push(da_path.slice());
+            
+                }
+                
+            };
 
-                    e.target.classList.remove('inactive');
+            const loop_and_pin_layers = async (collName, layers)=>{
+                let emptyComboArray = [];
+                
+                layers.reverse();
+            
+                for(let indx = 0; indx < layers.length; indx++){
+            
+                    emptyComboArray.push({name: layers[indx].name, traits:[]});
+                    
+                    for(let pin = 0; pin < layers[indx].traits.length; pin++){
+            
+                        const options = {
+                            pinataMetadata:{
+                            name: `${layers[indx].traits[pin].trait_name}`,
+                            keyvalues: {
+                                description: `nft trait element from collection, generated by Yaad labs.`,
+                                name: layers[indx].traits[pin].trait_name
+                            }
+                            },
+                            pinataOptions: {
+                                cidVersion: 0
+                            }
+                            
+                        };
+                        
+                        let body = {
+                            "description": `nft trait element from ${collName} collection. generated by Yaad labs.`,
+                            "external_url": "", 
+                            "image": "", 
+                            "name": (layers[indx].traits[pin].trait_name)? layers[indx].traits[pin].trait_name: layers[indx].name,
+                            "attributes": []
+                        }
+                        
+                        // let pinned = await pinnit(normalize(theDir+sep+layers[indx].traits[pin].path), options);
+                        let pin_body = new FormData();
+                        pin_body.append('path',layers[indx].traits[pin].path);
+                        pin_body.append('the_options', options);
+                        await fetch(`${baseServerUri}api/pinnit`, {method:'POST', body: pin_body})
+                        .then((resp)=>resp.json())
+                        .then((pinned)=>{
 
-                    hideLoading();
-                })
-                .then((res)=>{
+                            console.log(`pinned:: ${JSON.stringify(pinned)}`);
 
-                })
-            } catch (error) {
-                console.log(`da try error is: ${error}`);
+                            emptyComboArray[indx].traits.push({ trait_name: layers[indx].traits[pin].trait_name, path: pinned.IpfsHash });
+                        });
+                    }
+                }
+                
+                return emptyComboArray;
+            };
+
+            const loop_and_pin_background = async (backgrounds)=>{
+    
+                // let backgrounds = JSON.parse(req.body.data).background;
+                
+                for(let f = 0; f < backgrounds.length; f++){
+                    const options = {
+                        pinataMetadata:{
+                        name: `background ${f}.`,
+                        keyvalues: {
+                            description: `nft trait element from collection, generated by Yaad labs.`,
+                        }
+                        },
+                        pinataOptions: {
+                            cidVersion: 0
+                        }
+                        
+                    };
+            
+                    // let pinned = await pinnit(normalize(theDir+sep+backgrounds[f].path), options);
+                    let pin_body = new FormData();
+                    console.log(`background: ${JSON.stringify(backgrounds[f])}`)
+                    pin_body.append('path',backgrounds[f].path);
+                    pin_body.append('the_options', options);
+                    await fetch(`${baseServerUri}api/pinnit`, {method:'POST', body: pin_body})
+                    .then((resp)=>resp.json())
+                    .then((pinned)=>{
+                        console.log(`bg pinned: ${JSON.stringify(pinned)}`);
+                        // emptyComboArray[indx].traits.push({ trait_name: layers[indx].traits[pin].trait_name, path: pinned.IpfsHash });
+                        backgrounds[f].path = pinned.IpfsHash;
+                    });
+                    // backgrounds[f].path = pinned.IpfsHash;
+                    
+                }
+                
+                return backgrounds;
+            };
+
+            const mapTraitTypes = async (comboz) => {
+                // let comboz = res.locals.comboz;
+            
+                let len = 0; let traitTypes = []; let ego;
+            
+                while(len < comboz.length){
+                    // console.log(`comboz:::::::>> ${JSON.stringify(comboz)}\n`);
+            
+                    ego = comboz[len].traits.map((x,v,arr) => {
+
+                        return { trait_type: comboz[len].name, trait_name: comboz[len].traits[v].trait_name, value: x.path};
+
+                    });
+            
+                    traitTypes.push(ego)
+            
+                    len++;
+                }
+
+                ego = "";
+                
+                return traitTypes;
+            };
+            
+            const traitTypesPushNA = async (traitTypes) => {
+                // let traitTypes = res.locals.traitTypes;
+                let endo = 0;
+
+                while (endo < traitTypes.length) {
+
+                    traitTypes[endo].push({trait_type: traitTypes[endo][0].trait_type, value: 'N/A'});
+                    endo++;
+
+                }
+
+                return traitTypes
+            };
+
+            const insertBackground = async (comboz) =>{
+                let d = 0;
+                // let comboz = res.locals.comboz;
+                let backgrounds = await loop_and_pin_background(state.data["createbox"].background)
+                while(d < comboz.length){
+            
+                    let newBG = backgrounds[Math.floor(Math.random() * backgrounds.length)]
+                    
+                    comboz[d].splice(0, 0, { trait_type: "background", trait_name: newBG.trait_name, value: newBG.path });
+                    
+                    d++;
+                }
+            };
+
+            const allPossibleCombos = async ()=> {
+                let comboz = [];
+                const layerz = JSON.parse(JSON.stringify(state.data["createbox"].layers));
+                let loop_and_pin = await loop_and_pin_layers(state.data["createbox"].coll_name, layerz);
+                let map_traits = await mapTraitTypes(loop_and_pin);
+                let traittypes_fin = await traitTypesPushNA(map_traits);
+                
+                console.log(`final trait types: ${JSON.stringify(traittypes_fin)}`);
+
+                await get_all_possible_combos(traittypes_fin, comboz);
+
+                // console.log(`all possible combos: ${res.locals.comboz}`);
+                
+                // res.locals.comboz = comboz;
+                
+                await shuffle(comboz);
+                await insertBackground(comboz);
+                
+                return comboz;
+            };
+
+            let combo =  await allPossibleCombos();
+            
+            let possibleCombos = combo.length;
+
+            const pinCombo = async (combo, optns)=> {
+
+                // let collectionName = state.data["createbox"].coll_name;
+                
+                let pin_body = new FormData();
+                
+                pin_body.append('path', JSON.stringify(combo));
+                
+                pin_body.append('the_options', JSON.stringify(optns));
+
+                let pinnedCombo = await fetch(`${baseServerUri}api/pinnit`,{method:'POST', body: pin_body}).then((rezz)=>rezz.json()).then((pinned)=>pinned);
+                
+                return pinnedCombo;
             }
+
+            let optns = { pinataMetadata:{ name: state.data["createbox"].coll_name, keyvalues: {} }, pinataOptions: { cidVersion: 0 } };
+
+            let pinnedCombo = await pinCombo(combo, optns);
+
+            console.log(JSON.stringify(pinnedCombo));
+            
+            const drawimage = async (traitTypes, width, height) => {
+                let sampleArray = [], gateway = 'https://gateway.pinata.cloud/ipfs/', cap_it = traitTypes.length;
+                
+                for(let v = 0; v < cap_it; v++){
+                    const options = {
+                        pinataMetadata:{
+                            name: `${v}`,
+                            keyvalues: {
+                            description: 'no',
+                            name: `${v}`
+                            }
+                        },
+                        pinataOptions: {
+                            cidVersion: 0
+                        }
+                    };
+
+                    const  drawableTraits = traitTypes[v].filter(x=>  x.value !== 'N/A');
+                    
+                    let bdy = new FormData();
+
+                    bdy.append('width', width);
+                    bdy.append('height', height);
+                    bdy.append('traits', JSON.stringify(drawableTraits));
+                    // bdy.append('theoptions', JSON.stringify(options));
+                    bdy.append('imgindex', v);
+                    bdy.append('account', conntd);
+                    bdy.append('collname', state.data['createbox'].coll_name);
+
+                    let drewimg = await fetch(`${baseServerUri}api/drawimage`, {method:'POST',body: bdy} ).then((theresponse)=>theresponse.json()).then((drewimg)=>drewimg);
+                    
+                    console.log(`drew image: ${JSON.stringify(drewimg)}`);
+                    bdy = "";
+                    bdy = new FormData();
+
+                    bdy.append('path', drewimg.path);
+                
+                    bdy.append('the_options', JSON.stringify(options));
+
+                    let pinnedSample = await fetch(`${baseServerUri}api/pinnit`,{method:'POST', body: bdy}).then((rezz)=>rezz.json()).then((pinned)=>pinned);
+                
+                    // let pinnedSample = await pinCombo(drewimg.path, options);
+
+                    let metadataJSON = { name: `sample turd #${v}`, attributes: drawableTraits, path: pinnedSample.IpfsHash};
+
+                    sampleArray.push(metadataJSON);
+
+                }
+                
+                return sampleArray;
+              
+            };
+
+            const getSamplesAndClearComboData = async (comboz, cap)=>{
+                // const cap = 5;
+                let cap_it = (cap)?cap:comboz.length;
+                let sampleImgs = [];
+                for(let v = 0; v < cap_it; v++){
+                    sampleImgs.push(comboz[v]);
+                }
+                console.log(`sample img: ${JSON.stringify(sampleImgs)}`);
+
+                
+                return drawimage(sampleImgs, 1000, 1000);
+            };
+
+            let samples = await getSamplesAndClearComboData(combo, 4);
+
+            combo = "";
+            console.log(`sample img: ${JSON.stringify(samples)}`);
+
+            const updateDB = async (data, collname, account, thesamples, combo_ipfs_hash)=>{
+                temp_state = JSON.parse(JSON.stringify(state));
+                
+                temp_state.data["createbox"] =  {};
+
+                temp_state.data["createbox"]["activeContract"] = null;
+
+                temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
+
+                temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
+
+                temp_state.data["createbox"].samples = thesamples;
+
+                temp_state.data["createbox"].possibleCombos = possibleCombos;
+
+                // changeState(temp_state);
+
+                let payload = new FormData();
+                payload.append('data', JSON.stringify(state['data'].createbox));
+                payload.append('collname', state.data["createbox"].coll_name);
+                payload.append('account', conntd);
+                payload.append('ipfs_uri', combo_ipfs_hash);
+                payload.append('samples', JSON.stringify(thesamples));
+
+                let saveCollection = await fetch(`${baseServerUri}api/savenftcollection`, {method:'POST', body:payload}).then((response)=>response.json()).then((ress)=>ress);
+                
+                return changeState(temp_state);
+            
+            };
+
+            updateDB(state.data.createbox, state.data['createbox'].coll_name, conntd, samples, pinnedCombo.IpfsHash)
+
+            // try {
+            //     await fetch(`${baseServerUri}api/generate`, {method:"POST", body, mode:'cors'})
+            //     .then((response)=>{
+            //         console.log(` response type: ${response.type}, response status: ${response.status}, response headers: ${response.headers}, response url: ${response.url}, response ok: ${response.ok}`);
+            //         if(response.ok){
+            //             return response.json;
+            //         }
+            //         console.log(`generated: ${JSON.stringify(generate_it)}`);
+            //         temp_state = JSON.parse(JSON.stringify(state));
+            //         temp_state.data["createbox"] =  {};
+            //         temp_state.data["createbox"]["activeContract"] = null;
+            //         temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
+            //         temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
+            //         temp_state.data["createbox"].account = state.data["createbox"].account;
+                    
+            //         changeState(temp_state);
+
+            //         e.target.classList.remove('inactive');
+
+            //         hideLoading();
+            //     })
+            //     .then((res)=>{
+
+            //     })
+            // } catch (error) {
+            //     console.log(`da try error is: ${error}`);
+            // }
             
             // .then((res)=>{
             //     console.log(`generate response: ${JSON.stringify(res)}`);
@@ -1512,7 +1656,6 @@ function Body(props){
             //     }
             // });
 
-            
         }
         
         const handleSol = async(e)=>{
@@ -1673,6 +1816,210 @@ function Body(props){
         function GenLayers (){
 
             function Layerz(props){
+                
+                
+                let mouseUpFired;
+        
+                let initPositions = [];
+                
+                let elebox = document.getElementById('LayerGenBoxx');
+                
+                let initDivIndx = null; let newindex = null;
+
+                useEffect(()=>{
+
+                    [].forEach.call(document.getElementsByClassName('generatorRightPanelLayerBox'), (element) => {
+
+                        initPositions.push(element.getBoundingClientRect().top);
+
+                    });
+                    
+                },[elebox, initPositions])
+
+                function swapSibling(node1, node2) {
+                    node1.parentNode.replaceChild(node1, node2);
+                    node1.parentNode.insertBefore(node2, node1); 
+                }
+
+                const layer_move_initializer = (event)=>{
+                    
+                    if(event.target.getAttribute('class') === 'generatorRightPanelLayerBox'){
+
+                        mouseUpFired = false;
+                        let div = event.target;
+                        
+                        let divWitdh = div.clientWidth;
+
+                        if(event.type === 'mousedown' || event.type === 'touchstart'){
+                            let popup = document.getElementById('popup');
+
+                            popup.style.overflowY = 'hidden';
+                            
+                            if(mouseUpFired === true){
+                                
+                                return false;
+                            }
+
+                            div.classList.add("sortable-handler");
+
+                            let indexOfSelectedItem = [].indexOf.call(document.getElementsByClassName('generatorRightPanelLayerBox'), div);
+                            // setLayerIndex(indexOfSelectedItem)
+                            let arrayOfEles = document.getElementsByClassName('generatorRightPanelLayerBox');
+                            
+                            let centerofdiv = div.clientHeight/2;
+
+                            // console.log(`scroll height: ${document.getElementById('popup').scrollTop}, parent div location: ${div.parentNode.parentNode.getBoundingClientRect().top}`)
+
+                            div.style.width = divWitdh+'px';
+                            
+                            div.style.top = (event.type === 'touchstart')?((event.touches[0].clientY + document.getElementById('popup').scrollTop) - centerofdiv)+'px':((event.clientY + document.getElementById('popup').scrollTop) - centerofdiv)+'px';
+                            
+                            initDivIndx = indexOfSelectedItem;
+
+                            window.onmousemove = (e)=>{
+                                
+                                if(mouseUpFired === false){
+
+                                    div.style.top = ((e.clientY + document.getElementById('popup').scrollTop)- centerofdiv)+'px';
+                                    
+                                    initPositions.forEach((element, i) => {
+
+                                        if(indexOfSelectedItem > i){
+                                            
+                                            if((div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) < (element) && (div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) > (element-70)){
+                                                
+                                                // console.log(`${arrayOfEles[i].parentNode.getAttribute('class')}, class name 1${div.parentNode.getAttribute('class')}`);
+                                                swapSibling(arrayOfEles[i].parentNode, div.parentNode);
+
+                                                newindex = i; //[].indexOf.call(document.getElementsByClassName('generatorRightPanelLayerBox'), div);
+                                                indexOfSelectedItem = i;
+                                                
+                                            }
+                                        }
+                                        if(indexOfSelectedItem < i){
+                                        
+                                            if((div.getBoundingClientRect().bottom+document.getElementById('popup').scrollTop) > (element+70) && (div.getBoundingClientRect().bottom+document.getElementById('popup').scrollTop) < (element+140)){
+
+                                                swapSibling(div.parentNode,arrayOfEles[i].parentNode);
+
+                                                newindex =i;// [].indexOf.call(document.getElementsByClassName('generatorRightPanelLayerBox'), div);
+                                                
+                                                indexOfSelectedItem = i;
+
+                                            }
+                                        }
+
+                                    });
+                                    
+                                }
+                            }
+                            
+                            window.ontouchmove = (e)=>{
+
+                                if(mouseUpFired === false){
+
+                                    div.style.top = ((e.touches[0].clientY + document.getElementById('popup').scrollTop)-centerofdiv)+'px';
+                                    
+                                    initPositions.forEach((element, i) => {
+                                        if(indexOfSelectedItem > i){
+                                            if((div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) <= (element) && (div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) >= (element-70)){
+                                                
+                                                
+                                                swapSibling(arrayOfEles[i].parentNode, div.parentNode);
+                                                newindex = [].indexOf.call(document.getElementsByClassName('generatorRightPanelLayerBox'), div);
+                                                
+                                                arrayOfEles[i+1].classList.add('betweenItem_two');
+                                                
+                                            }else{
+
+                                                arrayOfEles[i+1].classList.remove('betweenItem_two');
+                                            
+                                            }
+                                        }
+
+                                        if(indexOfSelectedItem <= i){
+                                        
+                                            if((div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) >= (element-70) && (div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) <= (element+70)){
+
+                                                swapSibling(div.parentNode,arrayOfEles[i].parentNode);
+                                                newindex = [].indexOf.call(document.getElementsByClassName('generatorRightPanelLayerBox'), div);
+                                                
+                                                if(div !== arrayOfEles[i]){
+                                                    
+                                                    arrayOfEles[i].classList.add('betweenItem');
+                                                
+                                                }
+
+                                            }else{
+
+                                                arrayOfEles[i].classList.remove('betweenItem');
+                                            
+                                            }
+                                        }
+
+                                    });
+                                    
+                                }
+                            }
+                        }
+                    }
+                };
+
+                const layer_move_ender = (event)=>{
+                    if(event.target.getAttribute('class') === 'generatorRightPanelLayerBox'){
+                        showLoading();
+                    }
+                    
+                    mouseUpFired = true;
+                    
+                    if(event.type === 'mouseup' || event.type === 'touchend'){
+        
+                        let popup = document.getElementById('popup');
+        
+                        popup.style.overflowY = 'auto';
+        
+                        let div = event.target;
+                        
+                        div.classList.remove("sortable-handler");
+                        
+                        let arrayOfEles = document.getElementsByClassName('generatorRightPanelLayerBox');
+                        let p = 0;
+        
+                        while ( p < arrayOfEles.length ) {
+        
+                            arrayOfEles[p].classList.remove('betweenItem_two');
+                            
+                            arrayOfEles[p].classList.remove('betweenItem');
+        
+                            p++;
+                        }
+        
+                        mouseUpFired = true;
+        
+                        if(event.target.getAttribute('class') === 'generatorRightPanelLayerBox'){
+                            // console.log(`gun dung piss`);
+                            // console.log(`init index: ${initDivIndx}, new index:: ${newindex}`);
+                            
+                            let tempArray = state.data["createbox"].layers.splice(initDivIndx,1)[0];
+        
+                            // console.log(`tempArray::: ${tempArray}`);
+                            
+                            state.data["createbox"].layers.splice(newindex, 0, tempArray);
+                            
+                            hideLoading();
+
+                            changeState(state, document.getElementById('popup').scrollTop())
+                            
+                            // if(editState === null){
+                            //     changeEditState(undefined);
+                            // }else{
+                            //     changeEditState(null);                           
+                            // }
+                        }
+                        
+                    }
+                    
+                };
 
                 const setTrait = async (e)=>{
 
@@ -2120,6 +2467,7 @@ function Body(props){
                 return("");
             }
         }
+        if(document.getElementById('popup')) document.getElementById('popup').scrollTop = scrollPosition;
 
         return(
             <div>
