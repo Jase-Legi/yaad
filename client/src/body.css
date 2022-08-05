@@ -31,7 +31,18 @@
     font-size:.75em;
 }
 
-@media (max-width: 399px){
+@media (max-width: 450px){
+    .welcomeBox{
+        max-width:1200px;
+        width: calc(100%-80px);
+        height: auto;
+        min-width: auto;
+        padding: 20px;
+        margin: 0px auto;
+        display:flex;
+        flex-flow:wrap;
+        background-color: black;
+    }
     .welcomeBoxElement{
         width: 75vw !important;
         height: 75vw !important;
@@ -39,10 +50,22 @@
         min-height: 75vw !important;
         margin:10px auto;
         position: relative;
+        border-radius: 20px;
     }
 }
 
-@media (min-width:400px) and (max-width: 500px){
+@media (min-width:451px) and (max-width: 500px){
+    .welcomeBox{
+        max-width:1200px;
+        width: calc(100%-80px);
+        height: auto;
+        min-width: auto;
+        padding: 20px;
+        margin: 0px auto;
+        display:flex;
+        flex-flow:wrap;
+        background-color: black;
+    }
     .welcomeBoxElement{
         width: 41vw !important;
         height: 41vw !important;
@@ -51,10 +74,22 @@
         min-height: 150px;
         margin:10px auto;
         position: relative;
+        border-radius: 20px;
     }
 }
 
 @media (min-width: 501px) and (max-width:800px){
+    .welcomeBox{
+        max-width:1200px;
+        width: calc(100%-80px);
+        height: auto;
+        min-width: auto;
+        padding: 20px;
+        margin: 0px auto;
+        display:flex;
+        flex-flow:wrap;
+        background-color: black;
+    }
     .welcomeBoxElement{
         height: 42vw;
         width: 42vw;
@@ -63,10 +98,22 @@
         min-height: 200px;
         margin: 15px auto;
         position: relative;
+        border-radius: 20px;
     }
 }
 
 @media (min-width:801px){
+    .welcomeBox{
+        max-width:1200px;
+        width: calc(100%-80px);
+        height: auto;
+        min-width: auto;
+        padding: 20px;
+        margin: 0px auto;
+        display:flex;
+        flex-flow:wrap;
+        background-color: black;
+    }
     .welcomeBoxElement{
         height: 20vw;
         width: 20vw;
@@ -75,6 +122,7 @@
         min-height: 150px;
         margin: 15px auto;
         position: relative;
+        border-radius: 20px;
     }
 }
 
