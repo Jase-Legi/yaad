@@ -70,8 +70,8 @@
         height: 38vw;
         width: 38vw;
         max-width: 38vw;
-        min-width: 200px;
-        min-height: 200px;
+        min-width: 100px;
+        min-height: 100px;
         margin: 15px auto;
         position: relative;
         border-radius: 20px;
