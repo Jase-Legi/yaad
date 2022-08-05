@@ -14,7 +14,7 @@
     background-color: black;
 }
 
-.welcomeBoxElement{
+/* .welcomeBoxElement{
     height: 20vw;
     width: 20vw;
     max-width: 20vw;
@@ -25,7 +25,7 @@
     background-color: #999;
     overflow: hidden;
     border-radius: 20px;
-}
+} */
 
 .title{
     font-size:.75em;
@@ -67,6 +67,8 @@
         min-width: 75vw !important;
         min-height: 75vw !important;
         margin:10px auto;
+        border-radius: 20px;
+
     }
 }
 
@@ -77,6 +79,8 @@
         min-width: 41vw !important;
         min-height: 41vw !important;
         margin:10px auto;
+        border-radius: 20px;
+
     }
 }
 
@@ -88,6 +92,8 @@
         min-width: 200px;
         min-height: 200px;
         margin: 15px auto;
+        border-radius: 20px;
+
     }
 }
 
@@ -99,5 +105,7 @@
         min-width: 150px;
         min-height: 150px;
         margin: 15px auto;
+        border-radius: 20px;
+
     }
 }
