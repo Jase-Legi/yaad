@@ -31,35 +31,6 @@
     font-size:.75em;
 }
 
-.contractBox{
-    height:50px;
-    width:fit-content;
-    cursor: pointer;
-    display: flex;
-    flex-direction: row;
-    margin: 0px 10px 0px 0px;
-    background-color: black;
-    border: solid #222 1px;
-    border-radius: 5px;
-    padding: 0px 10px;
-}
-
-.contractBox:hover{
-    background-color: #111;
-}
-
-.contractBox > img{
-    height:20px;
-    margin: 15px 5px;
-}
-
-.contractBox > span {
-    color: #fff;
-    height: 100%;
-    line-height: 20px;
-    margin: 15px 0px;
-}
-
 @media (max-width: 399px){
     .welcomeBoxElement{
         width: 75vw !important;
@@ -75,8 +46,9 @@
     .welcomeBoxElement{
         width: 41vw !important;
         height: 41vw !important;
-        min-width: 41vw !important;
-        min-height: 41vw !important;
+        max-width: 41vw !important;
+        min-width: 150px;
+        min-height: 150px;
         margin:10px auto;
         position: relative;
     }
@@ -104,4 +76,33 @@
         margin: 15px auto;
         position: relative;
     }
+}
+
+.contractBox{
+    height:50px;
+    width:fit-content;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    margin: 0px 10px 0px 0px;
+    background-color: black;
+    border: solid #222 1px;
+    border-radius: 5px;
+    padding: 0px 10px;
+}
+
+.contractBox:hover{
+    background-color: #111;
+}
+
+.contractBox > img{
+    height:20px;
+    margin: 15px 5px;
+}
+
+.contractBox > span {
+    color: #fff;
+    height: 100%;
+    line-height: 20px;
+    margin: 15px 0px;
 }
