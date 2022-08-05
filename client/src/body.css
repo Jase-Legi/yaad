@@ -54,7 +54,31 @@
     }
 }
 
-@media (min-width: 451px) and (max-width:800px){
+@media (min-width: 451px) and (max-width:600px){
+    .welcomeBox{
+        max-width:1200px;
+        width: calc(100%-80px);
+        height: auto;
+        min-width: auto;
+        padding: 20px;
+        margin: 0px auto;
+        display:flex;
+        flex-flow:wrap;
+        background-color: black;
+    }
+    .welcomeBoxElement{
+        height: 38vw;
+        width: 38vw;
+        max-width: 38vw;
+        min-width: 200px;
+        min-height: 200px;
+        margin: 15px auto;
+        position: relative;
+        border-radius: 20px;
+    }
+}
+
+@media (min-width: 601px) and (max-width:800px){
     .welcomeBox{
         max-width:1200px;
         width: calc(100%-80px);
