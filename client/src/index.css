@@ -237,15 +237,17 @@ h4{ font-family: tahoma; font-weight:bolder; }
     /* padding: 40px !important; */
     z-index: 1500 !important;
     padding: 40px 0px;
-    overflow-y: auto; 
-    overflow-x: hidden !important;
+    overflow-y: auto;
     position:absolute;
     left: 0px;
     top: 0px;
-    min-width: calc(100vw - 40px);
-    min-height: calc(100vw - 80px);
+    width: 100% !important;
+    min-height: 100vh !important;
+    height: 100% !important;
     /* box-sizing: border-box !important; */
-    height: auto  !important;
+    box-sizing: border-box;
+
+    /* height: !important; */
     background-color:rgba(255, 255, 255, 1);
     inset: 0px !important;
     display: flex !important;
@@ -259,15 +261,16 @@ h4{ font-family: tahoma; font-weight:bolder; }
     /* padding: 40px !important; */
     z-index: 1500 !important;
     padding: 40px 0px;
-    overflow-y: auto; 
-    overflow-x: hidden !important;
+    overflow-y: auto;
     position:absolute;
     left: 0px;
     top: 0px;
-    min-width: calc(100vw - 40px);
+    min-width: 100vw;
+    width: 100%;
+    box-sizing: border-box;
     min-height: (100vw - 80px);
     /* box-sizing: border-box !important; */
-    height: auto  !important;
+    height: 100%  !important;
     background-color:rgb(17, 17, 17);
     inset: 0px !important;
     display: flex !important;
@@ -498,7 +501,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     width: 100%;
     display: table;
     align-content: center;
-    border:rgb(61, 61, 61) 1px dashed;
+    border:#222 1px solid;
     border-radius: 5px;    
 }
 
@@ -512,7 +515,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     width: 100%;
     display: table;
     align-content: center;
-    border:rgb(61, 61, 61) 1px dashed;
+    border:#222 1px solid;
     border-radius: 5px;
 }
 
@@ -538,6 +541,20 @@ h4{ font-family: tahoma; font-weight:bolder; }
     text-indent: 0px;
     text-align: center;
     text-shadow: none;
+}
+
+.coll_name_box{
+    width: 93vw;
+    max-width: 1000px;
+    background-color: #000;
+    padding: 10px 30px;
+    margin: 10px auto 0px auto;
+    box-sizing: border-box;
+    border-radius: 20px;
+}
+
+.coll_name_box > h2{
+    color:whitesmoke;
 }
 
 .generatorRightPanelAddNewLayer > h1:hover { color: #000;}
@@ -689,14 +706,30 @@ h4{ font-family: tahoma; font-weight:bolder; }
 
 .expander-box{
     width: 25% !important;
-    height: 50px !important;
-    padding: 5px 0px;
+    height: 60px !important;
     /* display: block; */
     float: left;
     cursor: pointer;
+    color: #999;
+    font-size: 10px;
+    border-bottom-left-radius: 7.5px;
+    border-top-left-radius: 7.5px;
+    background-color: rgb(30, 29, 31);
     border-right:solid 2px rgb(48, 48, 48);
+    border-top:none;
+    border-bottom:none;
+    border-left:none;
     overflow: hidden;
     margin:0px;
+}
+
+.expander-box:hover{
+    background-color: rgb(46, 45, 47) !important;
+    border-right:solid 2px rgb(48, 48, 48) !important;
+    border-top:none !important;
+    border-bottom:none !important;
+    border-left:none !important;
+    color:#999;
 }
 
 .edit-trait-box{
@@ -1171,4 +1204,148 @@ h4{ font-family: tahoma; font-weight:bolder; }
     font-size:.75em;
     font-weight: 700;
     border-radius: 5px;
+}
+
+#pissingD{
+    /* padding:"10px 0px", height:"52px", maxHeight:"70px", width:"100%", display:"flex", flexDirection:"row", overflowX: "hidden", overflowY: "hidden" */
+    padding: 10px 0px;
+    height:52px;
+    max-height: 70px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    overflow-x:auto;
+    overflow-y:hidden;
+    scrollbar-color: #333 !important;
+    scrollbar-width: thin !important;
+}
+
+.contract-box{
+    border: solid 1px #222;
+    border-radius: 10px;
+    background-color: #000;
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+.expand-contract{
+    width: 100%;
+    background-color:#000;
+    height: 30px;
+    border-bottom-left-radius: 7.5px;
+    border-bottom-right-radius: 7.5px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #ccc;
+    font-size: 11px;
+    border-top: 1px solid rgb(34, 34, 34);
+}
+
+.expand-contract:hover{
+    background-color: #111 !important;
+    color: #fff;
+}
+
+.contract-container{
+    height: 100px;
+    overflow-y: hidden;
+}
+
+.contract-container-expanded{
+    height:fit-content;
+    overflow-y: hidden;
+}
+
+#contract-container>h2{
+    color: #fff;
+    border-bottom: solid 1px #222;
+}
+
+#contract-container>span{
+    color: #888;
+}
+
+.contractContainer{
+    display: inline-block;
+    height: 50px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.contractName{
+    width: 97% !important;
+    border: none !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0px 3% 0px 0px !important;
+    padding: 0px 20px !important;
+    box-sizing: border-box;
+    max-width: 97%;
+    min-width: 97%;
+    height: 50px;
+    user-select: none;
+    text-align:left;
+    background-color: rgb(243, 242, 242);
+    border:none;
+    color: black;
+    font-size:1.25em;
+    font-weight: 700;
+    border-radius: 10px;
+}
+
+.contractNameContainer{
+    width: 50% !important;
+    border: none !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0px !important;
+    padding: 0px !important;
+    box-sizing: border-box;
+    min-width: 50%;
+    height: 50px;
+    border:none;
+    /* display: flex; */
+    /* flex-direction: row; */
+    float: left;
+}
+
+.contractSymbol{
+    width: 97% !important;
+    border: none !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0px 0px 3% 0px !important;
+    padding: 0px 20px !important;
+    box-sizing: border-box;
+    max-width: 97%;
+    min-width: 97%;
+    height: 50px;
+    user-select: none;
+    text-align:left;
+    background-color: rgb(243, 242, 242);
+    border:none;
+    color: black;
+    font-size:1.25em;
+    font-weight: 700;
+    border-radius: 10px;
+}
+
+.contractSymbolContainer{
+    width: 50% !important;
+    border: none !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0px !important;
+    padding: 0px !important;
+    box-sizing: border-box;
+    min-width: 48%;
+    height: 50px;
+    border:none;
+    float: left;
 }
