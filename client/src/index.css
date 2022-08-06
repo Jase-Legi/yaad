@@ -1349,3 +1349,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     border:none;
     float: left;
 }
+
+.sampleImage{
+    background-color: #222;
+}

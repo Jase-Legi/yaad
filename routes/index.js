@@ -4,6 +4,7 @@ const index = express();
 require('dotenv').config();
 const pinataSDK = require('@pinata/sdk');
 const multer  = require('multer');
+
 const {canvas, createCanvas, loadImage} = require("canvas");
 const {basename, dirname, isAbsolute, normalize, resolve, sep} = require('path')
 const {readFileSync, createReadStream, unlinkSync, existsSync, writeFileSync} = require('fs');
@@ -306,7 +307,7 @@ let pinnit = async (pathh, options)=>{
     }
 };
 
-index.post('/pinnit', multer().none(), async (req, res, next)=>{
+index.post('/pinnit', multer({ limits: { fieldSize : 25 * 1024 * 1024}}).none(), async (req, res, next)=>{
     // console.log(`req.body.path:::: ${req.body.path}`);
 
     const [err, json_to_pin] = checkJsonParse(req.body.path);

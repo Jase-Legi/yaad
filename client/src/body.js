@@ -1,11 +1,11 @@
 import './body.css'; import './App.css'; import './header.css';
 
-import {useState, memo, useEffect, useRef} from 'react'; //useEffect
-import {providers, Contract, utils, BigNumber, HDNode} from "ethers";
+import {useState, memo, useEffect} from 'react'; //useRef
+import {providers, Contract, utils, BigNumber} from "ethers";
 import yaadtokenAbi from './contracts/ABIs/Yaad.json';
 // import nftTokenImportsSol from './contracts/imports.721.sol'
 // import nftTokenSol from './contracts/yaad.sol';
-import { createCanvas, loadImage, canvas } from 'canvas';
+// import { createCanvas, loadImage, canvas } from 'canvas';
 // import legitokenAbi from './contracts/Legi.json';
 const pumpum = window.location.host;
 
@@ -163,18 +163,6 @@ function LoadingBox(props){
     )
 }
 
-const checkJsonParse = (str)=>{
-    if(typeof(str) !== 'string') return [true];
-    // console.log(`str:: ${str}`);
-    try {
-        return [null, JSON.parse(str)];
-
-    } catch (error) {
-        
-        return [error];
-    }
-}
-
 function shuffle(arra1) {
   var ctr = arra1.length, temp, index;
 
@@ -204,6 +192,8 @@ function Body(props){
     let [editState, setEditState] = useState(null);
 
     let [scrollPosition, setScrollPosition] = useState(0);
+
+    const ipfs_gateway = 'https://gateway.pinata.cloud/ipfs/';
     
     const changeState = (val, scrollval)=>{
         showLoading();
@@ -259,7 +249,7 @@ function Body(props){
 
     let deployArray =[];
 
-    const deployContract = async (contract_array, contratct__name)=>{
+    const deployContract = async (contract_array, contratct_name)=>{
         console.log(`arrayy:::>> ${contract_array[0]}`)
         let contractOptions = {
             language: "Solidity", 
@@ -281,8 +271,10 @@ function Body(props){
         };
 
         for(let l = 0; l < contract_array.length; l++){
-            let pisssing = await readFile(contract_array[l]);
-            deployArray.push({name:'', contract: pisssing})
+
+            let readContract = await readFile(contract_array[l]);
+            
+            deployArray.push({name:'', contract: readContract})
         }
     };
     
@@ -455,23 +447,11 @@ function Body(props){
                 </div>
             )
         }
-
-        const boxStyle = {
-            display: "flex",
-            position: "relative",
-            color: "white",
-            backgroundColor: "black",
-            fontFamily: "Circular, -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif"
-        };
         
-        const logoBox = {
-            
-        };
-    
         return (
-            <header className='header' style={boxStyle}>
+            <header className='header' >
                 <div className='headerElementlogo' onClick={()=>window.location = './'}>
-                    <img src='./yaad.svg'/>
+                    <img src='./yaad.svg' alt='home'/>
                     {/* <span>
                         Yaad
                     </span> */}
@@ -1223,8 +1203,7 @@ function Body(props){
         
         const generate_it = async (e)=>{
             showLoading();
-
-            // let body = new FormData();
+            
             let conntd = await iswalletConnected();
             
             if(conntd === false){
@@ -1234,12 +1213,8 @@ function Body(props){
                 return false;
             
             }
-
-            // body.append('currentState', state.currsubState["createbox"])
-
-            state.data["createbox"].account = conntd;
             
-            // body.append('data',JSON.stringify(state.data["createbox"]));
+            state.data["createbox"].account = conntd;
             
             const get_all_possible_combos =  async (input, output, n, da_path)=>{
 
@@ -1308,8 +1283,8 @@ function Body(props){
                             "attributes": []
                         }
                         
-                        // let pinned = await pinnit(normalize(theDir+sep+layers[indx].traits[pin].path), options);
                         let pin_body = new FormData();
+
                         pin_body.append('path',layers[indx].traits[pin].path);
                         pin_body.append('the_options', options);
                         await fetch(`${baseServerUri}api/pinnit`, {method:'POST', body: pin_body})
@@ -1341,13 +1316,12 @@ function Body(props){
                         }
                         
                     };
-            
-                    // let pinned = await pinnit(normalize(theDir+sep+backgrounds[f].path), options);
+                    
                     let pin_body = new FormData();
-                    console.log(`background: ${JSON.stringify(backgrounds[f])}`)
                     pin_body.append('path',backgrounds[f].path);
                     pin_body.append('the_options', options);
                     let pinnedBG = await fetch(`${baseServerUri}api/pinnit`, {method:'POST', body: pin_body}).then((resp)=>resp.json()).then((pinned)=>pinned);
+                    console.log(`background: ${JSON.stringify(backgrounds[f])}`);
                     backgrounds[f].path = pinnedBG.IpfsHash;
                 }
                 
@@ -1396,6 +1370,7 @@ function Body(props){
                 let d = 0;
                 // let comboz = res.locals.comboz;
                 let backgrounds = await loop_and_pin_background(state.data["createbox"].background)
+
                 while(d < comboz.length){
             
                     let newBG = backgrounds[Math.floor(Math.random() * backgrounds.length)]
@@ -1431,8 +1406,9 @@ function Body(props){
                 pin_body.append('path', JSON.stringify(combo));
                 
                 pin_body.append('the_options', JSON.stringify(optns));
-
+                console.log(`about to pin combo!`);
                 let pinnedCombo = await fetch(`${baseServerUri}api/pinnit`,{method:'POST', body: pin_body}).then((rezz)=>rezz.json()).then((pinned)=>pinned);
+                console.log(`pinned the combo!`)
                 pin_body = null;
                 return pinnedCombo;
             }
@@ -1442,7 +1418,7 @@ function Body(props){
             let pinnedCombo = await pinCombo(combo, optns);
             
             const drawimage = async (traitTypes, width, height) => {
-                let sampleArray = [], gateway = 'https://gateway.pinata.cloud/ipfs/', cap_it = traitTypes.length;
+                let sampleArray = [], cap_it = traitTypes.length;
                 
                 for(let v = 0; v < cap_it; v++){
                     const options = {
@@ -1548,7 +1524,7 @@ function Body(props){
             temp_state =  JSON.parse(JSON.stringify(state));
             
             const  readAndShowFiles = async (demFiles) => {
-                // const readContract =
+                
                 let contractArray = [];
 
                 for (let dafile of demFiles) {
@@ -2213,7 +2189,7 @@ function Body(props){
                     let sampleLen = 0; let boxcont = [];
     
                     while (sampleLen < 4){
-                        boxcont.push(<div key={sampleLen} className='LayerUpldContentBx'><div className='LayerUpldContent'><img className='sampleImage' style={{backgroundColor: '#222'}} src={"https://gateway.pinata.cloud/ipfs/"+state.data["createbox"].samples[sampleLen].path+"?"+ new Date().getTime()} alt=''/></div></div>)
+                        boxcont.push(<div key={sampleLen} className='LayerUpldContentBx'><div className='LayerUpldContent'><img className='sampleImage' src={ipfs_gateway+state.data["createbox"].samples[sampleLen].path+"?"+ new Date().getTime()} alt=''/></div></div>)
                         sampleLen++;
                     }
                     
@@ -2249,8 +2225,6 @@ function Body(props){
 
                     const expandContractBox  = (e)=>{
                         let ele = e.target;
-                        const da_ele = document.getElementById('expand_contract');
-
                         let cntrctbox = document.getElementById('contract-container');
                         if (cntrctbox.classList.contains("contract-container-expanded")){
                             cntrctbox.classList.remove('contract-container-expanded');
