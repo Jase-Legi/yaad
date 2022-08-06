@@ -2296,18 +2296,7 @@ function Body(props){
                     </div>
                 )                
             } else {
-                return(
-                    // <div>
-                    //     <div className='contractContainer'>
-                    //         <div className='contractNameContainer'></div>
-                    //         <div className='contractSymbolContainer'><h2 style={{color:'#FFF'}}>Token Symbol</h2></div>
-                    //     </div>
-                        <div className='contractContainer'>
-                            <DaInput data={{ type:'text', typeId:'', typeClass:'contractName', class:'contractNameContainer', placeholder:state["data"].createbox.coll_name, name:'multi_asset', onChange:handleAddLayerUpld}}/>
-                            <DaInput data={{ type:'text', typeId:'', typeClass:'contractSymbol', class:'contractSymbolContainer', placeholder:state["data"].createbox.coll_name, name:'multi_asset', onChange:handleAddLayerUpld}}/>
-                        </div>
-                    // </div>
-                )
+                return'';
             }
         }
         
@@ -2320,7 +2309,11 @@ function Body(props){
                         X
                     </button>
                     <div className='RandomGenerator'>
-                        <BoxTitle data={{class:'coll_name_box', type:'h2', text:state.data["createbox"].coll_name }}/>
+                        {/* <BoxTitle data={{class:'coll_name_box', type:'h2', text:state.data["createbox"].coll_name }}/> */}
+                        <div className='coll_name_box'>
+                            <DaInput data={{ type:'text', typeId:'', typeClass:'contractName', class:'contractNameContainer', placeholder:'Name: '+state["data"].createbox.coll_name, name:'multi_asset', onChange:nullFunc}}/>
+                            <DaInput data={{ type:'text', typeId:'', typeClass:'contractSymbol', class:'contractSymbolContainer', placeholder:'Symbol:', name:'multi_asset', onChange:nullFunc}}/>
+                        </div>
                         <div>
                             <div className='LayerGenBox'>
                                 <BoxTitle data={{class:'generatorRightPanelTitle', type:'span', text:(contractZone)?'Contract':'LAYERS'}}/>
