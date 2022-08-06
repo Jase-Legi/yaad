@@ -471,9 +471,10 @@ function Body(props){
         return (
             <header className='header' style={boxStyle}>
                 <div className='headerElementlogo' onClick={()=>window.location = './'}>
-                    <span>
+                    <img src='./yaad.svg'/>
+                    {/* <span>
                         Yaad
-                    </span>
+                    </span> */}
                 </div>
                 {/* <SearchBar style={logoBox}/> */}
                 <Dropdown/>
