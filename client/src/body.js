@@ -832,7 +832,7 @@ function Body(props){
                     return false;
                 }
 
-                temp_state.data["createbox"] = {coll_name : collname.value.trim(), layers:[]}
+                temp_state.data["createbox"] = {coll_name : collname.value.trim(), coll_symbol : collname.value.trim()[0]+collname.value.trim()[collname.value.trim().length - 1], layers:[]}
                 
                 temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions"
 
@@ -1504,6 +1504,8 @@ function Body(props){
 
                 temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
 
+                temp_state.data["createbox"].coll_symbol = state.data["createbox"].coll_symbol;
+
                 temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
 
                 temp_state.data["createbox"].samples = thesamples;
@@ -1513,6 +1515,7 @@ function Body(props){
                 let payload = new FormData();
                 payload.append('data', JSON.stringify(state['data'].createbox));
                 payload.append('collname', state.data["createbox"].coll_name);
+                payload.append('collSym', state.data["createbox"].coll_symbol);
                 payload.append('account', conntd);
                 payload.append('ipfs_uri', combo_ipfs_hash);
                 payload.append('samples', JSON.stringify(thesamples));
@@ -2326,7 +2329,7 @@ function Body(props){
                     return;
                 }
 
-                state.data["createbox"].coll_symbol = the_value;
+                state.data["createbox"]["coll_symbol"] = the_value;
                 ele.setAttribute("placeholder", the_value)
 
                 // ele.value = "";
@@ -2370,7 +2373,6 @@ function Body(props){
                             <div className='LayerGenBox'>
                                 <BoxTitle data={{class:'generatorRightPanelTitle', type:'span', text:(contractZone)?'Contract':'LAYERS'}}/>
                                 {/* <ContractBox/> */}
-
                                 <div className='LayerUpldBoxTitle'> {spanBox2} </div>
                                 <AddLayer/>
                                 <div id='LayerGenBoxx'> {mainBox} </div>
