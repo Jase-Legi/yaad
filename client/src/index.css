@@ -516,6 +516,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     display: table;
     align-content: center;
     border:#222 1px solid;
+    background-color: rgb(2,2,2);
     border-radius: 5px;
 }
 
@@ -549,7 +550,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     background-color: #000;
     padding: 10px 30px;
     margin: 10px auto 0px auto;
-    color: #ccc;
+    color: #222;
     box-sizing: border-box;
     border-radius: 20px;
 }
@@ -610,9 +611,9 @@ h4{ font-family: tahoma; font-weight:bolder; }
 
 .generatorRightPanelTitle > span{
     color: rgb(68, 68, 68);
-    font-size: 18px;
+    font-size: 24px;
     font-weight: 700;
-    letter-spacing: 2px;
+    /* letter-spacing: 2px; */
     height: 40px;
     line-height: 40px;
     vertical-align: middle;
@@ -1276,7 +1277,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
 }
 
 .contractName{
-    width: 97% !important;
+    width: calc( 97% - 40px) !important;
     border: none !important;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -1284,16 +1285,17 @@ h4{ font-family: tahoma; font-weight:bolder; }
     margin: 0px 3% 0px 0px !important;
     padding: 0px 20px !important;
     box-sizing: border-box;
-    max-width: 97%;
-    min-width: 97%;
+    max-width: calc( 97% - 40px) !important;
+    min-width: calc( 97% - 40px) !important;
     height: 40px;
     user-select: none;
     text-align:left;
-    background-color: rgb(3,3,3);
-    border:none;
-    color: #999;
-    font-size:13px;
-    font-weight: 400;
+    background-color: rgb(2,2,2);
+    border:solid 1px #222 !important;
+    box-sizing: border-box !important;
+    color: #555;
+    font-size:14px;
+    font-weight: 500;
     border-radius: 10px;
 }
 
@@ -1315,7 +1317,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
 }
 
 .contractSymbol{
-    width: 97% !important;
+    width: calc( 97% - 50px) !important;
     border: none !important;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -1323,16 +1325,17 @@ h4{ font-family: tahoma; font-weight:bolder; }
     margin: 0px 0px 3% 0px !important;
     padding: 0px 20px !important;
     box-sizing: border-box;
-    max-width: 97%;
-    min-width: 97%;
+    max-width: calc( 97% - 50px) !important;
+    min-width: calc( 97% - 50px) !important;
     height: 40px;
     user-select: none;
     text-align:left;
-    background-color: rgb(3,3,3);
-    border:none;
-    color: #999;
-    font-size:13px;
-    font-weight: 400;
+    background-color: rgb(2,2,2);
+    border:solid 1px #222 !important;
+    box-sizing: border-box !important;
+    color: #555;
+    font-size:14px;
+    font-weight: 500;
     border-radius: 10px;
 }
 
@@ -1349,6 +1352,35 @@ h4{ font-family: tahoma; font-weight:bolder; }
     height: 40px;
     border:none;
     float: left;
+}
+
+.contractNameText{
+    width: 40px;
+    height: 40px;
+    vertical-align: middle;
+    text-align: left;
+    margin: 0px;
+    box-sizing: border-box;
+    padding: 9.5px 0px;
+    float: left;
+    color: #333;
+}
+
+.contractSymbolText{
+    width: 50px;
+    height: 40px;
+    vertical-align: middle;
+    text-align: left;
+    margin: 0px;
+    box-sizing: border-box;
+    padding: 9.5px 0px;
+    float: left;
+    color: #333;
+}
+
+.contractNameText > span{
+    height: 18px;
+    margin-top: 12px;
 }
 
 .sampleImage{

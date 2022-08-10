@@ -149,21 +149,7 @@ const readFile = async (dFile)=>{
     reader.readAsText(dFile);
 }
 
-function LoadingBox(props){
-    // let loading_text = "Please Wait";
-    return(
-        <div id='loadingpopup' className='inactive'>
-            <div id='loadingbttn' >
-                <img src="./loading.svg" alt=""/>
-                <div className='loadingbttn_text_box'>
-                    <span style={{color:"white"}}>Please Wait</span>
-                </div>
-            </div>
-        </div>
-    )
-}
-
-function shuffle(arra1) {
+const shuffle = (arra1)=> {
   var ctr = arra1.length, temp, index;
 
   // While there are elements in the array
@@ -178,6 +164,33 @@ function shuffle(arra1) {
       arra1[index] = temp;
   }
   return arra1;
+}
+
+function LoadingBox(props){
+    // let loading_text = "Please Wait";
+    return(
+        <div id='loadingpopup' className='inactive'>
+            <div id='loadingbttn' >
+                <img src="./loading.svg" alt=""/>
+                <div className='loadingbttn_text_box'>
+                    <span style={{color:"white"}}>Please Wait</span>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+const isAplhaNumeric = (str)=>{
+    
+    for (let ind = 0; ind < str.length; ind++) {
+        const element = str[ind];
+        let  get_code = str.charCodeAt(ind);
+
+        if (!(get_code > 47 && get_code < 58) && /* numeric (0-9) */ !(get_code > 64 && get_code < 91) && /* upper alpha (A-Z)*/ !(get_code > 96 && get_code < 123) && !(get_code === 95)) /* lower alpha (a-z)*/ {
+            return false;
+        }
+    }
+    return true;
 }
 
 function Body(props){
@@ -2284,7 +2297,7 @@ function Body(props){
             }
         }
 
-        function Addfile(){
+        function AddLayer(){
             if (!contractZone) {
                 return(
                     <div style={{marginBottom:"20px"}}>
@@ -2299,7 +2312,40 @@ function Body(props){
                 return'';
             }
         }
-        
+
+        const collNameBox = (e)=>{
+            const ele = e.target;
+            const the_value = ele.value.trim();
+            
+            if(the_value === "") return false;
+
+            if(ele.getAttribute("id") === "contractSymbol"){
+                
+                if(ele.value.length > 4 || !isAplhaNumeric(ele.value)){
+                    ele.value = state.data["createbox"].coll_symbol;
+                    return;
+                }
+
+                state.data["createbox"].coll_symbol = the_value;
+                ele.setAttribute("placeholder", the_value)
+
+                // ele.value = "";
+
+            }else if(ele.getAttribute("id") === "contractName"){
+                // console.log(`_ charcode: ${"_".charCodeAt(0)}`);
+
+                if(contractZone){
+                    ele.value = state.data["createbox"].coll_name;
+                    return;
+                }
+
+                state.data["createbox"].coll_name = the_value;
+                ele.setAttribute("placeholder", the_value);
+                // ele.value = "";
+
+            }
+        }
+
         if(document.getElementById('popup')) document.getElementById('popup').scrollTop = scrollPosition;
 
         return(
@@ -2311,8 +2357,14 @@ function Body(props){
                     <div className='RandomGenerator'>
                         {/* <BoxTitle data={{class:'coll_name_box', type:'h2', text:state.data["createbox"].coll_name }}/> */}
                         <div className='coll_name_box'>
-                            <DaInput data={{ type:'text', typeId:'', typeClass:'contractName', class:'contractNameContainer', placeholder:'Name: '+state["data"].createbox.coll_name, name:'multi_asset', onChange:nullFunc}}/>
-                            <DaInput data={{ type:'text', typeId:'', typeClass:'contractSymbol', class:'contractSymbolContainer', placeholder:'Symbol:', name:'multi_asset', onChange:nullFunc}}/>
+                            <div className='contractNameContainer'>
+                                <BoxTitle data={{class:'contractNameText', type:'span', text:'Name:'}}/>
+                                <DaInput data={{ type:'text', typeId:'contractName', typeClass:'contractName', placeholder:state["data"].createbox.coll_name, onChange:collNameBox}}/>
+                            </div>
+                            <div className='contractSymbolContainer'>
+                                <BoxTitle data={{class:'contractSymbolText', type:'span', text:'Symbol:'}}/>
+                                <DaInput data={{ type:'text', typeId:'contractSymbol', typeClass:'contractSymbol', placeholder:(state["data"].createbox.coll_symbol)?state["data"].createbox.coll_symbol:'', onChange:collNameBox}}/>
+                            </div>
                         </div>
                         <div>
                             <div className='LayerGenBox'>
@@ -2320,7 +2372,7 @@ function Body(props){
                                 {/* <ContractBox/> */}
 
                                 <div className='LayerUpldBoxTitle'> {spanBox2} </div>
-                                <Addfile/>
+                                <AddLayer/>
                                 <div id='LayerGenBoxx'> {mainBox} </div>
                                 {daBattn}
                                 <Dabttn/>
@@ -2338,7 +2390,7 @@ function Body(props){
         
         return (
             <div className='popup'>
-                <Buttonz data={{class:'closeBox', value:'X',}}/>
+                {/* <Buttonz data={{class:'closeBox', value:'X',}}/> */}
                 <button className='closeBox' onClick={()=>changeState({state:"", data: {"createbox": "", "bet": state.data["bet"]}, currsubState: {"createbox":state.currsubState["createbox"], "bet":""}})}>
                     X
                 </button>
