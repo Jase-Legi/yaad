@@ -2257,7 +2257,7 @@ function Body(props){
         }
         
         let contractZone = (state.currsubState["createbox"] === "RandomGenerator-RandomGenerated")?true:false;
-        let spanBox2  = (contractZone)?<span> Click the <span style={{color:"yellow", display:"contents"}}>"+"</span> to upload custom smart contract with <span style={{color:"white", display:"contents", verticalAlign: "middle", lineHeight: "normal",}}>".sol"</span> extention.<span style={{fontSize:"8px", fontWeight:"normal", color:"#999"}}>If you do not have one click submit, the project will be created using our contract template.</span></span>:<span> Click the "+" to create new layer </span>;
+        let spanBox2  = (contractZone)?<span> Click the Yaad button to view contract. <span style={{color:"white", display:"contents", verticalAlign: "middle", lineHeight: "normal",}}>".sol"</span> extention.<span style={{fontSize:"8px", fontWeight:"normal", color:"#999"}}>If you do not have one click submit, the project will be created using our contract template.</span></span>:<span> Click the "+" to create new layer </span>;
         let mainBox = (contractZone)?<ThaSamples/>:<GenLayers/>;
         let daBattn = (contractZone)?<Buttonz data={{class:"LayerUpldBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />:"";
 
