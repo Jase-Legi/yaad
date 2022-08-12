@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "./imports721.sol";
+import "./imports.721.sol";
 
 /// @custom:security-contact legidesigns@gmail.com
 contract Yaad is ERC721, ERC721URIStorage, Ownable {
@@ -27,7 +27,7 @@ contract Yaad is ERC721, ERC721URIStorage, Ownable {
     }
 
     function safeMint(address to, string memory uri) internal {
-        uint256 tokenId = _tokenIdCounter.currentggggggggg();
+        uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
@@ -60,4 +60,3 @@ contract Yaad is ERC721, ERC721URIStorage, Ownable {
         return super.tokenURI(tokenId);
     }
 }
-

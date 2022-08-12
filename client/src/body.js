@@ -1,8 +1,10 @@
 import './body.css'; import './App.css'; import './header.css';
 
 import {useState, memo, useEffect} from 'react'; //useRef
-import {providers, Contract, utils, BigNumber} from "ethers";
+import {providers, Contract, utils, BigNumber, ContractFactory} from "ethers";
 import yaadtokenAbi from './contracts/ABIs/Yaad.json';
+import yaadcontract from './contracts/yaad.json';
+
 // import nftTokenImportsSol from './contracts/imports.721.sol'
 // import nftTokenSol from './contracts/yaad.sol';
 // import { createCanvas, loadImage, canvas } from 'canvas';
@@ -262,33 +264,65 @@ function Body(props){
 
     let deployArray =[];
 
-    const deployContract = async (contract_array, contratct_name)=>{
-        console.log(`arrayy:::>> ${contract_array[0]}`)
-        let contractOptions = {
-            language: "Solidity", 
-            sources: {
-              'all.sol': {
-                // content: readFileSync('contracts/all.sol', 'utf8')
-              },
-              'legi.sol': {
-                // content: readFileSync('contracts/legi.sol', 'utf8')
-              }
-            },
-            settings:{
-              outputSelection:{
-                '*': {
-                  '*':['*']
-                }
-              }
-            }
-        };
+    const deployContract = async (e)=>{
+        const ele = e.target;
+        ele.classList.add("inactive");
 
-        for(let l = 0; l < contract_array.length; l++){
-
-            let readContract = await readFile(contract_array[l]);
+        showLoading();
+        
+        try {
             
-            deployArray.push({name:'', contract: readContract})
+            let contractOptions = {
+                language: "Solidity", 
+                sources: {
+                'yaad.sol': {
+                    content: yaadcontract.contract
+                }
+                },
+                settings:{
+                outputSelection:{
+                    '*': {
+                    '*':['*']
+                    }
+                }
+                }
+            };
+            
+            // const compiledContract = await JSON.parse( compile(contractOptions) );
+
+            // const abi = compiledContract.contracts['yaad.sol']['Yaad'].abi;
+            // const bytecode = compiledContract.contracts['yaad.sol']['Yaad'].evm.bytecode.object;
+            
+            let contractData = new FormData();
+            contractData.append('contractJSON', JSON.stringify(contractOptions));
+            const compiledContract = await fetch(baseServerUri+"api/compileContract", {method:'POST',body: contractData} ).then((theresponse)=>theresponse.json()).then((compiled)=>compiled);
+            const abi = compiledContract.abi;
+            const bytecode = compiledContract.bytecode;
+            
+            const factory = new ContractFactory(abi, bytecode, signer);
+            const nftToken = await factory.deploy(state.data.createbox.coll_name, state.data.createbox.coll_symbol);
+            
+            console.log(`nft address: ${nftToken.address}`);
+            
+            contractData = null;
+            temp_state.data.createbox["contract_address"] = nftToken.address;
+            // https://ropsten.etherscan.io/address/0xeb8E5a5656FDd6eB4bbDfa6F730966f29cDD1A33#events
+            hideLoading();
+            ele.classList.remove("inactive");
+
+            return;
+
+        } catch (error) {
+            console.log(`error: ${error}`)
+            return false;
         }
+
+        // for(let l = 0; l < contract_array.length; l++){
+
+        //     let readContract = await readFile(contract_array[l]);
+            
+        //     deployArray.push({name:'', contract: readContract})
+        // }
     };
     
     const clickCreate = async (dastate)=>{
@@ -304,7 +338,7 @@ function Body(props){
         hideLoading();
         return changeState(dastate);
     }
-
+    
     Array.prototype.swapItems = function(a, b){
         this[a] = this.splice(b, 1, this[a])[0];
         return this;
@@ -1521,8 +1555,13 @@ function Body(props){
                 payload.append('samples', JSON.stringify(thesamples));
 
                 let saveCollection = await fetch(`${baseServerUri}api/savenftcollection`, {method:'POST', body:payload}).then((response)=>response.json()).then((ress)=>ress);
+
                 payload = null;
                 
+                let newcontract = JSON.parse(JSON.stringify(yaadcontract));
+                
+                newcontract.name = state.data["createbox"].coll_name;
+                temp_state.data["createbox"]["contracts"] = [yaadcontract];
                 return changeState(temp_state);
             
             };
@@ -2130,19 +2169,17 @@ function Body(props){
             if(state.data["createbox"].layers){
 
                 if(state.data["createbox"].layers.length > 1){
-                    let bgBox = ''; 
+
+                    let Bgwords = (state.data["createbox"].background)?'GENERATE':'Choose Backgrounds';
                     
-                    let Bgwords = 'Choose Backgrounds';
-
-                    if(state.data["createbox"].background){
-                        let indxx = 0; let bgstack = [];
-
-                        function TheBGs(){
+                    function TheBGs(){
+                        if(state.data["createbox"].background){
+                            let indxx = 0; let bgstack = [];
 
                             while (indxx < state.data["createbox"].background.length){
                             
                                 bgstack.push(<div key={indxx} className='BG_UpldContentBx'><div className='BG_UpldContent'><img style={{backgroundColor: '#222'}} src={baseServerUri+state.data["createbox"].background[indxx].path} alt=''/><DaInput data={{class:'traitName', typeClass:'BG_traitNameBox', typeId:"BGName_"+indxx, placeholder:state.data["createbox"].background[indxx].trait_name, type:'text', name:'name', onChange:setBGTrait }}/></div><Buttonz data={{class:"delBG", id:'deleteBGUpldContentBx_'+indxx, value:'X', func: delBG}} /></div>)
-    
+
                                 indxx++;
                             }
 
@@ -2152,11 +2189,6 @@ function Body(props){
                                         <span style={{display:'table-cell'}}>
                                             Backgrounds
                                         </span>
-                                        <div className='edit-bg-box'>
-                                            <div className='edit-bg-img-div' >
-                                                <img src='./edit icon.svg' alt='Edit layer' />
-                                            </div>
-                                        </div>
                                     </div>
                                     {bgstack}
                                     <div className='LayerbgAdd' id='selectBG' style={{zIndex:"1"}} onClick={handleAddBGLayer}>
@@ -2167,16 +2199,12 @@ function Body(props){
                                     </div>
                                 </div>
                             )
-
                         }
-
-                        bgBox = <TheBGs/>;
-                        Bgwords = 'GENERATE';
                     }
-                        
+
                     return(
                         <div style={{marginTop:"40px"}}>
-                            {bgBox}
+                            <TheBGs/>
                             <Buttonz data={{class:"LayerUpldBttn", id:(state.data["createbox"].background)?'Generate-pfp':'selectBG', value: Bgwords, func: (state.data["createbox"].background)?generate_it:handleAddLayer}} />
                         </div>
                     )
@@ -2285,7 +2313,7 @@ function Body(props){
                     }
                     
                     let contractDetailsBox = (typeof(activeContract) === "number")? <div className='contract-box'><div id='contract-container' className='contract-container'><h2>{state.data["createbox"]["contracts"][activeContract].name}.sol</h2><span>{state.data["createbox"]["contracts"][activeContract].contract}</span></div><Buttonz data={{class:"expand-contract", id: "expand_contract", value: "expand", func:expandContractBox}} /></div>:"";
-                    
+                    // console.log(JSON.stringify(state.data["createbox"]["contracts"]));
                     return(
                         <div>
                             <div id="pissingD"> {boxxcont} </div>
@@ -2372,7 +2400,7 @@ function Body(props){
                         <div>
                             <div className='LayerGenBox'>
                                 <BoxTitle data={{class:'generatorRightPanelTitle', type:'span', text:(contractZone)?'Contract':'LAYERS'}}/>
-                                {/* <ContractBox/> */}
+                                <ContractBox/>
                                 <div className='LayerUpldBoxTitle'> {spanBox2} </div>
                                 <AddLayer/>
                                 <div id='LayerGenBoxx'> {mainBox} </div>
