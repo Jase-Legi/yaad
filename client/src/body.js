@@ -5,16 +5,12 @@ import {providers, Contract, utils, BigNumber, ContractFactory} from "ethers";
 import yaadtokenAbi from './contracts/ABIs/Yaad.json';
 import yaadcontract from './contracts/yaad.json';
 
-// import nftTokenImportsSol from './contracts/imports.721.sol'
-// import nftTokenSol from './contracts/yaad.sol';
-// import { createCanvas, loadImage, canvas } from 'canvas';
-// import legitokenAbi from './contracts/Legi.json';
 const pumpum = window.location.host;
 
 let baseServerUri = (pumpum  === "localhost:3000")?'./':'https://yaadlabs.herokuapp.com/';
 let provider = null, signer = null;
 let intervalId;
-
+let currentNetwork;
 if (typeof window.ethereum !== 'undefined') {
     
     // console.log('MetaMask is installed!');
@@ -22,11 +18,14 @@ if (typeof window.ethereum !== 'undefined') {
     provider = new providers.Web3Provider(window.ethereum, "any");
     
     provider.on("network", (newNetwork, oldNetwork) => {
+        currentNetwork = newNetwork;
+        console.log(`new Network: ${JSON.stringify(newNetwork)}`);
+
         // When a Provider makes its initial connection, it emits a "network"
         // event with a null oldNetwork along with the newNetwork. So, if the
         // oldNetwork exists, it represents a changing network
         if (oldNetwork) {
-            console.log(`oldNetwork: ${JSON.stringify(oldNetwork)}`)
+            console.log(`oldNetwork: ${JSON.stringify(oldNetwork)}`);
             // window.location = '/';
         }
     });
@@ -82,10 +81,8 @@ const addFantomNetwork = ()=>{
     }) 
 }
 
-// const tokenAddy = '0x5dDebA6Ef00bD641c198174dC153767C40a6C743';
-// const contract__addy = '0xcFDEb297643119cd58dB2e48BE7aBEA09B44F0D3';
 const etherTokenAddy = '0x0DDfBF1E76F37eE8545595ce6AD772d5a326B33A';
-console.log(`yaad token: ${yaadtokenAbi}`);
+
 const etherToken = new Contract(etherTokenAddy, yaadtokenAbi.abi, signer);
 
 document.addEventListener('submit', (e)=>{
@@ -287,13 +284,13 @@ function Body(props){
                 }
                 }
             };
-            
-            // const compiledContract = await JSON.parse( compile(contractOptions) );
 
-            // const abi = compiledContract.contracts['yaad.sol']['Yaad'].abi;
-            // const bytecode = compiledContract.contracts['yaad.sol']['Yaad'].evm.bytecode.object;
-            
+            let connected = await iswalletConnected();
+            if(connected === false){
+                return false;
+            }
             let contractData = new FormData();
+
             contractData.append('contractJSON', JSON.stringify(contractOptions));
             const compiledContract = await fetch(baseServerUri+"api/compileContract", {method:'POST',body: contractData} ).then((theresponse)=>theresponse.json()).then((compiled)=>compiled);
             const abi = compiledContract.abi;
@@ -305,24 +302,21 @@ function Body(props){
             console.log(`nft address: ${nftToken.address}`);
             
             contractData = null;
+
+            temp_state = JSON.parse(JSON.stringify(state));
             temp_state.data.createbox["contract_address"] = nftToken.address;
+            temp_state.data.createbox["contract_link"] = `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`;
+            temp_state.currsubState.createbox = "RandomGenerator-ContractDeployed";
+            // {"name":"ropsten","chainId":3,"ensAddress":"0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"}
+            // currentNetwork
             // https://ropsten.etherscan.io/address/0xeb8E5a5656FDd6eB4bbDfa6F730966f29cDD1A33#events
             hideLoading();
             ele.classList.remove("inactive");
-
-            return;
-
+            changeState(temp_state);
         } catch (error) {
             console.log(`error: ${error}`)
             return false;
         }
-
-        // for(let l = 0; l < contract_array.length; l++){
-
-        //     let readContract = await readFile(contract_array[l]);
-            
-        //     deployArray.push({name:'', contract: readContract})
-        // }
     };
     
     const clickCreate = async (dastate)=>{
@@ -570,7 +564,7 @@ function Body(props){
                     </form>
                 </label>
                 <div>
-                    <label className='popupBoxEle' id='generateNFT_Coll' onClick={()=>changeState({state:"RandomGenerator", data: { "createbox": "", "bet": state.data["bet"]}, currsubState: {"createbox":"RandomGenerator-LayerOptions", "bet":state.currsubState["bet"]}})}>
+                    <label className='popupBoxEle' id='generateNFT_Coll' onClick={()=>changeState({state:"RandomGenerator", data: { "createbox": "", "bet": state.data["bet"]}, currsubState: {"createbox":"RandomGenerator-LayerOptions-CollectionName", "bet":state.currsubState["bet"]}})}>
                         <span> PFP Project </span>
                     </label>                    
                 </div>
@@ -786,7 +780,7 @@ function Body(props){
                 
                 temp_state.data["createbox"] = state.data["createbox"];
 
-                temp_state.currsubState["createbox"] = (e.target.getAttribute('id') === 'selectBG')?"RandomGenerator-LayerOptions-BG-Upld":"RandomGenerator-LayerOptions";
+                temp_state.currsubState["createbox"] = (e.target.getAttribute('id') === 'selectBG')?"RandomGenerator-LayerOptions-BG-Upld":"RandomGenerator-LayerOptions-AddLayer";
                 
                 e.target.setAttribute('id','generatePfps');
 
@@ -801,7 +795,7 @@ function Body(props){
 
                 temp_state = JSON.parse(JSON.stringify(state));
 
-                temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions";
+                temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions-AddLayer";
                 
                 // e.target.setAttribute('id','generatePfps')
                 // if(document.getElementById('popup')){
@@ -868,7 +862,7 @@ function Body(props){
 
                 temp_state.data["createbox"] = {coll_name : collname.value.trim(), coll_symbol : collname.value.trim()[0]+collname.value.trim()[collname.value.trim().length - 1], layers:[]}
                 
-                temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions"
+                temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions-AddLayer"
 
                 e.target.classList.remove('inactive');
                 
@@ -979,7 +973,7 @@ function Body(props){
             .then((piss)=>{
                 if(piss.error){
 
-                    temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions";
+                    temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions-AddLayer";
 
                     console.log("an error occured!");
 
@@ -1605,118 +1599,41 @@ function Body(props){
             await readAndShowFiles(elemFiles);
             console.log(`default contract: ${JSON.stringify(state.data["createbox"]["defaultContract"])}`);
         };
-        
-        function LayerOptions (){
-            hideLoading();
+
+        const collNameBox = (e)=>{
+            const ele = e.target;
+            const the_value = ele.value.trim();
             
-            if(state.currsubState["createbox"].split('-')[1] === "LayerOptions" && state.currsubState["createbox"] === "RandomGenerator-LayerOptions" && state.data["createbox"].coll_name){
-                return(
-                    <div className='popup'>
-                        <Buttonz data={{class:"closeBox", id:'', value:'X', func: closeLayerOptionsBox}} />
-                        <div className='LayerOptionsBox'>
-                            <DaInput data={(typeof(state.temp_value) === "number")?{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.createbox.layers[state.temp_value].name}:{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:'Enter layer name.'}}/>
-                            <div className='LayerUpldBox'>
-                                <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:'Click the "+" to upload layer files'}}/>
-                                <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:'multi_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/>
-                                <label className='LayerUpldBttn' htmlFor='multi_asset'>
-                                    <img src='./plus.svg' alt='' />
-                                </label>
-                                <div className='layerContentBox'></div>
-                            </div>
-                            <Buttonz data={{class:"LayerUpldBttn", id:'', value: (typeof(state.temp_value) === "number")?'Add':'Create', func: handleAddLayerUpld}} />
-                        </div>
-                    </div>
-                )
-            }else if(state.currsubState["createbox"].split('-')[1] === "LayerOptions" && state.currsubState["createbox"] === "RandomGenerator-LayerOptions"){
-                return(
-                    <div className='popup'>
-                        <Buttonz data={{class:"closeBox", id:'proj_name_closer', value:'X', func: closeLayerOptionsBox}} />
-                        <div className='LayerOptionsBox'>
-                            <DaInput data={{typeClass:'LayerName', typeId:'CollName', placeholder:'Enter NFT project name.', type:'text', name:'name'}}/>
-                            <Buttonz data={{class:"LayerUpldBttn", id:'Collection_name_button', value: 'NEXT', func: handleAddLayerUpld}} />
-                        </div>
-                    </div>
-                );
-            }else if(state.currsubState["createbox"].split('-')[1] === "LayerOptions" && state.currsubState["createbox"] === "RandomGenerator-LayerOptions-BG-Upld"){
-                return(
-                    <div className='popup'>
-                        <Buttonz data={{class:"closeBox", id:'', value:'X', func: closeLayerOptionsBox}} />
-                        <div className='LayerOptionsBox'>
-                            <BoxTitle data={{class:'LayerUpldBoxTitle', type:'h2', typeClass: 'whiteColor', text:'Background Images'}}/>
-                            <div className='LayerUpldBox'>
-                                <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:'Click the "+" to upload background files.'}}/>
-                                <DaInput data={{typeClass:'LayerName', typeId:'multi_asset', name:'bg_asset', type:'file', multiple:'multiple', hidden:true, accept:'image/*', onChange:handleAddLayerUpld}}/>
-                                <label className='LayerUpldBttn' htmlFor='multi_asset'>
-                                    <img src='./plus.svg' alt='' />
-                                </label>
-                                <div className='layerContentBox'></div>
-                            </div>
-                            <Buttonz data={{class:"LayerUpldBttn", id:'bg_upld', value: 'No Background', func: handleAddLayerUpld}} />
-                        </div>
-                    </div>
-                )
-            }else if( state.currsubState["createbox"].split('-')[1] === "LayerOptions" && state.currsubState["createbox"] === "RandomGenerator-LayerOptions-Edit-Layer" ){
-                return(
-                    <div className='popup'>
-                        <Buttonz data={{class:"closeBox", id:'', value:'X', func: closeLayerOptionsBox}} />
-                        <div className='LayerOptionsBox'>
-                            <div className='LayerUpldBox'>
-                                <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:'Rename layer.'}}/>
-                                <input type="text" id='multi_asset' name='bg_asset' multiple="multiple" accept="image/*" style={{opacity:100, zIndex:1}} onChange={handleAddLayerUpld} hidden/>
-                                <Buttonz data={{class:'renameLayerBttn', id:'bg_upld', value:'Rename', func: renameLayer}} />
-                                <div className='layerContentBox'></div>
-                            </div>
-                            <div>
-                                <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Delete ${state.data.createbox.layers[state.temp_value.index].name} layer.`}}/>
-                                <Buttonz data={{class:"delLayerBttn", id:'bg_upld', value: 'DELETE', func: delLayer}} />
-                            </div>
-                        </div>
-                    </div>
-                )
-            }else if( state.currsubState["createbox"].split('-')[1] === "LayerOptions" && state.currsubState["createbox"] === "RandomGenerator-LayerOptions-Del-Layer" ){
-                return(
-                    <div className='popup'>
-                        <Buttonz data={{class:"closeBox", id:'', value:'X', func: closeLayerOptionsBox}} />
-                        <div className='LayerOptionsBox'>
-                            <div className='LayerUpldBox'>
-                                <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Select yes to delete ${state.data.createbox.layers[state.temp_value.index].name} layer.`}}/>
-                                <Buttonz data={{class:'delLayerBttn', id:'', value:'YES', func: delLayer}} />
-                                <Buttonz data={{class:'nodelLayerBttn', id:'', value:'NO', func: backToPrev}} />
-                            </div>
-                        </div>
-                    </div>
-                )
-            }else if(state.currsubState["createbox"].split('-')[1] === "LayerOptions" && state.currsubState["createbox"] === "RandomGenerator-LayerOptions-Rename_Layer"){
-                return(
-                    <div className='popup'>
-                        <Buttonz data={{class:"closeBox", id:'', value: 'X', func: closeLayerOptionsBox}} />
-                        <div className='LayerOptionsBox'>
-                            <div className='LayerUpldBox'>
-                                <BoxTitle data={{class:'LayerUpldBoxTitle', type:'h2', text:'Change layer name.'}}/>
-                                <DaInput data={{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:state.data["createbox"].layers[state.temp_value.index].name, onChange:renameLayer}}/>
-                                <Buttonz data={{class:"nodelLayerBttn", id:'', value:'SUBMIT', func: closeLayerOptionsBox}} />
-                            </div>
-                        </div>
-                    </div>
-                )
-            }else if(state.currsubState["createbox"].split('-')[1] === "LayerOptions" && state.currsubState["createbox"] === "RandomGenerator-LayerOptions-ContractName"){
-                return(
-                    <div className='popup'>
-                        <Buttonz data={{class:"closeBox", id:'contractState', value: 'X', func: closeLayerOptionsBox}} />
-                        <div className='LayerOptionsBox'>
-                            <div className='LayerUpldBox'>
-                                <BoxTitle data={{class:'LayerUpldBoxTitle', type:'h2', text:'enter contract name.'}}/>
-                                <DaInput data={{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:"Enter main contract name.", onChange:nullFunc}}/>
-                                <ContractBox/>
-                                <Buttonz data={{class:"nodelLayerBttn", id:'', value:'SUBMIT', func: nullFunc}} />
-                            </div>
-                        </div>
-                    </div>
-                )
-            }else{
-                return('')
+            if(the_value === "") return false;
+
+            if(ele.getAttribute("id") === "contractSymbol"){
+                
+                if(ele.value.length > 4 || !isAplhaNumeric(ele.value)){
+                    ele.value = state.data["createbox"].coll_symbol;
+                    return;
+                }
+
+                state.data["createbox"]["coll_symbol"] = the_value;
+                ele.setAttribute("placeholder", the_value)
+
+                // ele.value = "";
+
+            }else if(ele.getAttribute("id") === "contractName"){
+                // console.log(`_ charcode: ${"_".charCodeAt(0)}`);
+
+                if(contractZone){
+                    ele.value = state.data["createbox"].coll_name;
+                    return;
+                }
+
+                state.data["createbox"].coll_name = the_value;
+                ele.setAttribute("placeholder", the_value);
+                // ele.value = "";
+
             }
         }
+
+        
 
         function GenLayers (){
 
@@ -2186,9 +2103,7 @@ function Body(props){
                             return(
                                 <div>
                                     <div className='bg_title_box'>
-                                        <span style={{display:'table-cell'}}>
-                                            Backgrounds
-                                        </span>
+                                        <span style={{display:'table-cell'}}> Backgrounds </span>
                                     </div>
                                     {bgstack}
                                     <div className='LayerbgAdd' id='selectBG' style={{zIndex:"1"}} onClick={handleAddBGLayer}>
@@ -2257,15 +2172,13 @@ function Body(props){
         }
         
         let contractZone = (state.currsubState["createbox"] === "RandomGenerator-RandomGenerated")?true:false;
-        let spanBox2  = (contractZone)?<span> Click the Yaad button to view contract. <span style={{color:"white", display:"contents", verticalAlign: "middle", lineHeight: "normal",}}>".sol"</span> extention.<span style={{fontSize:"8px", fontWeight:"normal", color:"#999"}}>If you do not have one click submit, the project will be created using our contract template.</span></span>:<span> Click the "+" to create new layer </span>;
-        let mainBox = (contractZone)?<ThaSamples/>:<GenLayers/>;
-        let daBattn = (contractZone)?<Buttonz data={{class:"LayerUpldBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />:"";
+        
 
         function ContractBox(){
             let boxxcont = [];
             
             if(state.data["createbox"]["contracts"]){
-                if(state.data["createbox"]["contracts"].length > 0){
+                if(state.data["createbox"]["contracts"].length > 0 && state.currsubState.createbox !== "RandomGenerator-ContractDeployed"){
 
                     const expandContractBox  = (e)=>{
                         let ele = e.target;
@@ -2329,89 +2242,135 @@ function Body(props){
         }
 
         function AddLayer(){
-            if (!contractZone) {
+            return(
+                <div style={{marginBottom:"20px"}}>
+                    <input type="file" id={(contractZone)?'project_contract':'single_asset'} name={(contractZone)?'project_contract':'single_asset'} accept={(contractZone)?'*':"image/*"} multiple="multiple" style={{opacity:100, zIndex:1}} onChange={(contractZone)?handleSol:state.data["createbox"].func} hidden/>
+                                        
+                    <label className='generatorRightPanelAddNewLayer' onClick={(!contractZone)?handleAddLayer:nullFunc} htmlFor={(contractZone)?'project_contract':''} >
+                        <h1>+</h1>
+                    </label>
+                </div>
+            )
+        }
+
+        let currentSubState, LayerUpldBoxTitle, mainBox, daBattn, addLayer;
+
+        switch (state.currsubState.createbox) {
+            case "RandomGenerator-ContractDeployed":
+                break;
+            case "RandomGenerator-RandomGenerated":
+                daBattn = <Buttonz data={{class:"LayerUpldBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />;
+                mainBox = <div id='LayerGenBoxx'><ThaSamples/></div>;
+                LayerUpldBoxTitle = <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the Yaad button to view the NFT contract.${<span style={{fontSize:"8px", fontWeight:"normal", color:"#999"}}>If you already have a contract, click "Already have a contract" to link your contract.</span>}` }}/>
+                break;
+            case "RandomGenerator-LayerOptions-CollectionName":
+                currentSubState = <div>
+                    <DaInput data={{typeClass:'LayerName', typeId:'CollName', placeholder:'Enter NFT project name.', type:'text', name:'name'}}/>
+                    <Buttonz data={{class:"LayerUpldBttn", id:'Collection_name_button', value: 'NEXT', func: handleAddLayerUpld}} />
+                </div>
+                break;
+            case "RandomGenerator-LayerOptions-AddLayer":
+                currentSubState = <div className='LayerUpldBox'>
+                    <DaInput data={(typeof(state.temp_value) === "number")?{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.createbox.layers[state.temp_value].name}:{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:'Enter layer name.'}}/>
+                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" to upload layer files${(typeof(state.temp_value) === "number")?" for: "+state.data.createbox.layers[state.temp_value].name:""}.`}}/>
+                    <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:'multi_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/>
+                    <label className='LayerUpldBttn' htmlFor='multi_asset'> <img src='./plus.svg' alt='' /> </label>
+                    <div className='layerContentBox'></div>
+                    <Buttonz data={{class:"LayerUpldBttn", id:'', value: (typeof(state.temp_value) === "number")?'Add':'Create', func: handleAddLayerUpld}} />
+                </div>;
+                break;
+            case "RandomGenerator-LayerOptions-BG-Upld":
+                currentSubState = <div className='LayerUpldBox'>
+                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:'Click the "+" to upload background files.'}}/>
+                    <DaInput data={{typeClass:'LayerName', typeId:'multi_asset', name:'bg_asset', type:'file', multiple:'multiple', hidden:true, accept:'image/*', onChange:handleAddLayerUpld}}/>
+                    <label className='LayerUpldBttn' htmlFor='multi_asset'> <img src='./plus.svg' alt='' /> </label>
+                    <div className='layerContentBox'></div>
+                    <Buttonz data={{class:"LayerUpldBttn", id:'bg_upld', value: 'No Background', func: handleAddLayerUpld}} />
+                </div>;
+                break;
+            case "RandomGenerator-LayerOptions-Edit-Layer":
+                currentSubState = <div className='LayerUpldBox'>
+                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:'Rename layer.'}}/>
+                    <input type="text" id='multi_asset' name='bg_asset' multiple="multiple" accept="image/*" style={{opacity:100, zIndex:1}} onChange={handleAddLayerUpld} hidden/>
+                    <Buttonz data={{class:'renameLayerBttn', id:'bg_upld', value:'Rename', func: renameLayer}} />
+                    <div className='layerContentBox'></div>
+                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Delete ${state.data.createbox.layers[state.temp_value.index].name} layer.`}}/>
+                    <Buttonz data={{class:"delLayerBttn", id:'bg_upld', value: 'DELETE', func: delLayer}} />
+                </div>
+                break;
+            case "RandomGenerator-LayerOptions-Rename_Layer":
+                currentSubState = <div className='LayerUpldBox'>
+                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'h2', text:'Change layer name.'}}/>
+                    <DaInput data={{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:state.data["createbox"].layers[state.temp_value.index].name, onChange:renameLayer}}/>
+                    <Buttonz data={{class:"nodelLayerBttn", id:'', value:'SUBMIT', func: closeLayerOptionsBox}} />
+                </div>
+                break;
+            case "RandomGenerator-LayerOptions-Del-Layer":
+                currentSubState = <div className='LayerUpldBox'>
+                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Select yes to delete ${state.data.createbox.layers[state.temp_value.index].name} layer.`}}/>
+                    <Buttonz data={{class:'delLayerBttn', id:'', value:'YES', func: delLayer}} />
+                    <Buttonz data={{class:'nodelLayerBttn', id:'', value:'NO', func: backToPrev}} />
+                </div>
+                break;
+            case "RandomGenerator-LayerOptions-ContractName":
+                currentSubState = <div className='LayerUpldBox'>
+                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'h2', text:'enter contract name.'}}/>
+                    <DaInput data={{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:"Enter main contract name.", onChange:nullFunc}}/>
+                    <ContractBox/>
+                    <Buttonz data={{class:"nodelLayerBttn", id:'', value:'SUBMIT', func: nullFunc}} />
+                </div>
+                break;
+            default:
+                currentSubState = "";
+                addLayer = <AddLayer/>
+                mainBox = <div id='LayerGenBoxx'><GenLayers/></div>;
+                LayerUpldBoxTitle = <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" to create new layer`}}/>;
+                break;
+        }
+
+        function MainContainer (){
+            hideLoading();
+            if(!currentSubState){
                 return(
-                    <div style={{marginBottom:"20px"}}>
-                        <input type="file" id={(contractZone)?'project_contract':'single_asset'} name={(contractZone)?'project_contract':'single_asset'} accept={(contractZone)?'*':"image/*"} multiple="multiple" style={{opacity:100, zIndex:1}} onChange={(contractZone)?handleSol:state.data["createbox"].func} hidden/>
-                                            
-                        <label className='generatorRightPanelAddNewLayer' onClick={(!contractZone)?handleAddLayer:nullFunc} htmlFor={(contractZone)?'project_contract':''} >
-                            <h1>+</h1>
-                        </label>
-                    </div>
-                )                
-            } else {
-                return'';
-            }
-        }
-
-        const collNameBox = (e)=>{
-            const ele = e.target;
-            const the_value = ele.value.trim();
-            
-            if(the_value === "") return false;
-
-            if(ele.getAttribute("id") === "contractSymbol"){
-                
-                if(ele.value.length > 4 || !isAplhaNumeric(ele.value)){
-                    ele.value = state.data["createbox"].coll_symbol;
-                    return;
-                }
-
-                state.data["createbox"]["coll_symbol"] = the_value;
-                ele.setAttribute("placeholder", the_value)
-
-                // ele.value = "";
-
-            }else if(ele.getAttribute("id") === "contractName"){
-                // console.log(`_ charcode: ${"_".charCodeAt(0)}`);
-
-                if(contractZone){
-                    ele.value = state.data["createbox"].coll_name;
-                    return;
-                }
-
-                state.data["createbox"].coll_name = the_value;
-                ele.setAttribute("placeholder", the_value);
-                // ele.value = "";
-
-            }
-        }
-
-        if(document.getElementById('popup')) document.getElementById('popup').scrollTop = scrollPosition;
-
-        return(
-            <div>
-                <div className='popupdark' id='popup'>
-                    <button className='closeBox' onClick={()=> changeState(homeSate) }>
-                        X
-                    </button>
-                    <div className='RandomGenerator'>
-                        {/* <BoxTitle data={{class:'coll_name_box', type:'h2', text:state.data["createbox"].coll_name }}/> */}
-                        <div className='coll_name_box'>
-                            <div className='contractNameContainer'>
-                                <BoxTitle data={{class:'contractNameText', type:'span', text:'Name:'}}/>
-                                <DaInput data={{ type:'text', typeId:'contractName', typeClass:'contractName', placeholder:state["data"].createbox.coll_name, onChange:collNameBox}}/>
+                    <div className='popupdark' id='popup'>
+                        <button className='closeBox' onClick={()=> changeState(homeSate) }>X</button>
+                        <div className='RandomGenerator'>
+                            <div className='coll_name_box'>
+                                <div className='contractNameContainer'>
+                                    <BoxTitle data={{class:'contractNameText', type:'span', text:'Name:'}}/>
+                                    <DaInput data={{ type:'text', typeId:'contractName', typeClass:'contractName', placeholder:state["data"].createbox.coll_name, onChange:collNameBox}}/>
+                                </div>
+                                <div className='contractSymbolContainer'>
+                                    <BoxTitle data={{class:'contractSymbolText', type:'span', text:'Symbol:'}}/>
+                                    <DaInput data={{ type:'text', typeId:'contractSymbol', typeClass:'contractSymbol', placeholder:(state["data"].createbox.coll_symbol)?state["data"].createbox.coll_symbol:'', onChange:collNameBox}}/>
+                                </div>
                             </div>
-                            <div className='contractSymbolContainer'>
-                                <BoxTitle data={{class:'contractSymbolText', type:'span', text:'Symbol:'}}/>
-                                <DaInput data={{ type:'text', typeId:'contractSymbol', typeClass:'contractSymbol', placeholder:(state["data"].createbox.coll_symbol)?state["data"].createbox.coll_symbol:'', onChange:collNameBox}}/>
-                            </div>
-                        </div>
-                        <div>
                             <div className='LayerGenBox'>
                                 <BoxTitle data={{class:'generatorRightPanelTitle', type:'span', text:(contractZone)?'Contract':'LAYERS'}}/>
                                 <ContractBox/>
-                                <div className='LayerUpldBoxTitle'> {spanBox2} </div>
-                                <AddLayer/>
-                                <div id='LayerGenBoxx'> {mainBox} </div>
+                                {LayerUpldBoxTitle}
+                                {addLayer}
+                                {mainBox}
                                 {daBattn}
                                 <Dabttn/>
                             </div>
                         </div>
                     </div>
-                </div>
-                <LayerOptions/>
-            </div>
+                )
+            }else{
+                return(
+                    <div className='popup'>
+                        <Buttonz data={{class:"closeBox", id:'', value:'X', func: closeLayerOptionsBox}} />
+                        <div className='LayerOptionsBox'>{currentSubState}</div>
+                    </div>
+                )
+            }
+        }
+        
+        if(document.getElementById('popup')) document.getElementById('popup').scrollTop = scrollPosition;
+
+        return(
+            <MainContainer/>
         )
     };
 

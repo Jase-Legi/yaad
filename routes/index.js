@@ -660,7 +660,7 @@ index.post('/addGenlayer',(req,res, next)=>{
     }
 });
 
-index.post('/readcontracts',(req,res, next)=>{
+index.post('/readcontracts',(req, res, next)=>{
     try {
         
         checkDirectory(upldDir);
@@ -733,7 +733,7 @@ index.post('/readcontracts',(req,res, next)=>{
     }
 });
 
-index.post('/delLayer', multer().none(), (req,res, next)=>{
+index.post('/delLayer', multer().none(), (req, res, next)=>{
     try {
         
         checkDirectory(upldDir);
@@ -760,7 +760,7 @@ index.post('/delLayer', multer().none(), (req,res, next)=>{
     }
 });
 
-index.post('/delTrait', multer().none(), (req,res, next)=>{
+index.post('/delTrait', multer().none(), (req, res, next)=>{
     const address =(req.body.account)?req.body.account:null;
     const trait = JSON.parse(req.body.value);
     const indx = req.body.index;
@@ -787,6 +787,15 @@ index.post('/delTrait', multer().none(), (req,res, next)=>{
 
         return res.json({error,});
     }
+});
+
+index.post('/compileContract', multer().none(), (req, res, next)=>{
+    const contractJSON = req.body.contractJSON;
+
+    const compiledContract = JSON.parse(solc.compile(contractJSON));
+    const abi = compiledContract.contracts['yaad.sol']['Yaad'].abi;
+    const bytecode = compiledContract.contracts['yaad.sol']['Yaad'].evm.bytecode.object;
+    res.json({abi, bytecode,})
 });
 
 function shuffle(arra1) {
@@ -840,7 +849,7 @@ const getCases = (input, output, n, da_path)=>{
 
 };
 
-let loopNpin = async (req,res, next)=>{
+let loopNpin = async (req, res, next)=>{
     let collName = JSON.parse(req.body.data).coll_name;
     let layers = JSON.parse(req.body.data).layers;
     // let backgrounds = JSON.parse(req.body.data).background;
@@ -914,7 +923,7 @@ let loopNpin = async (req,res, next)=>{
     
 };
 
-let loopNpinBackground = async (req,res, next)=>{
+let loopNpinBackground = async (req, res, next)=>{
     
     let backgrounds = JSON.parse(req.body.data).background;
     
@@ -945,7 +954,7 @@ let loopNpinBackground = async (req,res, next)=>{
     
 }
 
-const mapTraitTypes = async (req,res, next) => {
+const mapTraitTypes = async (req, res, next) => {
     let comboz = res.locals.comboz;
 
     let len = 0; let traitTypes = []; let ego;
@@ -971,7 +980,7 @@ const mapTraitTypes = async (req,res, next) => {
     return next();
 };
 
-const traitTypesPushNA = async (req,res, next) => {
+const traitTypesPushNA = async (req, res, next) => {
 
     let traitTypes = res.locals.traitTypes;
     let endo = 0;
@@ -1220,7 +1229,7 @@ const updateDBAgain = async (req, res, next)=>{
     return next();
 };
 
-const generate = async (req,res, next) => {
+const generate = async (req, res, next) => {
     
     const cap = 5;
     let cap_it = (cap)?cap:traitTypes.length;
@@ -1339,57 +1348,5 @@ const generate = async (req,res, next) => {
 
     return next();
 };
-
-index.post('/generate',  multer().none(), loopNpin, loopNpinBackground, mapTraitTypes, traitTypesPushNA, getAllPossibleCombos, shuffleCombo, insertBackground, pinTheJSON, getSamplesAndClearComboData, updateDB, drawimage,updateDBAgain, (req,res, next)=>{
-    try {
-        let datat = JSON.parse(req.body.data);
-        const account = req.body.account;
-        const collectionName = datat.coll_name;
-        const currentState = req.body.currentState;
-        // let sampleArray = [];
-        let gateway = 'https://gateway.pinata.cloud/ipfs/'; //'https://gateway.pinata.cloud/ipfs/';//'https://ipfs.io/ipfs/'
-
-        let stateCodes = {}; let comboz = []; const priorities = []; let bb = 0;
-
-        // while(bb < datat.layers.length){
-
-        //   priorities.push(datat.layers[bb].name);
-
-        //   bb++;
-            
-        // }
-
-        let layerswapexception = [];
-        let exception_json = {
-            value:null,
-            layer_name:null,
-            index: null,
-            layer_to_swap: null
-        }
-    
-        // drawimage(res.locals.comboz, 1000, 1000, 4).then((samplez) => {
-
-            let boody = (!res.locals.samples)? JSON.stringify(res.locals.errors): JSON.stringify({ message: "success!", code: 7, sampleArray: res.locals.samples, possibleCombos: res.locals.possibleCombos, traitTypes: res.locals.traitTypes, });
-            // res.on('finish')
-            if(res.locals.errors){
-                res.writeHead(503, { 'Content-Length': Buffer.byteLength(boody), 'Content-Type': 'application/json' })
-                .end(boody);
-            }else{
-                res.writeHead(200, { 'Content-Length': Buffer.byteLength(boody), 'Content-Type': 'application/json' })
-                .end(boody);
-            }
-
-            // return res.json(boody);
-        // });
-
-    } catch (error) {
-
-        // console.log(`money shot error: ${error}`);
-        res.writeHead(200, { 'Content-Length': Buffer.byteLength(JSON.stringify({error})), 'Content-Type': 'application/json' })
-                .end(JSON.stringify({error}));
-        // return res.json({error,});
-
-    }
-});
 
 module.exports = index;
