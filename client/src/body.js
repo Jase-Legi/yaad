@@ -1,6 +1,5 @@
 import './body.css'; import './App.css'; import './header.css';
-
-import {useState, memo, useEffect} from 'react'; //useRef
+import {useState, memo, useEffect, useMemo} from 'react'; //useRef
 import {providers, Contract, utils, BigNumber, ContractFactory} from "ethers";
 import yaadtokenAbi from './contracts/ABIs/Yaad.json';
 import yaadcontract from './contracts/yaad.json';
@@ -108,6 +107,7 @@ const getGas = async (trans)=>{
 };
 
 const iswalletConnected = async ()=>{
+    showLoading();
     if(window.ethereum){
         
         const accounts = await window.ethereum.request({method:'eth_accounts'});
@@ -122,15 +122,19 @@ const iswalletConnected = async ()=>{
             // const account = accounts[0];
             // console.log(`account:: ${accounts[0]}`);
             // onConnect(account)
+            hideLoading();
             return accounts[0];
         }else{
             const accounts = await window.ethereum.request({method: "eth_requestAccounts"}).catch((error)=>false);
             // console.log(`account__: ${accounts}`);
+            hideLoading();
             return (accounts === false)? false : accounts[0];
         }
     }else{
 
         alert("get metamask");
+        hideLoading();
+
         return false;
 
     }
@@ -182,7 +186,6 @@ function LoadingBox(props){
 const isAplhaNumeric = (str)=>{
     
     for (let ind = 0; ind < str.length; ind++) {
-        const element = str[ind];
         let  get_code = str.charCodeAt(ind);
 
         if (!(get_code > 47 && get_code < 58) && /* numeric (0-9) */ !(get_code > 64 && get_code < 91) && /* upper alpha (A-Z)*/ !(get_code > 96 && get_code < 123) && !(get_code === 95)) /* lower alpha (a-z)*/ {
@@ -190,22 +193,145 @@ const isAplhaNumeric = (str)=>{
         }
     }
     return true;
-}
+};
+
+const nullFunc = (e)=>{
+    // e.preventDefault();
+    return;
+};
+
+function BoxTitle(props){
+    let textType;
+    switch (props.data.type) {
+        case 'h2':
+            textType = <h2 className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</h2>;
+            break;
+        case 'span':
+            textType = <span className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</span>;
+            break;
+        case 'h1':
+            textType = <h1 className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</h1>;
+            break;
+        case 'h3':
+                textType = <h3 className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</h3>;
+                break;
+        case 'h4':
+            textType = <h4 className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</h4>;
+            break;
+        default:
+            break;
+    }
+    return ( <div className={(props.data.class)?props.data.class:''} id={(props.data.id)?props.data.id:''}> {textType} </div> )
+};
+
+function Buttonz(props){
+    return (
+        <button className={(props.data.class)?props.data.class:''} id={(props.data.id)?props.data.id:''} style={{zIndex: 11}} onClick={props.data.func}>
+            {props.data.value}
+        </button>
+    )
+};
+
+function DaInput(props){
+    let daInput;
+    
+    if(props.data.hidden){
+
+        switch (props.data.type) {
+            case 'file':
+                daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''} name={(props.data.name)?props.data.name:''} readOnly={(props.data.readOnly)?props.data.readOnly:false} type='file' multiple={(props.data.multiple)?props.data.multiple:''} accept={(props.data.accept)?props.data.accept:'*'} onChange={(props.data.onChange)?props.data.onChange:nullFunc} hidden/>;
+                break;
+            case 'textarea':
+                daInput = <textarea className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} value={props.data.value} readOnly={(props.data.readOnly)?props.data.readOnly:false} onChange={(props.data.onChange)?props.data.onChange:nullFunc} hidden></textarea>;
+                break;
+            case 'text':
+                daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} type='text' value={props.data.value} readOnly={(props.data.readOnly)?props.data.readOnly:false} onChange={(props.data.onChange)?(e)=>props.data.onChange(e):nullFunc} hidden/>;
+                break;
+            default:
+                break;
+        }
+        return(daInput);
+    }else{
+        switch (props.data.type) {
+            case 'file':
+                daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''} name={(props.data.name)?props.data.name:''} type='file' multiple={(props.data.multiple)?props.data.multiple:''} accept={(props.data.accept)?props.data.accept:'*'} onChange={(props.data.onChange)?props.data.onChange:nullFunc} onClick={(props.data.onClick)?(e)=>props.data.onClick:nullFunc}/>;
+                break;
+            case 'textarea':
+                daInput = <textarea className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} onChange={(props.data.onChange)?props.data.onChange:nullFunc} onClick={(props.data.onClick)?(e)=>props.data.onClick(e):nullFunc} ></textarea>;
+                break;
+            case 'text':
+                daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} type='text' placeholder={(props.data.placeholder)?props.data.placeholder:''} onChange={(props.data.onChange)?props.data.onChange:nullFunc} onClick={(props.data.onClick)?(e)=>props.data.onClick(e):nullFunc}/>;
+                break;
+            case 'number':
+                daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} type='number' placeholder={(props.data.placeholder)?props.data.placeholder:''} onChange={(props.data.onChange)?props.data.onChange:nullFunc} onClick={(props.data.onClick)?(e)=>props.data.onClick(e):nullFunc} />;
+                break;
+            default:
+                break;
+        }
+        return( <div className={(props.data.class)?props.data.class:''} id={(props.data.id)?props.data.id:''}> {daInput} </div> );
+    }
+};
 
 function Body(props){
+    const homeSate = {state:"", data:{ createbox :{coll_name : null, coll_symbol : null, layers:[] }, bet:""}, currsubState:{ createbox:"createbox", bet:"bet"}};
 
-    // hideLoading();
-    const homeSate = {state:"", data:{"createbox":"", "bet":""}, currsubState:{"createbox":"createbox", "bet":"bet"}};
-
-    let temp_state = {state:"", data:{"createbox": "", "bet":""}, currsubState:{"createbox":"createbox", "bet":"bet"}};
+    let temp_state = {state:"", data:{ createbox : {coll_name : null, coll_symbol : null, layers:[] }, bet:""}, currsubState:{ createbox:"createbox", bet:"bet"}};
 
     let [state, setState] = useState(homeSate);
+
+    const defaultErrorStack = {intervalId:null, formdata:[], substate:null, messages:[], timeOutEnded: null};
+
+    let [errStacks, setErrStacks] = useState(defaultErrorStack);
 
     let [editState, setEditState] = useState(null);
 
     let [scrollPosition, setScrollPosition] = useState(0);
 
     const ipfs_gateway = 'https://gateway.pinata.cloud/ipfs/';
+
+    const changeStack = (val, setname)=>{
+        showLoading();
+        let mounted = true;
+        if(mounted){
+            setname((prev)=>(val));
+        }
+        hideLoading();
+        return ()=> mounted = false;
+    }
+
+    useEffect(() => {
+        return ()=>{
+            if(errStacks.substate !== state.currsubState.createbox && errStacks.substate != null){
+                setErrStacks((prev)=>defaultErrorStack)
+            }
+        }
+    }, [state.state, state.currsubState.createbox, defaultErrorStack])
+
+    function MsgBox(){       
+
+        const removeMsgBox = (interval, callback)=>{
+
+            if((errStacks.intervalId === null) && (errStacks.messages.length > 0)){
+                setErrStacks((prev)=>({...prev, timeOutEnded:false}));
+    
+                errStacks.intervalId = setTimeout(()=>{
+                    callback();
+                }, interval)
+            }
+        }
+
+        if(errStacks.messages?.length > 0 && errStacks.substate === state.currsubState.createbox){
+            let bbx = [];
+            errStacks.messages.forEach((element, i) => {
+                let eleID = errStacks.formdata[i]?.id;
+                let the_ele = document.getElementById(eleID);
+                bbx.push(
+                    <div key={i} className='errorbox' id='errorbox' style={{top: parseInt(the_ele.getBoundingClientRect().bottom)-5+"px", left: parseInt(the_ele.getBoundingClientRect().left)+15+"px"}}><BoxTitle data={{text:`${element}`, type:"span", class:"errorboxEle" }}/><Buttonz data={{value:"X", class:"error-box-closer", func:()=>{setErrStacks((prev)=>(defaultErrorStack))} }} /> </div>
+                )
+            });
+            return ( <div> {bbx} </div> )
+        }
+    }
     
     const changeState = (val, scrollval)=>{
         showLoading();
@@ -258,9 +384,7 @@ function Body(props){
         console.log(isconnected);
         return isconnected;
     }
-
-    let deployArray =[];
-
+    
     const deployContract = async (e)=>{
         const ele = e.target;
         ele.classList.add("inactive");
@@ -338,103 +462,6 @@ function Body(props){
         return this;
     }
 
-    function MsgBox(){
-        if(state.data.createbox.msg){
-            return (
-                <div className='errorbox'>
-                    <span className='errortextt'>
-                        {state.data.createbox.msg}
-                    </span>
-                    <span className='closeErrorbox' onClick={hideErrBox}>
-                        x
-                    </span>
-                </div>
-            )
-        }else{
-            return('')
-        }
-    }
-
-    const hideErrBox = (e)=>{
-
-        e.target.parentNode.classList.add("inactive");
-    
-    }
-    
-    const nullFunc = (e)=>{
-        // e.preventDefault();
-        return;
-    };
-
-    function Buttonz(props){
-        return (
-            <button className={(props.data.class)?props.data.class:''} id={(props.data.id)?props.data.id:''} style={{zIndex: 11}} onClick={props.data.func}>
-                {props.data.value}
-            </button>
-        )
-    }
-
-    function DaInput(props){
-        let daInput;
-        
-        if(props.data.hidden){
-
-            switch (props.data.type) {
-                case 'file':
-                    daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''} name={(props.data.name)?props.data.name:''} readOnly={(props.data.readOnly)?props.data.readOnly:false} type='file' multiple={(props.data.multiple)?props.data.multiple:''} accept={(props.data.accept)?props.data.accept:'*'} onChange={(props.data.onChange)?props.data.onChange:nullFunc} hidden/>;
-                    break;
-                case 'textarea':
-                    daInput = <textarea className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} value={props.data.value} readOnly={(props.data.readOnly)?props.data.readOnly:false} onChange={(props.data.onChange)?props.data.onChange:nullFunc} hidden></textarea>;
-                    break;
-                case 'text':
-                    daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} type='text' value={props.data.value} readOnly={(props.data.readOnly)?props.data.readOnly:false} onChange={(props.data.onChange)?props.data.onChange:nullFunc} hidden/>;
-                    break;
-                default:
-                    break;
-            }
-            return(daInput);
-        }else{
-            switch (props.data.type) {
-                case 'file':
-                    daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''} name={(props.data.name)?props.data.name:''} type='file' multiple={(props.data.multiple)?props.data.multiple:''} accept={(props.data.accept)?props.data.accept:'*'} onChange={(props.data.onChange)?props.data.onChange:nullFunc} onClick={(props.data.onClick)?props.data.onClick:nullFunc}/>;
-                    break;
-                case 'textarea':
-                    daInput = <textarea className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} onChange={(props.data.onChange)?props.data.onChange:nullFunc} onClick={(props.data.onClick)?props.data.onClick:nullFunc} ></textarea>;
-                    break;
-                case 'text':
-                    daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} type='text' placeholder={(props.data.placeholder)?props.data.placeholder:''} onChange={(props.data.onChange)?props.data.onChange:nullFunc} onClick={(props.data.onClick)?props.data.onClick:nullFunc}/>;
-                    break;
-                case 'number':
-                    daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} type='number' placeholder={(props.data.placeholder)?props.data.placeholder:''} onChange={(props.data.onChange)?props.data.onChange:nullFunc} onClick={(props.data.onClick)?props.data.onClick:nullFunc} />;
-                    break;
-                default:
-                    break;
-            }
-            return( <div className={(props.data.class)?props.data.class:''} id={(props.data.id)?props.data.id:''}> {daInput} </div> );
-        }
-    }
-
-    function BoxTitle(props){
-        let textType;
-        switch (props.data.type) {
-            case 'h2':
-                textType = <h2 className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</h2>;
-                break;
-            case 'span':
-                textType = <span className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</span>;
-                break;
-            case 'h1':
-                textType = <h1 className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</h1>;
-                break;
-            case 'h3':
-                    textType = <h3 className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</h3>;
-                    break;
-            default:
-                break;
-        }
-        return ( <div className={(props.data.class)?props.data.class:''} id={(props.data.id)?props.data.id:''}> {textType} </div> )
-    }
-
     function Header(){
         function SearchBar(){
             return (
@@ -504,11 +531,6 @@ function Body(props){
     }
 
     function handlesingleUload(e){
-
-        const form = e.target.parentNode;
-        
-        // let coll_box = doc.getElementById('collectionBox');
-
         let body = new FormData();
 
         let newItemName = (state.data["createbox"].filename)?state.data["createbox"].filename.split('.'):null;
@@ -525,9 +547,7 @@ function Body(props){
         
         }
         
-        // console.log(e.target.files[0].name.split('.')[e.target.files[0].name.split('.').length-1])
-        
-        fetch(form.action, {method:form.method, body, })
+        fetch(`${baseServerUri}api/upldSingle`, {method:"POST", body, })
         .then((res)=> res.json())
         .then((piss)=>{
 
@@ -557,16 +577,20 @@ function Body(props){
                 <button className='closeBox' onClick={()=> changeState({state:"", data:{"createbox":"", "bet":""}, currsubState:{"createbox":"createbox", "bet":"bet"}})} >
                     X
                 </button>
-                <label className='popupBoxEle' id='createBox'>
-                    <span>Single NFT</span>
+                {/* <Buttonz data={{class:"popupBoxEle", id:"createBox", value:"Single NFT", onClick:}} /> */}
+                {/* <input type="file" id='single_asset' name='single_asset' accept="image/*,video/*,audio/*,webgl/*" style={{opacity:100, zIndex:1}} onChange={handlesingleUload} hidden/> */}
+                <DaInput data={{ typeId:'single_asset', name:'single_asset', type:'file', hidden:true, accept:'image/*,video/*,audio/*,webgl/*', onChange:handlesingleUload}}/>
+
+                <button className='popupBoxEle' id='createBox' onClick={()=>{document.getElementById('single_asset').click();}}>Single NFT</button>
+
+                {/* <label className='popupBoxEle' id='createBoxdd'> */}
+                    {/* <span>Single NFT</span> */}
                     <form action={baseServerUri+'api/upldSingle'} method="post" id='createSingleAssetUpld' encType="multipart/form-data">
-                        <input type="file" id='single_asset' name='single_asset' accept="image/*,video/*,audio/*,webgl/*" style={{opacity:100, zIndex:1}} onChange={handlesingleUload} hidden/>
                     </form>
-                </label>
+                {/* </label> */}
+                {/* <Buttonz data={{class:"popupBoxEle", id:"generateNFT_Coll", value:"PFP Project", onClick:changeState({state:"RandomGenerator", data: { "createbox": "", "bet": state.data["bet"]}, currsubState: {"createbox":"RandomGenerator-LayerOptions-CollectionName", "bet":state.currsubState["bet"]}})}} /> */}
                 <div>
-                    <label className='popupBoxEle' id='generateNFT_Coll' onClick={()=>changeState({state:"RandomGenerator", data: { "createbox": "", "bet": state.data["bet"]}, currsubState: {"createbox":"RandomGenerator-LayerOptions-CollectionName", "bet":state.currsubState["bet"]}})}>
-                        <span> PFP Project </span>
-                    </label>                    
+                    <button className='popupBoxEle' id='generateNFT_Coll' onClick={()=>setState((prev)=>({...prev, state: "RandomGenerator"}))}>PFP Project</button>
                 </div>
             </div>
         )
@@ -742,7 +766,6 @@ function Body(props){
                     X
                 </button>
                 <div className='popupBox'>
-                    <MsgBox/>
                     <SingleNFTForm state={state}/>
                 </div>
             </div>
@@ -764,7 +787,7 @@ function Body(props){
 
         };
 
-        function handleAddLayer(e){
+        const handleAddLayer = (e)=>{
 
             showLoading();
             let homeScrollValue = null;
@@ -772,11 +795,6 @@ function Body(props){
             if(e){
                 e.preventDefault();
                 console.log(`class:::: ${e.target.getAttribute('class')}`);
-
-                // e.target.classList.add('inactive');
-                // let ele = e.target;
-
-                // let eleindex = [].indexOf.call(document.getElementsByClassName(ele.getAttribute('class')), ele);
                 
                 temp_state.data["createbox"] = state.data["createbox"];
 
@@ -797,10 +815,6 @@ function Body(props){
 
                 temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions-AddLayer";
                 
-                // e.target.setAttribute('id','generatePfps')
-                // if(document.getElementById('popup')){
-                //     homeScrollValue = document.getElementById('popup').scrollTop()
-                // }
                 return changeState(temp_state);
             }
         }
@@ -808,8 +822,6 @@ function Body(props){
         const handleAddLayerUpld = async (e)=>{
             temp_state = JSON.parse(JSON.stringify(state));
             e.target.classList.add('inactive');
-
-            // console.log(`files: ${JSON.stringify(state)} `);
             
             showLoading();
             
@@ -848,29 +860,45 @@ function Body(props){
 
                 let collname = document.getElementById("CollName");
 
-                if( collname.value === "" ){
-                    temp_state.data["createbox"] = ""
-                
-                    e.target.classList.remove('inactive');
+                if( isAplhaNumeric(collname.value.trim()) === false){
+                    temp_state.data["createbox"] = null;
+                    // setErrStacks((prev)=>({...prev, substate: state.currsubState.createbox}));
+                    errStacks.substate =  state.currsubState.createbox;
+                    errStacks.formdata = [{id: "CollName", value: collname.value.trim()}];
+                    // setErrStacks((prev)=>({...prev, formdata:[{id: "CollName", value: collname.value.trim()}]}));
+                    setErrStacks((prev)=>({...prev, messages:["Only letters & Numbers allowed!"]}));
                     
-                    console.log("enter stuff!");
+                    e.target.classList.remove('inactive');
 
+                    hideLoading();
+
+                    return false;
+                }
+
+                if( collname.value.trim() === "" ){
+                    errStacks.substate =  state.currsubState.createbox;
+                    errStacks.formdata = [{id: "CollName", value: collname.value.trim()}];
+                    // setErrStacks((prev)=>({...prev, substate: state.currsubState.createbox}));
+                    // setErrStacks((prev)=>({...prev, formdata:[{id: "CollName", value: collname.value.trim()}]}));
+                    e.target.classList.remove('inactive');
+                    setErrStacks((prev)=>({...prev, messages:["This field cannot be empty!"]}));
                     hideLoading();
                     
                     return false;
                 }
+                console.log(`state now: ${JSON.stringify(state.data)}`)
 
-                temp_state.data["createbox"] = {coll_name : collname.value.trim(), coll_symbol : collname.value.trim()[0]+collname.value.trim()[collname.value.trim().length - 1], layers:[]}
-                
-                temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions-AddLayer"
-
+                // state.data["createbox"] = {coll_name : collname.value.trim(), coll_symbol : collname.value.trim()[0]+collname.value.trim()[collname.value.trim().length - 1], layers:[]}
+                state.data.createbox.coll_name = collname.value.trim();
+                // temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions-AddLayer";
+                // hideLoading();
                 e.target.classList.remove('inactive');
-                
-                console.log("enter stuff!");
+                setState((prev)=>({...prev.currsubState, createbox: "RandomGenerator-LayerOptions-AddLayer"}));
+                // setState((prev)=>({...prev.currsubState,createbox:"RandomGenerator-LayerOptions-AddLayer"}));
 
                 hideLoading();
                 
-                return changeState(temp_state);
+                // return changeState(temp_state);
             }
 
             if(e.target.getAttribute('type') === 'file' && e.target.getAttribute('name') === 'multi_asset'){
@@ -878,14 +906,13 @@ function Body(props){
                 let n = 0;
                 document.getElementsByClassName('layerContentBox')[0].innerHTML = "";
 
-                while(n < e.target.files.length){ 
-                    // console.log(e.target.files[0]);
+                while( n < e.target.files.length ) {
                     const para = document.createElement("div");
                     
                     // Append text node to the p element:
                     para.innerHTML = "<img src="+URL.createObjectURL(e.target.files[n])+" />";
     
-                    para.classList.add('LayerUpldContent');
+                    para.classList.add('LayerUpldContentBox');
 
                     document.getElementsByClassName('layerContentBox')[0].appendChild(para);
                     
@@ -893,12 +920,11 @@ function Body(props){
                 }
 
                 da_files = e.target.files;
-                e.target.classList.remove('inactive');
+                // e.target.classList.remove('inactive');
 
                 hideLoading();
                 
                 return;
-            
             }
 
             let layerName;
@@ -910,8 +936,36 @@ function Body(props){
                 if(layerName === "" || document.getElementById("multi_asset").files.length < 1){
                     
                     e.target.classList.remove('inactive');
+    
+                    let msgstack = [], fromdata = [];
+
+                    if(layerName === "") {
+                        // msgstack.push("This field cannot be empty!");
+                        // fromdata.push({id: "LayerName", value: ""});
+                        temp_state.data["createbox"] = null;
+                        errStacks.substate =  state.currsubState.createbox;
+                        let dt = new Date();
+                        errStacks.formdata = [{id: "LayerName", value: ""}];
+                        // errStacks.messages = [`${dt.getTime()}: This field cannot be empty!`];
+                        // setErrStacks((prev)=>({...prev, substate: state.currsubState.createbox}));
+                        // setErrStacks((prev)=>({...prev, formdata:[{id: "LayerName", value: ""}]}));
+                        errStacks.messages = [`This field cannot be empty!`];
+                        setErrStacks((prev)=>({...prev, timeOutEnded:false}));
+                        // errStacks.timeOutEnded = false;
+                        // changeStack({}, setErrStacks)
+                    }
+
+                    // if(document.getElementById("multi_asset").files.length < 1) {
+                        console.log(`values: ${document.getElementById("multi_asset").value}`)
+                        console.log(`files: ${JSON.stringify(document.getElementById("multi_asset").files[0])}`)
+                        // msgstack.push("Please upload a file!");
+                    // }
+
+
+                    // fromdata.push({id: "multi_asset", value: document.getElementById("multi_asset").files});
                     
-                    console.log("enter stuff!");
+
+                    console.log(`enter stuff!: ${JSON.stringify(errStacks)}`);
 
                     hideLoading();
                     
@@ -921,6 +975,7 @@ function Body(props){
             }
 
             let conntd = await iswalletConnected();
+            showLoading();
             
             console.log(`conntd: ${conntd}`);
             
@@ -1224,10 +1279,10 @@ function Body(props){
             hideLoading();
         };
 
-        const checkWorkInterval = (uurl, interval, callback)=>{
+        const checkWorkInterval = (url, interval, callback)=>{
             if(!intervalId){
                 intervalId = setInterval(() => {
-                    fetch(uurl)
+                    fetch(url)
                     .then((res)=>res.json())
                     .then((rez)=>{
                         console.log(`da res:: ${rez}`)
@@ -1243,10 +1298,9 @@ function Body(props){
         }
         
         const generate_it = async (e)=>{
-            showLoading();
             
             let conntd = await iswalletConnected();
-            
+            showLoading();
             if(conntd === false){
                 
                 console.log(`Wallet not connected!!`);
@@ -1632,9 +1686,7 @@ function Body(props){
 
             }
         }
-
         
-
         function GenLayers (){
 
             function Layerz(props){
@@ -1976,17 +2028,19 @@ function Body(props){
                         <div className='deatail-edit-trait-box inactive'>
                             <DetailEditTraitBox/>
                             <div className='LayerUpldContentBxAdd' onClick={()=>{state.temp_value = props.obj.key; handleAddLayer();}}>
-                                <div className='LayerUpldContentadd'>
-                                    <img src="./plus.svg" alt=""/>
+                                <div className='LayerUpldContentContainerAdd'>
+                                    <div className='LayerUpldContentadd'>
+                                        <img src="./plus.svg" alt=""/>
+                                    </div>
+                                    <BoxTitle data={{text:"Add image.", class:"addHeaderText", type:"h4"}} />
                                 </div>
-                                <span style={{color:"#666", float: "left", fontWeight:"700"}}> Add image. </span>
                             </div>
                         </div>
                     </div>
                 )
             }
 
-            if(state.currsubState["createbox"] === "RandomGenerator" && state.data["createbox"].layers ){
+            if(state.currsubState["createbox"] === "RandomGenerator" && state.data.createbox.layers ){
 
                 if(state.data["createbox"].layers.length > 0){
                     
@@ -2004,11 +2058,11 @@ function Body(props){
                 }else{
                     return('')
                 }
-            }else{
-                return('')
             }
         }
-
+        
+        console.log(`char code for space: ${" ".charCodeAt(0)}`);
+        
         function Dabttn(){
             const setBGTrait = (e)=>{
 
@@ -2082,98 +2136,91 @@ function Body(props){
                     changeState(temp_State);
                 })
             };
-
-            if(state.data["createbox"].layers){
-
-                if(state.data["createbox"].layers.length > 1){
-
-                    let Bgwords = (state.data["createbox"].background)?'GENERATE':'Choose Backgrounds';
-                    
-                    function TheBGs(){
-                        if(state.data["createbox"].background){
-                            let indxx = 0; let bgstack = [];
-
-                            while (indxx < state.data["createbox"].background.length){
-                            
-                                bgstack.push(<div key={indxx} className='BG_UpldContentBx'><div className='BG_UpldContent'><img style={{backgroundColor: '#222'}} src={baseServerUri+state.data["createbox"].background[indxx].path} alt=''/><DaInput data={{class:'traitName', typeClass:'BG_traitNameBox', typeId:"BGName_"+indxx, placeholder:state.data["createbox"].background[indxx].trait_name, type:'text', name:'name', onChange:setBGTrait }}/></div><Buttonz data={{class:"delBG", id:'deleteBGUpldContentBx_'+indxx, value:'X', func: delBG}} /></div>)
-
-                                indxx++;
-                            }
-
-                            return(
-                                <div>
-                                    <div className='bg_title_box'>
-                                        <span style={{display:'table-cell'}}> Backgrounds </span>
-                                    </div>
-                                    {bgstack}
-                                    <div className='LayerbgAdd' id='selectBG' style={{zIndex:"1"}} onClick={handleAddBGLayer}>
-                                        <div className='LayerbgContentadd'>
-                                            <img src="./plus.svg" alt=""/>
-                                        </div>
-                                        <span style={{color:"#666", float: "left", fontSize: "8px", fontWeight:"500"}}> Add image. </span>
-                                    </div>
-                                </div>
-                            )
-                        }
-                    }
-
-                    return(
-                        <div style={{marginTop:"40px"}}>
-                            <TheBGs/>
-                            <Buttonz data={{class:"LayerUpldBttn", id:(state.data["createbox"].background)?'Generate-pfp':'selectBG', value: Bgwords, func: (state.data["createbox"].background)?generate_it:handleAddLayer}} />
-                        </div>
-                    )
-                }else{
-                    return("")
-                }
-            }
             
+            if(state.data["createbox"].layers?.length > 1){
+
+                let Bgwords = (state.data["createbox"].background)?'GENERATE':'Choose Backgrounds';
+                
+                function TheBGs(){
+                    if(state.data["createbox"].background){
+                        let indxx = 0; let bgstack = [];
+
+                        while (indxx < state.data["createbox"].background.length){
+                        
+                            bgstack.push(<div key={indxx} className='BG_UpldContentBx'><div className='BG_UpldContent'><img style={{backgroundColor: '#222'}} src={baseServerUri+state.data["createbox"].background[indxx].path} alt=''/><DaInput data={{class:'traitName', typeClass:'BG_traitNameBox', typeId:"BGName_"+indxx, placeholder:state.data["createbox"].background[indxx].trait_name, type:'text', name:'name', onChange:setBGTrait }}/></div><Buttonz data={{class:"delBG", id:'deleteBGUpldContentBx_'+indxx, value:'X', func: delBG}} /></div>)
+
+                            indxx++;
+                        }
+
+                        return(
+                            <div>
+                                <div className='bg_title_box'>
+                                    <span style={{display:'table-cell'}}> Backgrounds </span>
+                                </div>
+                                {bgstack}
+                                <div className='LayerbgAdd' id='selectBG' style={{zIndex:"1"}} onClick={handleAddBGLayer}>
+                                    <div className='LayerbgContentadd'>
+                                        <img src="./plus.svg" alt=""/>
+                                    </div>
+                                    <span style={{color:"#666", float: "left", fontSize: "8px", fontWeight:"500", width:'100%', margin:'0px auto'}}> Add image. </span>
+                                </div>
+                            </div>
+                        )
+                    }
+                }
+
+                return(
+                    <div style={{marginTop:"40px"}}>
+                        <TheBGs/>
+                        <Buttonz data={{class:"LayerUpldBttn", id:(state.data["createbox"].background)?'Generate-pfp':'selectBG', value: Bgwords, func: (state.data["createbox"].background)?generate_it:handleAddLayer}} />
+                    </div>
+                )
+            }
         }
         
         let activeContract = state.data["createbox"]["activeContract"], conDetails = {};
         
         useEffect(()=>{
-            console.log(`pisssing: ${activeContract}`);
+            // console.log(`pisssing: ${activeContract}`);
             if(state.data["createbox"]["contracts"] && activeContract){
                 conDetails["name"] = state.data["createbox"]["contracts"][activeContract].name;
                 conDetails["contract"] = state.data["createbox"]["contracts"][activeContract].contract;
             }
             
-        },[activeContract, conDetails])
+        },[activeContract])
 
         function ThaSamples (){
-            if(state.data["createbox"].samples){
-                if(state.data["createbox"].samples.length > 0){
-                        
-                    let sampleLen = 0; let boxcont = [];
-    
-                    while (sampleLen < 4){
-                        boxcont.push(<div key={sampleLen} className='LayerUpldContentBx'><div className='LayerUpldContent'><img className='sampleImage' src={ipfs_gateway+state.data["createbox"].samples[sampleLen].path+"?"+ new Date().getTime()} alt=''/></div></div>)
-                        sampleLen++;
-                    }
+            // if(state.data["createbox"].samples){
+            if(state.data["createbox"].samples?.length > 0){
                     
-                    return(boxcont)
-                }
-            }else{
-                showLoading();
-                checkWorkInterval(`${baseServerUri}progress/generator/${state.data["createbox"].coll_name}`, 45000, (piss)=>{
-                    console.log(`meeehh its done-- ${JSON.stringify(piss)}`);
-                    if(piss !== null && piss !== undefined){
-                        stopCheckWork();
-                        temp_state = JSON.parse(JSON.stringify(state));
-                        temp_state.data["createbox"].samples = piss.data.samples;
-                        changeState(temp_state);
-                        hideLoading();
-                    }
+                let sampleLen = 0; let boxcont = [];
 
-                    return (<span style={{color:"white"}}>homoooo: {piss}</span> )
-                });
+                while (sampleLen < 4){
+                    boxcont.push(<div key={sampleLen} className='LayerUpldContentBx'><div className='LayerUpldContent'><img className='sampleImage' src={ipfs_gateway+state.data["createbox"].samples[sampleLen].path+"?"+ new Date().getTime()} alt=''/></div></div>)
+                    sampleLen++;
+                }
+                
+                return(boxcont)
             }
+            // }else{
+            showLoading();
+            checkWorkInterval(`${baseServerUri}progress/generator/${state.data["createbox"].coll_name}`, 45000, (piss)=>{
+                console.log(`meeehh its done-- ${JSON.stringify(piss)}`);
+                if(piss !== null && piss !== undefined){
+                    stopCheckWork();
+                    temp_state = JSON.parse(JSON.stringify(state));
+                    temp_state.data["createbox"].samples = piss.data.samples;
+                    changeState(temp_state);
+                    hideLoading();
+                }
+
+                return (<span style={{color:"white"}}>homoooo: {piss}</span> )
+            });
+            // }
         }
         
         let contractZone = (state.currsubState["createbox"] === "RandomGenerator-RandomGenerated")?true:false;
         
-
         function ContractBox(){
             let boxxcont = [];
             
@@ -2246,7 +2293,7 @@ function Body(props){
                 <div style={{marginBottom:"20px"}}>
                     <input type="file" id={(contractZone)?'project_contract':'single_asset'} name={(contractZone)?'project_contract':'single_asset'} accept={(contractZone)?'*':"image/*"} multiple="multiple" style={{opacity:100, zIndex:1}} onChange={(contractZone)?handleSol:state.data["createbox"].func} hidden/>
                                         
-                    <label className='generatorRightPanelAddNewLayer' onClick={(!contractZone)?handleAddLayer:nullFunc} htmlFor={(contractZone)?'project_contract':''} >
+                    <label className='generatorRightPanelAddNewLayer' onClick={(e)=>{if(!contractZone){ if(state.data.createbox.coll_name?.length > 0){handleAddLayer(e);}else{setErrStacks((prev)=>({...prev, formdata:[{id:"contractName", value:""}], messages:["Please enter a name first"], substate:state.currsubState.createbox, timeOutEnded:false }))} }else{ return nullFunc(e)}}} htmlFor={(contractZone)?'project_contract':''} >
                         <h1>+</h1>
                     </label>
                 </div>
@@ -2273,8 +2320,9 @@ function Body(props){
                 currentSubState = <div className='LayerUpldBox'>
                     <DaInput data={(typeof(state.temp_value) === "number")?{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.createbox.layers[state.temp_value].name}:{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:'Enter layer name.'}}/>
                     <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" to upload layer files${(typeof(state.temp_value) === "number")?" for: "+state.data.createbox.layers[state.temp_value].name:""}.`}}/>
-                    <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:'multi_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/>
-                    <label className='LayerUpldBttn' htmlFor='multi_asset'> <img src='./plus.svg' alt='' /> </label>
+                    <label className='LayerUpldBttn' htmlFor='multi_asset'> <img src='./plus.svg' alt='' />
+                        <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:'multi_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/>
+                    </label>
                     <div className='layerContentBox'></div>
                     <Buttonz data={{class:"LayerUpldBttn", id:'', value: (typeof(state.temp_value) === "number")?'Add':'Create', func: handleAddLayerUpld}} />
                 </div>;
@@ -2282,8 +2330,9 @@ function Body(props){
             case "RandomGenerator-LayerOptions-BG-Upld":
                 currentSubState = <div className='LayerUpldBox'>
                     <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:'Click the "+" to upload background files.'}}/>
-                    <DaInput data={{typeClass:'LayerName', typeId:'multi_asset', name:'bg_asset', type:'file', multiple:'multiple', hidden:true, accept:'image/*', onChange:handleAddLayerUpld}}/>
-                    <label className='LayerUpldBttn' htmlFor='multi_asset'> <img src='./plus.svg' alt='' /> </label>
+                    <label className='LayerUpldBttn' htmlFor='multi_asset'> <img src='./plus.svg' alt='' />
+                        <DaInput data={{typeClass:'LayerName', typeId:'multi_asset', name:'bg_asset', type:'file', multiple:'multiple', hidden:true, accept:'image/*', onChange:handleAddLayerUpld}}/>
+                    </label>
                     <div className='layerContentBox'></div>
                     <Buttonz data={{class:"LayerUpldBttn", id:'bg_upld', value: 'No Background', func: handleAddLayerUpld}} />
                 </div>;
@@ -2324,7 +2373,7 @@ function Body(props){
                 currentSubState = "";
                 addLayer = <AddLayer/>
                 mainBox = <div id='LayerGenBoxx'><GenLayers/></div>;
-                LayerUpldBoxTitle = <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" to create new layer`}}/>;
+                LayerUpldBoxTitle = <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" icon to create new layer`}}/>;
                 break;
         }
 
@@ -2338,7 +2387,7 @@ function Body(props){
                             <div className='coll_name_box'>
                                 <div className='contractNameContainer'>
                                     <BoxTitle data={{class:'contractNameText', type:'span', text:'Name:'}}/>
-                                    <DaInput data={{ type:'text', typeId:'contractName', typeClass:'contractName', placeholder:state["data"].createbox.coll_name, onChange:collNameBox}}/>
+                                    <DaInput data={{ type:'text', typeId:'contractName', typeClass:'contractName', placeholder:(state["data"].createbox.coll_name)?state["data"].createbox.coll_name:"Enter a project name.", onChange:collNameBox, onClick:(e)=>{e.target.value = state["data"].createbox.coll_name}}}/>
                                 </div>
                                 <div className='contractSymbolContainer'>
                                     <BoxTitle data={{class:'contractSymbolText', type:'span', text:'Symbol:'}}/>
@@ -2369,9 +2418,7 @@ function Body(props){
         
         if(document.getElementById('popup')) document.getElementById('popup').scrollTop = scrollPosition;
 
-        return(
-            <MainContainer/>
-        )
+        return( <div> <MsgBox/> <MainContainer/> </div> )
     };
 
     function Bet (props){
@@ -2395,7 +2442,7 @@ function Body(props){
         return (
             <div className='welcomeBox'>
                 <div className="welcomeBoxElement">
-                    <button className='containerbox' onClick={()=>clickCreate({state:'SelectCreateOption', data: { "createbox": state.data["createbox"], "bet": state.data["bet"] }, currsubState:{"createbox":state.currsubState["createbox"], "bet":state.currsubState["bet"]}})} >
+                    <button className='containerbox' onClick={()=>{ iswalletConnected().then((res)=>(res === false)?"": setState((prev)=>({...prev, state: "SelectCreateOption"})) ) }} >
                         <div className='title'>
                             <h1>
                                 Create
@@ -2452,10 +2499,10 @@ function Body(props){
             currentState =<div className='popupBox'> <SingleNft/> </div>;
             break;
         case 'RandomGenerator':
-            currentState = <div className='popupBox'> <RandomGenerator/> </div>;
+            currentState = <div className='popupBox'> <MsgBox/> <RandomGenerator/> </div>;
             break;
         case 'SelectCreateOption':
-            currentState = <div className='popup'> <div className='popupBox'> <SelectCreateOption state={state}/> </div> </div>;
+            currentState = <div className='popup'> <div className='createOptions'> <SelectCreateOption state={state}/> </div> </div>;
             break;
         default:
             currentState = <div><Header data={state}/>{/* <div style={{padding:"20px", backgroundColor:"yellow", height: "fit-content", margin: "20px 0px"}}> <h1 style={{color:"#000"}}> Create & deploy assets to the blockchain! </h1> <span style={{display: "block", textAlign: "center", fontSize:"15px", fontWeight: "500"}}>-Generate and Store NFT projects(no code needed)<br></br><br></br>-Create NFTs -Create Tokens<br></br></span></div> <button className="enableEthereumButton" onClick={mintNEW}>mint</button> <button className="enableEthereumButton" onClick={iswalletConnected}>Enable Ethereum</button> */}<WelcomeBox/></div>
