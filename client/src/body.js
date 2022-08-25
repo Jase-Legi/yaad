@@ -107,7 +107,6 @@ const getGas = async (trans)=>{
 };
 
 const iswalletConnected = async ()=>{
-    showLoading();
     if(window.ethereum){
         
         const accounts = await window.ethereum.request({method:'eth_accounts'});
@@ -122,19 +121,15 @@ const iswalletConnected = async ()=>{
             // const account = accounts[0];
             // console.log(`account:: ${accounts[0]}`);
             // onConnect(account)
-            hideLoading();
             return accounts[0];
         }else{
             const accounts = await window.ethereum.request({method: "eth_requestAccounts"}).catch((error)=>false);
             // console.log(`account__: ${accounts}`);
-            hideLoading();
             return (accounts === false)? false : accounts[0];
         }
     }else{
 
         alert("get metamask");
-        hideLoading();
-
         return false;
 
     }
@@ -2308,7 +2303,7 @@ function Body(props){
             case "RandomGenerator-RandomGenerated":
                 daBattn = <Buttonz data={{class:"LayerUpldBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />;
                 mainBox = <div id='LayerGenBoxx'><ThaSamples/></div>;
-                LayerUpldBoxTitle = <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the Yaad button to view the NFT contract.${<span style={{fontSize:"8px", fontWeight:"normal", color:"#999"}}>If you already have a contract, click "Already have a contract" to link your contract.</span>}` }}/>
+                LayerUpldBoxTitle = <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the Yaad button to view the NFT contract. \nIf you already have a contract, click "Already have a contract" to link your contract.` }}/>
                 break;
             case "RandomGenerator-LayerOptions-CollectionName":
                 currentSubState = <div>
@@ -2442,7 +2437,7 @@ function Body(props){
         return (
             <div className='welcomeBox'>
                 <div className="welcomeBoxElement">
-                    <button className='containerbox' onClick={()=>{ iswalletConnected().then((res)=>(res === false)?"": setState((prev)=>({...prev, state: "SelectCreateOption"})) ) }} >
+                    <button className='containerbox' onClick={ async()=>{ showLoading(); let conndt = await iswalletConnected(); if(conndt === false){ hideLoading(); }else{ hideLoading(); setState((prev)=>({...prev, state: "SelectCreateOption"})) } }} >
                         <div className='title'>
                             <h1>
                                 Create
