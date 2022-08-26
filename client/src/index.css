@@ -179,7 +179,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
 }
 
 .errorboxEle{
-    padding-left:5px;
+    padding-left:15px;
     height:fit-content;
     width: calc( 100% - 20px ) ;
     color:rgb(255, 255, 255);
@@ -192,7 +192,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     text-align: left;
     font-size: 11px;
     /* border-left: solid 1px rgb(113, 45, 45); */
-    margin: 0px;
+    margin:2.5px 0px auto 0px;
 }
 
 .errorboxEle > span{

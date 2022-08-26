@@ -274,7 +274,7 @@ function Body(props){
 
     let [state, setState] = useState(homeSate);
 
-    const defaultErrorStack = {intervalId:null, formdata:[], substate:null, messages:[], timeOutEnded: null};
+    const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
 
     let [errStacks, setErrStacks] = useState(defaultErrorStack);
 
@@ -302,26 +302,24 @@ function Body(props){
         }
     }, [state.state, state.currsubState.createbox, defaultErrorStack])
 
-    function MsgBox(){       
-
+    function MsgBox(){
         const removeMsgBox = (interval, callback)=>{
 
-            if((errStacks.intervalId === null) && (errStacks.messages.length > 0)){
-                setErrStacks((prev)=>({...prev, timeOutEnded:false}));
-    
+            if((errStacks.intervalId === null) && (errStacks.formdata?.length > 0)){
                 errStacks.intervalId = setTimeout(()=>{
                     callback();
                 }, interval)
             }
         }
 
-        if(errStacks.messages?.length > 0 && errStacks.substate === state.currsubState.createbox){
+        if(errStacks.formdata?.length > 0 && errStacks.substate === state.currsubState.createbox){
             let bbx = [];
-            errStacks.messages.forEach((element, i) => {
+            errStacks.formdata.forEach((element, i) => {
                 let eleID = errStacks.formdata[i]?.id;
+                let the_msg = errStacks.formdata[i]?.msg;
                 let the_ele = document.getElementById(eleID);
                 bbx.push(
-                    <div key={i} className='errorbox' id='errorbox' style={{top: parseInt(the_ele.getBoundingClientRect().bottom)-5+"px", left: parseInt(the_ele.getBoundingClientRect().left)+15+"px"}}><BoxTitle data={{text:`${element}`, type:"span", class:"errorboxEle" }}/><Buttonz data={{value:"X", class:"error-box-closer", func:()=>{setErrStacks((prev)=>(defaultErrorStack))} }} /> </div>
+                    <div key={i} className='errorbox' id='errorbox' style={{top: parseInt(the_ele.getBoundingClientRect().bottom)-5+"px", left: parseInt(the_ele.getBoundingClientRect().left)+15+"px"}}><BoxTitle data={{text:`${the_msg}`, type:"span", class:"errorboxEle" }}/><Buttonz data={{value:"X", class:"error-box-closer", func:()=>{setErrStacks((prev)=>(defaultErrorStack))} }} /> </div>
                 )
             });
             return ( <div> {bbx} </div> )
@@ -583,7 +581,6 @@ function Body(props){
                     <form action={baseServerUri+'api/upldSingle'} method="post" id='createSingleAssetUpld' encType="multipart/form-data">
                     </form>
                 {/* </label> */}
-                {/* <Buttonz data={{class:"popupBoxEle", id:"generateNFT_Coll", value:"PFP Project", onClick:changeState({state:"RandomGenerator", data: { "createbox": "", "bet": state.data["bet"]}, currsubState: {"createbox":"RandomGenerator-LayerOptions-CollectionName", "bet":state.currsubState["bet"]}})}} /> */}
                 <div>
                     <button className='popupBoxEle' id='generateNFT_Coll' onClick={()=>setState((prev)=>({...prev, state: "RandomGenerator"}))}>PFP Project</button>
                 </div>
@@ -815,11 +812,10 @@ function Body(props){
         }
         
         const handleAddLayerUpld = async (e)=>{
+            showLoading();
             temp_state = JSON.parse(JSON.stringify(state));
             e.target.classList.add('inactive');
-            
-            showLoading();
-            
+                        
             e.preventDefault();
             
             if (e.target.getAttribute('name') === 'bg_asset' && e.target.getAttribute('type') === 'file') {
@@ -851,51 +847,6 @@ function Body(props){
                 return;
             }
 
-            if(e.target.getAttribute("id") === "Collection_name_button"){
-
-                let collname = document.getElementById("CollName");
-
-                if( isAplhaNumeric(collname.value.trim()) === false){
-                    temp_state.data["createbox"] = null;
-                    // setErrStacks((prev)=>({...prev, substate: state.currsubState.createbox}));
-                    errStacks.substate =  state.currsubState.createbox;
-                    errStacks.formdata = [{id: "CollName", value: collname.value.trim()}];
-                    // setErrStacks((prev)=>({...prev, formdata:[{id: "CollName", value: collname.value.trim()}]}));
-                    setErrStacks((prev)=>({...prev, messages:["Only letters & Numbers allowed!"]}));
-                    
-                    e.target.classList.remove('inactive');
-
-                    hideLoading();
-
-                    return false;
-                }
-
-                if( collname.value.trim() === "" ){
-                    errStacks.substate =  state.currsubState.createbox;
-                    errStacks.formdata = [{id: "CollName", value: collname.value.trim()}];
-                    // setErrStacks((prev)=>({...prev, substate: state.currsubState.createbox}));
-                    // setErrStacks((prev)=>({...prev, formdata:[{id: "CollName", value: collname.value.trim()}]}));
-                    e.target.classList.remove('inactive');
-                    setErrStacks((prev)=>({...prev, messages:["This field cannot be empty!"]}));
-                    hideLoading();
-                    
-                    return false;
-                }
-                console.log(`state now: ${JSON.stringify(state.data)}`)
-
-                // state.data["createbox"] = {coll_name : collname.value.trim(), coll_symbol : collname.value.trim()[0]+collname.value.trim()[collname.value.trim().length - 1], layers:[]}
-                state.data.createbox.coll_name = collname.value.trim();
-                // temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions-AddLayer";
-                // hideLoading();
-                e.target.classList.remove('inactive');
-                setState((prev)=>({...prev.currsubState, createbox: "RandomGenerator-LayerOptions-AddLayer"}));
-                // setState((prev)=>({...prev.currsubState,createbox:"RandomGenerator-LayerOptions-AddLayer"}));
-
-                hideLoading();
-                
-                // return changeState(temp_state);
-            }
-
             if(e.target.getAttribute('type') === 'file' && e.target.getAttribute('name') === 'multi_asset'){
 
                 let n = 0;
@@ -925,48 +876,21 @@ function Body(props){
             let layerName;
 
             if(e.target.getAttribute("id") !== "bg_upld"){
-
                 layerName = document.getElementById("LayerName").value.trim();
 
                 if(layerName === "" || document.getElementById("multi_asset").files.length < 1){
                     
-                    e.target.classList.remove('inactive');
-    
-                    let msgstack = [], fromdata = [];
-
                     if(layerName === "") {
-                        // msgstack.push("This field cannot be empty!");
-                        // fromdata.push({id: "LayerName", value: ""});
                         temp_state.data["createbox"] = null;
-                        errStacks.substate =  state.currsubState.createbox;
-                        let dt = new Date();
-                        errStacks.formdata = [{id: "LayerName", value: ""}];
-                        // errStacks.messages = [`${dt.getTime()}: This field cannot be empty!`];
-                        // setErrStacks((prev)=>({...prev, substate: state.currsubState.createbox}));
-                        // setErrStacks((prev)=>({...prev, formdata:[{id: "LayerName", value: ""}]}));
-                        errStacks.messages = [`This field cannot be empty!`];
-                        setErrStacks((prev)=>({...prev, timeOutEnded:false}));
-                        // errStacks.timeOutEnded = false;
-                        // changeStack({}, setErrStacks)
+                        setErrStacks((prev)=>({...prev, substate: state.currsubState.createbox, formdata: [{id: "LayerName", value: "", msg:"This field cannot be empty!"}] }));
                     }
 
-                    // if(document.getElementById("multi_asset").files.length < 1) {
-                        console.log(`values: ${document.getElementById("multi_asset").value}`)
-                        console.log(`files: ${JSON.stringify(document.getElementById("multi_asset").files[0])}`)
-                        // msgstack.push("Please upload a file!");
-                    // }
-
-
-                    // fromdata.push({id: "multi_asset", value: document.getElementById("multi_asset").files});
-                    
-
-                    console.log(`enter stuff!: ${JSON.stringify(errStacks)}`);
+                    e.target.classList.remove('inactive');
 
                     hideLoading();
                     
                     return false;
                 }
-
             }
 
             let conntd = await iswalletConnected();
@@ -2288,7 +2212,7 @@ function Body(props){
                 <div style={{marginBottom:"20px"}}>
                     <input type="file" id={(contractZone)?'project_contract':'single_asset'} name={(contractZone)?'project_contract':'single_asset'} accept={(contractZone)?'*':"image/*"} multiple="multiple" style={{opacity:100, zIndex:1}} onChange={(contractZone)?handleSol:state.data["createbox"].func} hidden/>
                                         
-                    <label className='generatorRightPanelAddNewLayer' onClick={(e)=>{if(!contractZone){ if(state.data.createbox.coll_name?.length > 0){handleAddLayer(e);}else{setErrStacks((prev)=>({...prev, formdata:[{id:"contractName", value:""}], messages:["Please enter a name first"], substate:state.currsubState.createbox, timeOutEnded:false }))} }else{ return nullFunc(e)}}} htmlFor={(contractZone)?'project_contract':''} >
+                    <label className='generatorRightPanelAddNewLayer' onClick={(e)=>{if(!contractZone){ if(state.data.createbox.coll_name?.length > 0){handleAddLayer(e);}else{ setErrStacks((prev)=>({...prev, formdata:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState.createbox }) )} }else{ return nullFunc(e)}}} htmlFor={(contractZone)?'project_contract':''} >
                         <h1>+</h1>
                     </label>
                 </div>
@@ -2305,17 +2229,11 @@ function Body(props){
                 mainBox = <div id='LayerGenBoxx'><ThaSamples/></div>;
                 LayerUpldBoxTitle = <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the Yaad button to view the NFT contract. \nIf you already have a contract, click "Already have a contract" to link your contract.` }}/>
                 break;
-            case "RandomGenerator-LayerOptions-CollectionName":
-                currentSubState = <div>
-                    <DaInput data={{typeClass:'LayerName', typeId:'CollName', placeholder:'Enter NFT project name.', type:'text', name:'name'}}/>
-                    <Buttonz data={{class:"LayerUpldBttn", id:'Collection_name_button', value: 'NEXT', func: handleAddLayerUpld}} />
-                </div>
-                break;
             case "RandomGenerator-LayerOptions-AddLayer":
                 currentSubState = <div className='LayerUpldBox'>
                     <DaInput data={(typeof(state.temp_value) === "number")?{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.createbox.layers[state.temp_value].name}:{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:'Enter layer name.'}}/>
                     <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" to upload layer files${(typeof(state.temp_value) === "number")?" for: "+state.data.createbox.layers[state.temp_value].name:""}.`}}/>
-                    <label className='LayerUpldBttn' htmlFor='multi_asset'> <img src='./plus.svg' alt='' />
+                    <label className='LayerUpldBttn' htmlFor='multi_asset' onClick={(e)=>{ let ele_val = document.getElementById("LayerName").value.trim(); if(ele_val === ""){ e.preventDefault(); setErrStacks((prev)=>( {...prev, formdata:[{id:"LayerName", value: document.getElementById("LayerName").value, msg: "Enter a layer name!"}], substate:state.currsubState.createbox, timeOutEnded:false } )) }}}> <img src='./plus.svg' alt='' />
                         <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:'multi_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/>
                     </label>
                     <div className='layerContentBox'></div>
