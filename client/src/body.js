@@ -268,7 +268,7 @@ function DaInput(props){
 };
 
 function Body(props){
-    const homeSate = {state:"", data:{ createbox :{coll_name : null, coll_symbol : null, layers:[] }, bet:""}, currsubState:{ createbox:"createbox", bet:"bet"}};
+    const homeSate = {state:"", data:{ createbox : {coll_name : null, coll_symbol : null, layers:[] }, bet:""}, currsubState:{ createbox:"createbox", bet:"bet"}};
 
     let temp_state = {state:"", data:{ createbox : {coll_name : null, coll_symbol : null, layers:[] }, bet:""}, currsubState:{ createbox:"createbox", bet:"bet"}};
 
@@ -277,8 +277,6 @@ function Body(props){
     const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
 
     let [errStacks, setErrStacks] = useState(defaultErrorStack);
-
-    let [editState, setEditState] = useState(null);
 
     let [scrollPosition, setScrollPosition] = useState(0);
 
@@ -296,22 +294,21 @@ function Body(props){
 
     useEffect(() => {
         return ()=>{
-            if(errStacks.substate !== state.currsubState.createbox && errStacks.substate != null){
-                setErrStacks((prev)=>defaultErrorStack)
-            }
+            // if(errStacks.substate !== state.currsubState.createbox && errStacks.substate != null){
+            setErrStacks((prev)=>({ intervalId:null, formdata:[], substate:null }));
         }
-    }, [state.state, state.currsubState.createbox, defaultErrorStack])
+    }, [state.currsubState.createbox, state.state])
+    
+    const timeOutBox = (interval, callback)=>{
+
+        if((errStacks.intervalId === null) && (errStacks.formdata?.length > 0)){
+            errStacks.intervalId = setTimeout(()=>{
+                callback();
+            }, interval)
+        }
+    }
 
     function MsgBox(){
-        const removeMsgBox = (interval, callback)=>{
-
-            if((errStacks.intervalId === null) && (errStacks.formdata?.length > 0)){
-                errStacks.intervalId = setTimeout(()=>{
-                    callback();
-                }, interval)
-            }
-        }
-
         if(errStacks.formdata?.length > 0 && errStacks.substate === state.currsubState.createbox){
             let bbx = [];
             errStacks.formdata.forEach((element, i) => {
@@ -337,14 +334,6 @@ function Body(props){
         }
 
         hideLoading();
-        return ()=> mounted = false;
-    }
-
-    const changeEditState = (val)=>{
-        let mounted = true;
-        if(mounted){
-            setEditState(val);
-        }
         return ()=> mounted = false;
     }
 
@@ -1780,24 +1769,13 @@ function Body(props){
                         mouseUpFired = true;
         
                         if(event.target.getAttribute('class') === 'generatorRightPanelLayerBox'){
-                            // console.log(`gun dung piss`);
-                            // console.log(`init index: ${initDivIndx}, new index:: ${newindex}`);
-                            
                             let tempArray = state.data["createbox"].layers.splice(initDivIndx,1)[0];
-        
-                            // console.log(`tempArray::: ${tempArray}`);
-                            
+
                             state.data["createbox"].layers.splice(newindex, 0, tempArray);
                             
                             hideLoading();
 
-                            changeState(state, document.getElementById('popup').scrollTop())
-                            
-                            // if(editState === null){
-                            //     changeEditState(undefined);
-                            // }else{
-                            //     changeEditState(null);                           
-                            // }
+                            changeState(state, document.getElementById('popup').scrollTop());
                         }
                         
                     }
@@ -1897,17 +1875,10 @@ function Body(props){
                     e.preventDefault();
                     let ele = e.target;
                     let eleIndex = [].indexOf.call(document.getElementsByClassName(ele.getAttribute('class')), ele);
-                    // console.log(`class name: ${ele.getAttribute('class')}, index of the selected: ${eleIndex}, the selected in array: ${JSON.stringify(state.data["createbox"].layers[eleIndex])}`);
                     let temp_state = JSON.parse(JSON.stringify(state));
                     temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions-Edit-Layer";
                     temp_state.temp_value = {index:eleIndex};
-                    // changeEditState({index:eleIndex})
-                    // editState = {index:eleIndex};
-                    // console.log(JSON.stringify(editState))
-                    // setEditState()
                     changeState(temp_state);
-                    // changeEditState()
-
                 }
 
                 const DetailEditTraitBox = (e)=>{
