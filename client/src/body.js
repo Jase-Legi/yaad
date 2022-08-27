@@ -10,10 +10,8 @@ let baseServerUri = (pumpum  === "localhost:3000")?'./':'https://yaadlabs.heroku
 let provider = null, signer = null;
 let intervalId;
 let currentNetwork;
+
 if (typeof window.ethereum !== 'undefined') {
-    
-    // console.log('MetaMask is installed!');
-    
     provider = new providers.Web3Provider(window.ethereum, "any");
     
     provider.on("network", (newNetwork, oldNetwork) => {
@@ -84,39 +82,21 @@ const etherTokenAddy = '0x0DDfBF1E76F37eE8545595ce6AD772d5a326B33A';
 
 const etherToken = new Contract(etherTokenAddy, yaadtokenAbi.abi, signer);
 
-document.addEventListener('submit', (e)=>{
-    e.preventDefault();
-});
+document.addEventListener('submit', (e)=>{ e.preventDefault(); });
 
-let showLoading = ()=>{
+let showLoading = ()=>{ document.getElementById('loadingpopup').classList.remove('inactive'); }
 
-    document.getElementById('loadingpopup').classList.remove('inactive');                    
+let hideLoading = ()=>{ document.getElementById('loadingpopup').classList.add('inactive'); }
 
-}
-
-let hideLoading = ()=>{
-
-    document.getElementById('loadingpopup').classList.add('inactive');                    
-
-}
-
-const getGas = async (trans)=>{
-
-    return (trans)?trans.estimateGas():false;
-
-};
+const getGas = async (trans)=>{ return (trans)?trans.estimateGas():false; };
 
 const iswalletConnected = async ()=>{
     if(window.ethereum){
-        
         const accounts = await window.ethereum.request({method:'eth_accounts'});
-        
         // console.log(`gasPrice: ${await getGas().finally((eee)=>eee)}`);
 
         // let gaslimit = gasNow.add(50000)
-        
-        // console.log(`gas limit: ${}`);
-        
+
         if(accounts.length  > 0){
             // const account = accounts[0];
             // console.log(`account:: ${accounts[0]}`);
@@ -124,23 +104,18 @@ const iswalletConnected = async ()=>{
             return accounts[0];
         }else{
             const accounts = await window.ethereum.request({method: "eth_requestAccounts"}).catch((error)=>false);
-            // console.log(`account__: ${accounts}`);
             return (accounts === false)? false : accounts[0];
         }
     }else{
-
         alert("get metamask");
         return false;
-
     }
 };
 
 const readFile = async (dFile)=>{
     let reader = new FileReader();
-
     reader.onloadend = (e)=>{
         let content = reader.result;
-        // console.log(`content:: ${content}`);
         return content;
     }
 
@@ -165,7 +140,6 @@ const shuffle = (arra1)=> {
 }
 
 function LoadingBox(props){
-    // let loading_text = "Please Wait";
     return(
         <div id='loadingpopup' className='inactive'>
             <div id='loadingbttn' >
@@ -190,10 +164,7 @@ const isAplhaNumeric = (str)=>{
     return true;
 };
 
-const nullFunc = (e)=>{
-    // e.preventDefault();
-    return;
-};
+const nullFunc = (e)=>{ return; };
 
 function BoxTitle(props){
     let textType;
@@ -231,7 +202,6 @@ function DaInput(props){
     let daInput;
     
     if(props.data.hidden){
-
         switch (props.data.type) {
             case 'file':
                 daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''} name={(props.data.name)?props.data.name:''} readOnly={(props.data.readOnly)?props.data.readOnly:false} type='file' multiple={(props.data.multiple)?props.data.multiple:''} accept={(props.data.accept)?props.data.accept:'*'} onChange={(props.data.onChange)?props.data.onChange:nullFunc} hidden/>;
@@ -268,16 +238,16 @@ function DaInput(props){
 };
 
 function Body(props){
-    const homeSate = {state:"", data:{ createbox : {coll_name : null, coll_symbol : null, layers:[] }, bet:""}, currsubState:{ createbox:"createbox", bet:"bet"}};
+    const homeSate = {state:"", data:{ createbox : {coll_name : null, coll_symbol : null, layers:[] }, bet:""}, currsubState:{ createbox:"createbox", bet:"bet"}, temp_index: null};
 
-    let temp_state = {state:"", data:{ createbox : {coll_name : null, coll_symbol : null, layers:[] }, bet:""}, currsubState:{ createbox:"createbox", bet:"bet"}};
+    let temp_state = {state:"", data:{ createbox : {coll_name : null, coll_symbol : null, layers:[] }, bet:""}, currsubState:{ createbox:"createbox", bet:"bet"}, temp_index: null};
 
     let [state, setState] = useState(homeSate);
 
     const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
 
     let [errStacks, setErrStacks] = useState(defaultErrorStack);
-
+    
     let [scrollPosition, setScrollPosition] = useState(0);
 
     const ipfs_gateway = 'https://gateway.pinata.cloud/ipfs/';
@@ -298,9 +268,8 @@ function Body(props){
             setErrStacks((prev)=>({ intervalId:null, formdata:[], substate:null }));
         }
     }, [state.currsubState.createbox, state.state])
-    
-    const timeOutBox = (interval, callback)=>{
 
+    const timeOutBox = (interval, callback)=>{
         if((errStacks.intervalId === null) && (errStacks.formdata?.length > 0)){
             errStacks.intervalId = setTimeout(()=>{
                 callback();
@@ -368,13 +337,11 @@ function Body(props){
     }
     
     const deployContract = async (e)=>{
+        showLoading();
         const ele = e.target;
         ele.classList.add("inactive");
-
-        showLoading();
         
         try {
-            
             let contractOptions = {
                 language: "Solidity", 
                 sources: {
@@ -392,12 +359,12 @@ function Body(props){
             };
 
             let connected = await iswalletConnected();
-            if(connected === false){
-                return false;
-            }
-            let contractData = new FormData();
 
+            if(connected === false){ hideLoading(); return false; }
+
+            let contractData = new FormData();
             contractData.append('contractJSON', JSON.stringify(contractOptions));
+
             const compiledContract = await fetch(baseServerUri+"api/compileContract", {method:'POST',body: contractData} ).then((theresponse)=>theresponse.json()).then((compiled)=>compiled);
             const abi = compiledContract.abi;
             const bytecode = compiledContract.bytecode;
@@ -414,8 +381,7 @@ function Body(props){
             temp_state.data.createbox["contract_link"] = `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`;
             temp_state.currsubState.createbox = "RandomGenerator-ContractDeployed";
             // {"name":"ropsten","chainId":3,"ensAddress":"0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"}
-            // currentNetwork
-            // https://ropsten.etherscan.io/address/0xeb8E5a5656FDd6eB4bbDfa6F730966f29cDD1A33#events
+            setState((prev)=>({}))
             hideLoading();
             ele.classList.remove("inactive");
             changeState(temp_state);
@@ -445,22 +411,12 @@ function Body(props){
     }
 
     function Header(){
-        function SearchBar(){
-            return (
-                <div className='search-Header-Div'>
-                    <button className="headerElementSearch" type='button'>
-        
-                    </button>
-                </div>
-            )
-        };
+        function SearchBar(){ return ( <div className='search-Header-Div'> <button className="headerElementSearch" type='button'> </button> </div> ) };
         
         function Dropdown(props) {
-            
             var body = undefined;
             var init = function init() {
                 body = document.querySelector('body');
-                
             };
             
             let menuClick = function () {
@@ -488,7 +444,7 @@ function Body(props){
                     <div className="nav">
                         <div className="nav__content">
                             <ul className="nav__list" style={{cursor:"pointer"}}>
-                                <li className="nav__list-item_a" onClick={()=> changeState({state:"", data:{"createbox":"", "bet":""}, currsubState:{"createbox":"createbox", "bet":"bet"}} ) }> Home </li>
+                                <li className="nav__list-item_a" onClick={()=>setState((prev)=>homeSate) } > Home </li>
                                 <li className="nav__list-item_a" onClick={()=>changeState({state:'createbox', data: { "createbox": state.data["createbox"], "bet": state.data["bet"] }, currsubState:{"createbox":state.currsubState["createbox"], "bet":state.currsubState["bet"]}})}> Create </li>
                                 <li className="nav__list-item_a"> About </li>
                             </ul>
@@ -523,11 +479,7 @@ function Body(props){
         
         body.append('single_asset',e.target.files[0],assetName);
         
-        if(state.data["createbox"].filename){
-            
-            body.append('name',state.data["createbox"].filename);
-        
-        }
+        if ( state.data["createbox"].filename ) body.append( 'name', state.data["createbox"].filename );
         
         fetch(`${baseServerUri}api/upldSingle`, {method:"POST", body, })
         .then((res)=> res.json())
@@ -556,20 +508,11 @@ function Body(props){
     function SelectCreateOption(props) {
         return(
             <div>
-                <button className='closeBox' onClick={()=> changeState({state:"", data:{"createbox":"", "bet":""}, currsubState:{"createbox":"createbox", "bet":"bet"}})} >
-                    X
-                </button>
-                {/* <Buttonz data={{class:"popupBoxEle", id:"createBox", value:"Single NFT", onClick:}} /> */}
-                {/* <input type="file" id='single_asset' name='single_asset' accept="image/*,video/*,audio/*,webgl/*" style={{opacity:100, zIndex:1}} onChange={handlesingleUload} hidden/> */}
+                <button className='closeBox' onClick={()=> changeState({state:"", data:{"createbox":"", "bet":""}, currsubState:{"createbox":"createbox", "bet":"bet"}})} >X</button>
                 <DaInput data={{ typeId:'single_asset', name:'single_asset', type:'file', hidden:true, accept:'image/*,video/*,audio/*,webgl/*', onChange:handlesingleUload}}/>
 
                 <button className='popupBoxEle' id='createBox' onClick={()=>{document.getElementById('single_asset').click();}}>Single NFT</button>
-
-                {/* <label className='popupBoxEle' id='createBoxdd'> */}
-                    {/* <span>Single NFT</span> */}
-                    <form action={baseServerUri+'api/upldSingle'} method="post" id='createSingleAssetUpld' encType="multipart/form-data">
-                    </form>
-                {/* </label> */}
+                <form action={baseServerUri+'api/upldSingle'} method="post" id='createSingleAssetUpld' encType="multipart/form-data"> </form>
                 <div>
                     <button className='popupBoxEle' id='generateNFT_Coll' onClick={()=>setState((prev)=>({...prev, state: "RandomGenerator"}))}>PFP Project</button>
                 </div>
@@ -754,50 +697,55 @@ function Body(props){
     }
 
     function RandomGenerator (props){
+        let [formVals, setformVals] = useState();
+
+        // useMemo(() => {
+        //     // if(document.getElementById('popup')) document.getElementById('popup').scrollTop = scrollPosition;
+        //     // document.getElementById('popup').scrollTop()
+
+        // }, [state.state, state.currsubState.createbox])
+        
         temp_state.state = "RandomGenerator";
         
         let imgbody = new FormData(); let da_files;
 
         const handleAddBGLayer = (e)=>{
 
-            temp_state.data["createbox"] = state.data["createbox"]; 
+            // temp_state.data["createbox"] = state.data["createbox"];
             
             temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions-BG-Upld"; 
             
-            changeState(temp_state);
-
+            // changeState(temp_state);
+            state.currsubState.createbox = "RandomGenerator-LayerOptions-BG-Upld";
+            return setState((prev)=>({...prev, currsubState:{ createbox:"RandomGenerator-LayerOptions-BG-Upld", bet: prev.currsubState.bet}}));
         };
 
         const handleAddLayer = (e)=>{
-
-            showLoading();
-            let homeScrollValue = null;
+            // showLoading();
             
-            if(e){
-                e.preventDefault();
-                console.log(`class:::: ${e.target.getAttribute('class')}`);
-                
-                temp_state.data["createbox"] = state.data["createbox"];
+            const elementID = e.target.getAttribute('id');
 
-                temp_state.currsubState["createbox"] = (e.target.getAttribute('id') === 'selectBG')?"RandomGenerator-LayerOptions-BG-Upld":"RandomGenerator-LayerOptions-AddLayer";
-                
-                e.target.setAttribute('id','generatePfps');
-
-                // if(document.getElementById('popup')){
-                //     homeScrollValue = document.getElementById('popup').scrollTop()
-                // }
-                return changeState(temp_state);
-
-            }else{
-
-                console.log(`pissing contest!`)
-
-                temp_state = JSON.parse(JSON.stringify(state));
-
-                temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions-AddLayer";
-                
-                return changeState(temp_state);
+            let eleIndex = [].indexOf.call(document.getElementsByClassName(e.target.getAttribute('class')), e.target);
+            console.log(`index now big:::::>>>> ${state.temp_index}, id: ${elementID}`)
+            switch (elementID) {
+                case null:
+                    state.temp_index = eleIndex;
+                    state.currsubState.createbox = "RandomGenerator-LayerOptions-AddLayer";
+                    break;
+                case "selectBG":
+                    state.currsubState.createbox = "RandomGenerator-LayerOptions-BG-Upld";
+                    break;
+                default:
+                    state.temp_index = null;
+                    state.currsubState.createbox = "RandomGenerator-LayerOptions-AddLayer";
+                    break;
             }
+            
+            let homeScrollValue = null;
+            // state.currsubState["createbox"] = (e.target.getAttribute('id') === 'selectBG')?"RandomGenerator-LayerOptions-BG-Upld":"RandomGenerator-LayerOptions-AddLayer";
+            // e.target.setAttribute('id','generatePfps');
+            hideLoading();
+            return setState((prev)=>({...prev}));
         }
         
         const handleAddLayerUpld = async (e)=>{
@@ -869,9 +817,10 @@ function Body(props){
 
                 if(layerName === "" || document.getElementById("multi_asset").files.length < 1){
                     
-                    if(layerName === "") {
-                        temp_state.data["createbox"] = null;
+                    if( (layerName === "" && document.getElementById("multi_asset").files.length < 1) || ( layerName === "" )) {
                         setErrStacks((prev)=>({...prev, substate: state.currsubState.createbox, formdata: [{id: "LayerName", value: "", msg:"This field cannot be empty!"}] }));
+                    }else if( document.getElementById("multi_asset").files.length < 1 ) {
+                        setErrStacks((prev)=>({...prev, substate: state.currsubState.createbox, formdata: [{id: "LayerUpldLabel", value: "", msg:"Click the '+' to upload files!"}] }));
                     }
 
                     e.target.classList.remove('inactive');
@@ -1018,64 +967,39 @@ function Body(props){
         }
 
         const delLayer = async (e)=>{
-            showLoading();
-
             if(state.currsubState["createbox"] === "RandomGenerator-LayerOptions-Edit-Layer"){
-                
-                let tmp_stte = JSON.parse(JSON.stringify(state));
-                
-                tmp_stte.prev = tmp_stte.currsubState["createbox"];
-                
-                tmp_stte.currsubState["createbox"] = "RandomGenerator-LayerOptions-Del-Layer"
-                
-                hideLoading();
-
-                changeState(tmp_stte);
-
+                state.currsubState["createbox"] = "RandomGenerator-LayerOptions-Del-Layer";
+                return setState((prev)=>({...prev, previous: prev.currsubState.createbox}));
             }else{
-
-                if( state.temp_value.index !== null || state.temp_value.index !== undefined ){
-
-                    let delVal = state.data["createbox"].layers[state.temp_value.index];
-                    
+                showLoading();
+                if( state.temp_index !== null ){
+                    let delVal = state.data["createbox"].layers[ state.temp_index ];
                     let boddy = new FormData();
                     let conntd = await iswalletConnected();
-                    
-                    console.log(`conntd: ${conntd}`);
-                    
+
                     if(conntd !== false){
-
                         boddy.append('account', conntd)
-                    
                     }else{
-                        
-                        console.log(`Wallet not connected!!`);
-
-                        return false;
-                    
+                        closeLayerOptionsBox();
+                        // return false;
                     }
 
-                    boddy.append('index',state.temp_value.index);
-                    boddy.append('values', JSON.stringify(delVal))
-                    // let boddy = {index:state.temp_value.index, values: delVal};
+                    boddy.append('index', state.temp_index );
+                    boddy.append('values', JSON.stringify(delVal));
 
-                    await fetch(baseServerUri+'api/delLayer', {method:"post", body: boddy,})
-                    .then((res)=> res.json())
-                    .then((piss)=>{
-
-                        hideLoading();
-                        
-                        if(piss.error){
-                            state.data.createbox.msg = piss.error;
-                            closeLayerOptionsBox();
-                        }
-                        
-                        state.data["createbox"].layers.splice(state.temp_value.index, 1);
-                        
+                    const deletedLayer = await fetch(baseServerUri+'api/delLayer', {method:"post", body: boddy,}).then((res)=> res.json()).then((piss)=>piss);
+                    
+                    if(deletedLayer.error){
+                        state.data.createbox.msg = deletedLayer.error;
                         closeLayerOptionsBox();
+                    }
+                    
+                    state.data["createbox"].layers.splice( state.temp_index, 1);
+                    
+                    state.temp_index = null;
 
-                    })
-
+                    hideLoading();
+                    closeLayerOptionsBox();
                 }else{
                     closeLayerOptionsBox();
                 }
@@ -1083,16 +1007,12 @@ function Body(props){
         }
         
         const renameLayer = (e)=>{
-
             e.preventDefault();
-            // state.temp_value.index
             const ele = e.target;
             if(state.currsubState["createbox"] === "RandomGenerator-LayerOptions-Edit-Layer"){
-                let tmp_stte = JSON.parse(JSON.stringify(state));
-                tmp_stte.prev = tmp_stte.currsubState["createbox"];
-                tmp_stte.currsubState["createbox"] = "RandomGenerator-LayerOptions-Rename_Layer"
-                
-                return changeState(tmp_stte);
+                state.currsubState.createbox = "RandomGenerator-LayerOptions-Rename_Layer"
+                setState((prev)=>({...prev}))
+                // return changeState(tmp_stte);
 
             }else{
 
@@ -1100,7 +1020,7 @@ function Body(props){
                     // let eleindex = [].indexOf.call(document.getElementsByClassName(ele.getAttribute('class')), ele);
                     // let eleindex = parseInt(ele.getAttribute('id').split('_')[1]);
                     
-                    state.data["createbox"].layers[state.temp_value.index].name = ele.value;
+                    state.data["createbox"].layers[ state.temp_index ].name = ele.value;
                     
                     ele.setAttribute('placeholder', ele.value);
                     // trait_name
@@ -1112,8 +1032,8 @@ function Body(props){
         const backToPrev = async (e)=>{
             let tmp_stte = JSON.parse(JSON.stringify(state));
             
-            tmp_stte.currsubState["createbox"] = tmp_stte.prev;
-            // hideLoading();
+            state.currsubState.createbox = state.previous;
+            setState((prev)=>({...prev}))
             return changeState(tmp_stte);
         }
 
@@ -1483,27 +1403,27 @@ function Body(props){
             let samples = await getSamplesAndClearComboData(combo, 4);
 
             combo = null;
-            console.log(`sample img: ${JSON.stringify(samples)}`);
 
             const updateDB = async (data, collname, account, thesamples, combo_ipfs_hash)=>{
-                temp_state = JSON.parse(JSON.stringify(state));
+                // temp_state = JSON.parse(JSON.stringify(state));
                 
-                temp_state.data["createbox"] =  {};
+                // temp_state.data.createbox =  {};
 
-                temp_state.data["createbox"]["activeContract"] = null;
+                // temp_state.data.createbox.activeContract = null;
 
-                temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
+                // temp_state.data.createbox.coll_symbol = state.data["createbox"].coll_symbol;
 
-                temp_state.data["createbox"].coll_symbol = state.data["createbox"].coll_symbol;
+                // temp_state.data.createbox.coll_name = state.data["createbox"].coll_name;
 
-                temp_state.data["createbox"].coll_name = state.data["createbox"].coll_name;
+                // temp_state.data.createbox.samples = thesamples;
 
-                temp_state.data["createbox"].samples = thesamples;
+                // temp_state.data.createbox.possibleCombos = possibleCombos;
 
-                temp_state.data["createbox"].possibleCombos = possibleCombos;
+                // temp_state.currsubState.createbox = "RandomGenerator-RandomGenerated";
+
                 // temp_state.data["createbox"]["defaultContract"] =[ {name: "imports.721", contract: nftTokenImportsSol },  {name: "yaad", contract: nftTokenSol}]
                 let payload = new FormData();
-                payload.append('data', JSON.stringify(state['data'].createbox));
+                payload.append('data', JSON.stringify(state.data.createbox));
                 payload.append('collname', state.data["createbox"].coll_name);
                 payload.append('collSym', state.data["createbox"].coll_symbol);
                 payload.append('account', conntd);
@@ -1516,9 +1436,10 @@ function Body(props){
                 
                 let newcontract = JSON.parse(JSON.stringify(yaadcontract));
                 
-                newcontract.name = state.data["createbox"].coll_name;
-                temp_state.data["createbox"]["contracts"] = [yaadcontract];
-                return changeState(temp_state);
+                newcontract.name = state.data.createbox.coll_name;
+                // temp_state.data.createbox.contracts = [yaadcontract];
+                return setState((prev)=>({...prev, data:{ createbox: { coll_name: prev.data.createbox.coll_name, coll_symbol: prev.data.createbox.coll_symbol, samples: thesamples, possibleCombos, contracts: [yaadcontract] }}, currsubState:{ createbox: "RandomGenerator-RandomGenerated"}}))
+                // return changeState(temp_state);
             
             };
 
@@ -1527,17 +1448,11 @@ function Body(props){
         
         const handleSol = async(e)=>{
             showLoading();
-
             let elem  = (e)?e.target:null;
-            
             let elemFiles = elem.files;
             
-            temp_state =  JSON.parse(JSON.stringify(state));
-            
             const  readAndShowFiles = async (demFiles) => {
-                
                 let contractArray = [];
-
                 for (let dafile of demFiles) {
                     let readr = new FileReader();
                     readr.onloadend = async ()=>{
@@ -1546,10 +1461,9 @@ function Body(props){
                         contractArray.push({name: nameArray.join('.'), contract: readr.result});
                         
                         if(contractArray.length === demFiles.length){
-                            
-                            temp_state.data["createbox"]["contracts"] = contractArray;
-                            temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions-ContractName";
-                            changeState(temp_state);
+                            state.data.createbox.contracts = contractArray;
+                            state.currsubState.createbox = "RandomGenerator-LayerOptions-ContractName";
+                            setState((prev)=>prev);
                             hideLoading();
                         }
                     }
@@ -1559,17 +1473,15 @@ function Body(props){
             }
 
             await readAndShowFiles(elemFiles);
-            console.log(`default contract: ${JSON.stringify(state.data["createbox"]["defaultContract"])}`);
         };
 
         const collNameBox = (e)=>{
             const ele = e.target;
             const the_value = ele.value.trim();
             
-            if(the_value === "") return false;
+            if( the_value === "" ) return false;
 
             if(ele.getAttribute("id") === "contractSymbol"){
-                
                 if(ele.value.length > 4 || !isAplhaNumeric(ele.value)){
                     ele.value = state.data["createbox"].coll_symbol;
                     return;
@@ -1577,21 +1489,15 @@ function Body(props){
 
                 state.data["createbox"]["coll_symbol"] = the_value;
                 ele.setAttribute("placeholder", the_value)
-
-                // ele.value = "";
-
             }else if(ele.getAttribute("id") === "contractName"){
                 // console.log(`_ charcode: ${"_".charCodeAt(0)}`);
-
                 if(contractZone){
                     ele.value = state.data["createbox"].coll_name;
                     return;
                 }
 
-                state.data["createbox"].coll_name = the_value;
+                state.data.createbox.coll_name = the_value;
                 ele.setAttribute("placeholder", the_value);
-                // ele.value = "";
-
             }
         }
         
@@ -1806,79 +1712,43 @@ function Body(props){
                 const delTrait = async (e)=>{
                     showLoading();
                     e.preventDefault();
-    
                     const ele = e.target;
-                    // let eleindex = [].indexOf.call(document.getElementsByClassName(ele.getAttribute('class')), ele);
                     let eleindex = parseInt(ele.getAttribute('id').split('_')[1]);
-                    // let key = props.obj.key;
                     let eleparentNode = ele.parentNode.parentNode.parentNode.parentNode;
                     let eleClassName = eleparentNode.getAttribute('class');
                     let eleKey = [].indexOf.call(document.getElementsByClassName(eleClassName), eleparentNode);
-                    
-                    console.log(`this key is ${[].indexOf.call(document.getElementsByClassName(eleClassName), eleparentNode)}`);
-                    let temp_State = JSON.parse(JSON.stringify(state));
-                    
-                    let delVal = temp_State.data["createbox"].layers[eleKey].traits.splice(eleindex, 1);
-                    
+                    let delVal = state.data.createbox.layers[eleKey].traits.splice(eleindex, 1);
                     let boddy = new FormData();
                     let conntd = await iswalletConnected();
                     
-                    console.log(`conntd: ${conntd}`);
-                    
                     if(conntd !== false){
-
-                        boddy.append('account', conntd)
-                    
+                        boddy.append('account', conntd);
                     }else{
-                        
                         console.log(`Wallet not connected!!`);
-
                         return false;
+                    }
                     
+                    boddy.append('value', JSON.stringify(delVal));
+
+                    let deletedTrait = await fetch(baseServerUri+'api/delTrait', {method:"post", body: boddy,}).then((res)=> res.json()).then((piss)=>piss);
+                    
+                    if(deletedTrait.error){
+                        state.data.createbox.msg = deletedTrait.error;
+                        hideLoading();
+                        return setState((prev)=>( prev ));
                     }
 
-                    // boddy.append('index',state.temp_value.index);
-                    boddy.append('value', JSON.stringify(delVal))
-                    // let boddy = {index:state.temp_value.index, values: delVal};
+                    if(state.data.createbox.layers[eleKey].traits.length === 0) state.data.createbox.layers.splice(eleKey, 1);
 
-                    await fetch(baseServerUri+'api/delTrait', {method:"post", body: boddy,})
-                    .then((res)=> res.json())
-                    .then((piss)=>{
-
-                        
-                        if(piss.error){
-                            state.data.createbox.msg = piss.error;
-
-                            hideLoading();
-
-                            closeLayerOptionsBox();
-                        }
-
-                        if(temp_State.data["createbox"].layers[eleKey].traits.length === 0){
-
-                            temp_State.data["createbox"].layers.splice(eleKey, 1);
-
-                        }
-
-                        hideLoading();
-                        
-                        changeState(temp_State);
-
-                    })
-
-                    
-                    // trait_name
+                    hideLoading();
+                    return setState((prev)=>({...prev}));
                 };
 
                 let editLayer = (e)=>{
-
                     e.preventDefault();
                     let ele = e.target;
                     let eleIndex = [].indexOf.call(document.getElementsByClassName(ele.getAttribute('class')), ele);
-                    let temp_state = JSON.parse(JSON.stringify(state));
-                    temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions-Edit-Layer";
-                    temp_state.temp_value = {index:eleIndex};
-                    changeState(temp_state);
+                    setState((prev)=>({...prev, temp_index: eleIndex, currsubState:{ createbox:"RandomGenerator-LayerOptions-Edit-Layer" } } ));
                 }
 
                 const DetailEditTraitBox = (e)=>{
@@ -1897,7 +1767,7 @@ function Body(props){
                         return(boxcont)
 
                 }
-
+console.log(`props.obj.key: ${props.obj.key}`)
                 return(
                     <div className='layer-box-content' onMouseDown={layer_move_initializer} onMouseUp={layer_move_ender} onTouchStart={layer_move_initializer} onTouchCancel={layer_move_ender} onTouchEnd={layer_move_ender}>
                         <div className='generatorRightPanelLayerBox'>
@@ -1917,10 +1787,10 @@ function Body(props){
                         </div>
                         <div className='deatail-edit-trait-box inactive'>
                             <DetailEditTraitBox/>
-                            <div className='LayerUpldContentBxAdd' onClick={()=>{state.temp_value = props.obj.key; handleAddLayer();}}>
+                            <div className='LayerUpldContentBxAdd' onClick={handleAddLayer} >
                                 <div className='LayerUpldContentContainerAdd'>
                                     <div className='LayerUpldContentadd'>
-                                        <img src="./plus.svg" alt=""/>
+                                        <img className='LayerUpldContentaddimg' src="./plus.svg" alt=""/>
                                     </div>
                                     <BoxTitle data={{text:"Add image.", class:"addHeaderText", type:"h4"}} />
                                 </div>
@@ -1975,56 +1845,36 @@ function Body(props){
                 e.preventDefault();
     
                 const ele = e.target;
-                // let eleindex = [].indexOf.call(document.getElementsByClassName(ele.getAttribute('class')), ele);
+                
                 let eleindex = parseInt(ele.getAttribute('id').split('_')[1]);
-                // let eleIdNAme = ele.getAttribute('id').split('_')[0];
-
+                
                 let delVal = state.data["createbox"].background.splice(eleindex, 1);
                 console.log(`the id = ${ele.getAttribute('id')}, this key is ${eleindex}, gggooo ${delVal}`);
                 
                 let boddy = new FormData();
                 let conntd = await iswalletConnected();
                 
-                console.log(`conntd: ${conntd}`);
-                
                 if(conntd !== false){
-    
-                    boddy.append('account', conntd)
-                
+                    boddy.append('account', conntd);
                 }else{
-                    
-                    console.log(`Wallet not connected!!`);
-    
-                    return false;
-                
-                }
-    
-                // boddy.append('index',state.temp_value.index);
-                boddy.append('value', JSON.stringify(delVal))
-                // let boddy = {index:state.temp_value.index, values: delVal};
-    
-                await fetch(baseServerUri+'api/delTrait', {method:"post", body: boddy,})
-                .then((res)=> res.json())
-                .then((piss)=>{
-    
-                    let temp_State = JSON.parse(JSON.stringify(state));
-
-                    if(piss.error){
-                        temp_state.data.createbox.msg = piss.error;
-                        changeState(temp_State);
-                        hideLoading();
-                    }
-
-                    if( temp_State.data["createbox"].background.length === 0 ){
-    
-                        delete temp_State.data["createbox"].background;
-    
-                    }
-    
                     hideLoading();
-                    
-                    changeState(temp_State);
-                })
+                    return false;
+                }
+                
+                boddy.append('value', JSON.stringify(delVal))
+    
+                let deletedTrait = await fetch(baseServerUri+'api/delTrait', {method:"post", body: boddy,}).then((res)=>res.json()).then((piss)=>piss);
+                
+                if(deletedTrait.error){
+                    state.data.createbox.msg = deletedTrait.error;
+                    hideLoading();
+                    return setState((prev)=>( prev ));
+                }
+
+                if( state.data.createbox.background?.length === 0 ) delete state.data["createbox"].background;
+
+                hideLoading();
+                return setState((prev)=>({...prev}));
             };
             
             if(state.data["createbox"].layers?.length > 1){
@@ -2036,7 +1886,6 @@ function Body(props){
                         let indxx = 0; let bgstack = [];
 
                         while (indxx < state.data["createbox"].background.length){
-                        
                             bgstack.push(<div key={indxx} className='BG_UpldContentBx'><div className='BG_UpldContent'><img style={{backgroundColor: '#222'}} src={baseServerUri+state.data["createbox"].background[indxx].path} alt=''/><DaInput data={{class:'traitName', typeClass:'BG_traitNameBox', typeId:"BGName_"+indxx, placeholder:state.data["createbox"].background[indxx].trait_name, type:'text', name:'name', onChange:setBGTrait }}/></div><Buttonz data={{class:"delBG", id:'deleteBGUpldContentBx_'+indxx, value:'X', func: delBG}} /></div>)
 
                             indxx++;
@@ -2044,14 +1893,10 @@ function Body(props){
 
                         return(
                             <div>
-                                <div className='bg_title_box'>
-                                    <span style={{display:'table-cell'}}> Backgrounds </span>
-                                </div>
+                                <div className='bg_title_box'> <span> Backgrounds </span> </div>
                                 {bgstack}
                                 <div className='LayerbgAdd' id='selectBG' style={{zIndex:"1"}} onClick={handleAddBGLayer}>
-                                    <div className='LayerbgContentadd'>
-                                        <img src="./plus.svg" alt=""/>
-                                    </div>
+                                    <div className='LayerbgContentadd'> <img src="./plus.svg" alt=""/> </div>
                                     <span style={{color:"#666", float: "left", fontSize: "8px", fontWeight:"500", width:'100%', margin:'0px auto'}}> Add image. </span>
                                 </div>
                             </div>
@@ -2080,9 +1925,7 @@ function Body(props){
         },[activeContract])
 
         function ThaSamples (){
-            // if(state.data["createbox"].samples){
-            if(state.data["createbox"].samples?.length > 0){
-                    
+            if(state.data.createbox.samples?.length > 0){
                 let sampleLen = 0; let boxcont = [];
 
                 while (sampleLen < 4){
@@ -2092,89 +1935,71 @@ function Body(props){
                 
                 return(boxcont)
             }
-            // }else{
+
             showLoading();
             checkWorkInterval(`${baseServerUri}progress/generator/${state.data["createbox"].coll_name}`, 45000, (piss)=>{
                 console.log(`meeehh its done-- ${JSON.stringify(piss)}`);
                 if(piss !== null && piss !== undefined){
                     stopCheckWork();
-                    temp_state = JSON.parse(JSON.stringify(state));
-                    temp_state.data["createbox"].samples = piss.data.samples;
-                    changeState(temp_state);
+                    state.data.createbox.samples = piss.data.samples;
+                    setState((prev)=>prev);
                     hideLoading();
                 }
 
                 return (<span style={{color:"white"}}>homoooo: {piss}</span> )
             });
-            // }
         }
         
         let contractZone = (state.currsubState["createbox"] === "RandomGenerator-RandomGenerated")?true:false;
         
         function ContractBox(){
             let boxxcont = [];
-            
-            if(state.data["createbox"]["contracts"]){
-                if(state.data["createbox"]["contracts"].length > 0 && state.currsubState.createbox !== "RandomGenerator-ContractDeployed"){
-
-                    const expandContractBox  = (e)=>{
-                        let ele = e.target;
-                        let cntrctbox = document.getElementById('contract-container');
-                        if (cntrctbox.classList.contains("contract-container-expanded")){
-                            cntrctbox.classList.remove('contract-container-expanded');
-                            cntrctbox.classList.add('contract-container');
-                            ele.innerText = "expand"
-                        }else{
-                            cntrctbox.classList.add('contract-container-expanded');
-                            cntrctbox.classList.remove('contract-container');
-                            ele.innerText = "less"
-                        }
-                    };
-
-                    let sampleLen = 0; 
-                    
-                    const the_contracts = state.data["createbox"]["contracts"];
-                    const showContract = (e)=>{
-                        showLoading();
-                        // e.target.getElementsByClassName('contractBox');
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const da_ele = e.target;
-                        const daindex = parseInt(da_ele.getAttribute('id').split("_")[1]);
-                        
-                        console.log(`index::: ${daindex}, name: ${state.data["createbox"]["contracts"][daindex].name}`);
-                        
-                        temp_state = JSON.parse(JSON.stringify(state));
-                        temp_state.data["createbox"]["activeContract"] = daindex;
-                        // state.currsubState["createbox"] = "RandomGenerator-LayerOptions-ContractDetails";
-                        changeState(temp_state);
-                        hideLoading();
-                    };
-                    
-                    while (sampleLen < the_contracts.length){
-                        boxxcont.push(
-                            <button key={sampleLen} onClick={showContract} className={"contractBox"} id={"contractBox_"+sampleLen}>
-                                <img src='./solidity_icon.svg' id={"contractBoxImg_"+sampleLen} alt=''/>
-                                <span id={"contractBoxSpan_"+sampleLen} >{ the_contracts[sampleLen].name }</span>
-                            </button>
-                        );
-                        
-                        sampleLen++;
+            if(state.data.createbox.contracts?.length > 0 && state.currsubState.createbox !== "RandomGenerator-ContractDeployed"){
+                const expandContractBox  = (e)=>{
+                    let ele = e.target;
+                    let cntrctbox = document.getElementById('contract-container');
+                    if (cntrctbox.classList.contains("contract-container-expanded")){
+                        cntrctbox.classList.remove('contract-container-expanded');
+                        cntrctbox.classList.add('contract-container');
+                        ele.innerText = "expand"
+                    }else{
+                        cntrctbox.classList.add('contract-container-expanded');
+                        cntrctbox.classList.remove('contract-container');
+                        ele.innerText = "less"
                     }
+                };
+
+                let sampleLen = 0;
+                const the_contracts = state.data.createbox.contracts;
+                const showContract = (e)=>{
+                    showLoading();
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const da_ele = e.target;
+                    const daindex = parseInt(da_ele.getAttribute('id').split("_")[1]);
+                    state.data.createbox.activeContract = daindex;
+                    setState((prev)=>({...prev}));
+                    hideLoading();
+                };
+                
+                while (sampleLen < the_contracts.length){
+                    boxxcont.push(
+                        <button key={sampleLen} onClick={showContract} className={"contractBox"} id={"contractBox_"+sampleLen}>
+                            <img src='./solidity_icon.svg' id={"contractBoxImg_"+sampleLen} alt=''/>
+                            <span id={"contractBoxSpan_"+sampleLen} >{ the_contracts[sampleLen].name }</span>
+                        </button>
+                    );
                     
-                    let contractDetailsBox = (typeof(activeContract) === "number")? <div className='contract-box'><div id='contract-container' className='contract-container'><h2>{state.data["createbox"]["contracts"][activeContract].name}.sol</h2><span>{state.data["createbox"]["contracts"][activeContract].contract}</span></div><Buttonz data={{class:"expand-contract", id: "expand_contract", value: "expand", func:expandContractBox}} /></div>:"";
-                    // console.log(JSON.stringify(state.data["createbox"]["contracts"]));
-                    return(
-                        <div>
-                            <div id="pissingD"> {boxxcont} </div>
-                            {contractDetailsBox}
-                        </div>
-                    )
-                }else{
-                    return("");
+                    sampleLen++;
                 }
-            }else{
-                return("");
+                
+                let contractDetailsBox = (typeof(activeContract) === "number")? <div className='contract-box'><div id='contract-container' className='contract-container'><h2>{state.data["createbox"]["contracts"][activeContract].name}.sol</h2><span>{state.data["createbox"]["contracts"][activeContract].contract}</span></div><Buttonz data={{class:"expand-contract", id: "expand_contract", value: "expand", func:expandContractBox}} /></div>:"";
+                return(
+                    <div>
+                        <div id="pissingD"> {boxxcont} </div>
+                        {contractDetailsBox}
+                    </div>
+                )
             }
         }
 
@@ -2182,10 +2007,7 @@ function Body(props){
             return(
                 <div style={{marginBottom:"20px"}}>
                     <input type="file" id={(contractZone)?'project_contract':'single_asset'} name={(contractZone)?'project_contract':'single_asset'} accept={(contractZone)?'*':"image/*"} multiple="multiple" style={{opacity:100, zIndex:1}} onChange={(contractZone)?handleSol:state.data["createbox"].func} hidden/>
-                                        
-                    <label className='generatorRightPanelAddNewLayer' onClick={(e)=>{if(!contractZone){ if(state.data.createbox.coll_name?.length > 0){handleAddLayer(e);}else{ setErrStacks((prev)=>({...prev, formdata:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState.createbox }) )} }else{ return nullFunc(e)}}} htmlFor={(contractZone)?'project_contract':''} >
-                        <h1>+</h1>
-                    </label>
+                    <button className='generatorRightPanelAddNewLayer' id='generatorRightPanelAddNewLayer' onClick={(e)=>{if(!contractZone){ if(state.data.createbox.coll_name?.length > 0){ state.temp_index = null; handleAddLayer(e); }else{ setErrStacks((prev)=>({...prev, formdata:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState.createbox }) )} }else{ return nullFunc(e)}}} > + </button>
                 </div>
             )
         }
@@ -2202,13 +2024,13 @@ function Body(props){
                 break;
             case "RandomGenerator-LayerOptions-AddLayer":
                 currentSubState = <div className='LayerUpldBox'>
-                    <DaInput data={(typeof(state.temp_value) === "number")?{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.createbox.layers[state.temp_value].name}:{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:'Enter layer name.'}}/>
-                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" to upload layer files${(typeof(state.temp_value) === "number")?" for: "+state.data.createbox.layers[state.temp_value].name:""}.`}}/>
-                    <label className='LayerUpldBttn' htmlFor='multi_asset' onClick={(e)=>{ let ele_val = document.getElementById("LayerName").value.trim(); if(ele_val === ""){ e.preventDefault(); setErrStacks((prev)=>( {...prev, formdata:[{id:"LayerName", value: document.getElementById("LayerName").value, msg: "Enter a layer name!"}], substate:state.currsubState.createbox, timeOutEnded:false } )) }}}> <img src='./plus.svg' alt='' />
+                    <DaInput data={( state.temp_index  !== null )? {typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.createbox.layers[ state.temp_index ]?.name} : {typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:'Enter layer name.', onChange:(e)=>{}} }/>
+                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" to upload layer files${( state.temp_index !== null)?" for: "+state.data.createbox.layers[ state.temp_index ]?.name:""}.`}}/>
+                    <label className='LayerUpldBttn' id='LayerUpldLabel' htmlFor='multi_asset' onClick={(e)=>{ let ele_val = document.getElementById("LayerName").value.trim(); if(ele_val === ""){ e.preventDefault(); setErrStacks((prev)=>( {...prev, formdata:[{id:"LayerName", value: document.getElementById("LayerName").value, msg: "Enter a layer name!"}], substate:state.currsubState.createbox } )) }}}> <img src='./plus.svg' alt='' />
                         <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:'multi_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/>
                     </label>
                     <div className='layerContentBox'></div>
-                    <Buttonz data={{class:"LayerUpldBttn", id:'', value: (typeof(state.temp_value) === "number")?'Add':'Create', func: handleAddLayerUpld}} />
+                    <Buttonz data={{class:"LayerUpldBttn", id:'', value: (typeof( state.temp_index ) === "number")?'Add':'Create', func: handleAddLayerUpld}} />
                 </div>;
                 break;
             case "RandomGenerator-LayerOptions-BG-Upld":
@@ -2227,20 +2049,20 @@ function Body(props){
                     <input type="text" id='multi_asset' name='bg_asset' multiple="multiple" accept="image/*" style={{opacity:100, zIndex:1}} onChange={handleAddLayerUpld} hidden/>
                     <Buttonz data={{class:'renameLayerBttn', id:'bg_upld', value:'Rename', func: renameLayer}} />
                     <div className='layerContentBox'></div>
-                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Delete ${state.data.createbox.layers[state.temp_value.index].name} layer.`}}/>
+                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Delete ${state.data.createbox.layers[ state.temp_index ]?.name} layer.`}}/>
                     <Buttonz data={{class:"delLayerBttn", id:'bg_upld', value: 'DELETE', func: delLayer}} />
                 </div>
                 break;
             case "RandomGenerator-LayerOptions-Rename_Layer":
                 currentSubState = <div className='LayerUpldBox'>
                     <BoxTitle data={{class:'LayerUpldBoxTitle', type:'h2', text:'Change layer name.'}}/>
-                    <DaInput data={{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:state.data["createbox"].layers[state.temp_value.index].name, onChange:renameLayer}}/>
+                    <DaInput data={{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:state.data["createbox"].layers[ state.temp_index ]?.name, onChange:renameLayer}}/>
                     <Buttonz data={{class:"nodelLayerBttn", id:'', value:'SUBMIT', func: closeLayerOptionsBox}} />
                 </div>
                 break;
             case "RandomGenerator-LayerOptions-Del-Layer":
                 currentSubState = <div className='LayerUpldBox'>
-                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Select yes to delete ${state.data.createbox.layers[state.temp_value.index].name} layer.`}}/>
+                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Select yes to delete ${state.data.createbox.layers[ state.temp_index ]?.name} layer.`}}/>
                     <Buttonz data={{class:'delLayerBttn', id:'', value:'YES', func: delLayer}} />
                     <Buttonz data={{class:'nodelLayerBttn', id:'', value:'NO', func: backToPrev}} />
                 </div>
@@ -2260,13 +2082,13 @@ function Body(props){
                 LayerUpldBoxTitle = <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" icon to create new layer`}}/>;
                 break;
         }
-
+        // console.log(`temporary value:::::: ${state.temp_index}`);
         function MainContainer (){
             hideLoading();
             if(!currentSubState){
                 return(
                     <div className='popupdark' id='popup'>
-                        <button className='closeBox' onClick={()=> changeState(homeSate) }>X</button>
+                        <button className='closeBox' onClick={()=> setState((prev)=>homeSate) }>X</button>
                         <div className='RandomGenerator'>
                             <div className='coll_name_box'>
                                 <div className='contractNameContainer'>
@@ -2300,18 +2122,14 @@ function Body(props){
             }
         }
         
-        if(document.getElementById('popup')) document.getElementById('popup').scrollTop = scrollPosition;
-
         return( <div> <MsgBox/> <MainContainer/> </div> )
     };
 
     function Bet (props){
-        temp_state.state = "bet";
-        
         return (
             <div className='popup'>
                 {/* <Buttonz data={{class:'closeBox', value:'X',}}/> */}
-                <button className='closeBox' onClick={()=>changeState({state:"", data: {"createbox": "", "bet": state.data["bet"]}, currsubState: {"createbox":state.currsubState["createbox"], "bet":""}})}>
+                <button className='closeBox' onClick={()=> setState((prev)=>homeSate) } >
                     X
                 </button>
                 <div className='popupBox'>

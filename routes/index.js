@@ -383,9 +383,9 @@ index.post('/drawimage', multer().none(), async (req, res, next)=>{
 })
 
 index.post('/savenftcollection', multer().none(), async (req, res, next)=>{
-    const samples = JSON.parse(req.body.samples);
     const datat = JSON.parse(req.body.data);
-    const collectionName = req.body.collname;
+    const collectionName = datat.coll_name;
+    const samples = datat.samples
     const ipfs_uri  = req.body.ipfs_uri
     const account = req.body.account;
         
