@@ -697,7 +697,7 @@ function Body(props){
     }
 
     function RandomGenerator (props){
-        let [formVals, setformVals] = useState();
+        let [formVals, setformVals] = useState(null);
 
         // useMemo(() => {
         //     // if(document.getElementById('popup')) document.getElementById('popup').scrollTop = scrollPosition;
@@ -1384,7 +1384,6 @@ function Body(props){
                 }
                 
                 return sampleArray;
-              
             };
 
             const getSamplesAndClearComboData = async (comboz, cap)=>{
@@ -1405,23 +1404,6 @@ function Body(props){
             combo = null;
 
             const updateDB = async (data, collname, account, thesamples, combo_ipfs_hash)=>{
-                // temp_state = JSON.parse(JSON.stringify(state));
-                
-                // temp_state.data.createbox =  {};
-
-                // temp_state.data.createbox.activeContract = null;
-
-                // temp_state.data.createbox.coll_symbol = state.data["createbox"].coll_symbol;
-
-                // temp_state.data.createbox.coll_name = state.data["createbox"].coll_name;
-
-                // temp_state.data.createbox.samples = thesamples;
-
-                // temp_state.data.createbox.possibleCombos = possibleCombos;
-
-                // temp_state.currsubState.createbox = "RandomGenerator-RandomGenerated";
-
-                // temp_state.data["createbox"]["defaultContract"] =[ {name: "imports.721", contract: nftTokenImportsSol },  {name: "yaad", contract: nftTokenSol}]
                 let payload = new FormData();
                 payload.append('data', JSON.stringify(state.data.createbox));
                 payload.append('collname', state.data["createbox"].coll_name);
@@ -1430,17 +1412,13 @@ function Body(props){
                 payload.append('ipfs_uri', combo_ipfs_hash);
                 payload.append('samples', JSON.stringify(thesamples));
 
-                let saveCollection = await fetch(`${baseServerUri}api/savenftcollection`, {method:'POST', body:payload}).then((response)=>response.json()).then((ress)=>ress);
-
-                payload = null;
+                let saveCollection = await fetch(`${baseServerUri}api/savenftcollection`, {method:'POST', body:payload}).then((response)=>response.json()).then((ress)=>ress); payload = null;
                 
                 let newcontract = JSON.parse(JSON.stringify(yaadcontract));
                 
-                newcontract.name = state.data.createbox.coll_name;
-                // temp_state.data.createbox.contracts = [yaadcontract];
-                return setState((prev)=>({...prev, data:{ createbox: { coll_name: prev.data.createbox.coll_name, coll_symbol: prev.data.createbox.coll_symbol, samples: thesamples, possibleCombos, contracts: [yaadcontract] }}, currsubState:{ createbox: "RandomGenerator-RandomGenerated"}}))
-                // return changeState(temp_state);
-            
+                newcontract.name = state.data.createbox.coll_name.split(" ").join("_");
+                console.log(`contract name: ${newcontract.names}`);
+                return setState((prev)=>({...prev, data:{ createbox: { coll_name: prev.data.createbox.coll_name, coll_symbol: prev.data.createbox.coll_symbol, samples: thesamples, possibleCombos, contracts: [newcontract] }}, currsubState:{ createbox: "RandomGenerator-RandomGenerated"}}));
             };
 
             updateDB(state.data.createbox, state.data['createbox'].coll_name, conntd, samples, pinnedCombo.IpfsHash);
@@ -1480,17 +1458,18 @@ function Body(props){
             const the_value = ele.value.trim();
             
             if( the_value === "" ) return false;
-
+            
             if(ele.getAttribute("id") === "contractSymbol"){
-                if(ele.value.length > 4 || !isAplhaNumeric(ele.value)){
+                if(the_value.length > 4 || !isAplhaNumeric(the_value)){
                     ele.value = state.data["createbox"].coll_symbol;
                     return;
                 }
 
                 state.data["createbox"]["coll_symbol"] = the_value;
                 ele.setAttribute("placeholder", the_value)
-            }else if(ele.getAttribute("id") === "contractName"){
-                // console.log(`_ charcode: ${"_".charCodeAt(0)}`);
+            }
+            
+            if(ele.getAttribute("id") === "contractName"){
                 if(contractZone){
                     ele.value = state.data["createbox"].coll_name;
                     return;
@@ -1499,19 +1478,24 @@ function Body(props){
                 state.data.createbox.coll_name = the_value;
                 ele.setAttribute("placeholder", the_value);
             }
+
+            if(ele.getAttribute("id") === "LayerName"){
+                // if(the_value){
+                //     ele.value = state.data["createbox"].coll_name;
+                //     return;
+                // }
+
+                state.formVals = the_value;
+                ele.setAttribute("placeholder", the_value);
+            }
         }
         
         function GenLayers (){
 
             function Layerz(props){
-                
-                
                 let mouseUpFired;
-        
                 let initPositions = [];
-                
                 let elebox = document.getElementById('LayerGenBoxx');
-                
                 let initDivIndx = null; let newindex = null;
 
                 useEffect(()=>{
@@ -1767,7 +1751,7 @@ function Body(props){
                         return(boxcont)
 
                 }
-console.log(`props.obj.key: ${props.obj.key}`)
+                
                 return(
                     <div className='layer-box-content' onMouseDown={layer_move_initializer} onMouseUp={layer_move_ender} onTouchStart={layer_move_initializer} onTouchCancel={layer_move_ender} onTouchEnd={layer_move_ender}>
                         <div className='generatorRightPanelLayerBox'>
@@ -2024,9 +2008,9 @@ console.log(`props.obj.key: ${props.obj.key}`)
                 break;
             case "RandomGenerator-LayerOptions-AddLayer":
                 currentSubState = <div className='LayerUpldBox'>
-                    <DaInput data={( state.temp_index  !== null )? {typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.createbox.layers[ state.temp_index ]?.name} : {typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:'Enter layer name.', onChange:(e)=>{}} }/>
+                    <DaInput data={( state.temp_index  !== null )? { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.createbox.layers[ state.temp_index ]?.name } : { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:(state.formVals !== null)?state.formVals:'Enter layer name.', onChange:collNameBox, onClick:(e)=>{ e.target.value = state.formVals;} } }/>
                     <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" to upload layer files${( state.temp_index !== null)?" for: "+state.data.createbox.layers[ state.temp_index ]?.name:""}.`}}/>
-                    <label className='LayerUpldBttn' id='LayerUpldLabel' htmlFor='multi_asset' onClick={(e)=>{ let ele_val = document.getElementById("LayerName").value.trim(); if(ele_val === ""){ e.preventDefault(); setErrStacks((prev)=>( {...prev, formdata:[{id:"LayerName", value: document.getElementById("LayerName").value, msg: "Enter a layer name!"}], substate:state.currsubState.createbox } )) }}}> <img src='./plus.svg' alt='' />
+                    <label className='LayerUpldBttn' id='LayerUpldLabel' htmlFor='multi_asset' onClick={(e)=>{ let ele_val = state.formVals; if(!ele_val) { e.preventDefault(); setErrStacks((prev)=>( {...prev, formdata:[{id:"LayerName", value: document.getElementById("LayerName").value, msg: "Enter a layer name!"}], substate:state.currsubState.createbox } )) }else{document.getElementById("LayerName").value = ele_val;} }}> <img src='./plus.svg' alt='' />
                         <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:'multi_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/>
                     </label>
                     <div className='layerContentBox'></div>
@@ -2070,13 +2054,14 @@ console.log(`props.obj.key: ${props.obj.key}`)
             case "RandomGenerator-LayerOptions-ContractName":
                 currentSubState = <div className='LayerUpldBox'>
                     <BoxTitle data={{class:'LayerUpldBoxTitle', type:'h2', text:'enter contract name.'}}/>
-                    <DaInput data={{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:"Enter main contract name.", onChange:nullFunc}}/>
+                    <DaInput data={{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:"Enter main contract name.", onChange:collNameBox}}/>
                     <ContractBox/>
                     <Buttonz data={{class:"nodelLayerBttn", id:'', value:'SUBMIT', func: nullFunc}} />
                 </div>
                 break;
             default:
                 currentSubState = "";
+                state.formVals = null
                 addLayer = <AddLayer/>
                 mainBox = <div id='LayerGenBoxx'><GenLayers/></div>;
                 LayerUpldBoxTitle = <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" icon to create new layer`}}/>;
