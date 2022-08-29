@@ -697,26 +697,13 @@ function Body(props){
     }
 
     function RandomGenerator (props){
-        let [formVals, setformVals] = useState(null);
-
-        // useMemo(() => {
-        //     // if(document.getElementById('popup')) document.getElementById('popup').scrollTop = scrollPosition;
-        //     // document.getElementById('popup').scrollTop()
-
-        // }, [state.state, state.currsubState.createbox])
         
         temp_state.state = "RandomGenerator";
         
         let imgbody = new FormData(); let da_files;
 
         const handleAddBGLayer = (e)=>{
-
-            // temp_state.data["createbox"] = state.data["createbox"];
-            
-            temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions-BG-Upld"; 
-            
-            // changeState(temp_state);
-            state.currsubState.createbox = "RandomGenerator-LayerOptions-BG-Upld";
+            // state.currsubState.createbox = "RandomGenerator-LayerOptions-BG-Upld";
             return setState((prev)=>({...prev, currsubState:{ createbox:"RandomGenerator-LayerOptions-BG-Upld", bet: prev.currsubState.bet}}));
         };
 
@@ -813,11 +800,12 @@ function Body(props){
             let layerName;
 
             if(e.target.getAttribute("id") !== "bg_upld"){
-                layerName = document.getElementById("LayerName").value.trim();
+                layerName = state.formVals;
+                // layerName = document.getElementById("LayerName").value.trim();
 
-                if(layerName === "" || document.getElementById("multi_asset").files.length < 1){
+                if( layerName === null || document.getElementById("multi_asset").files.length < 1){
                     
-                    if( (layerName === "" && document.getElementById("multi_asset").files.length < 1) || ( layerName === "" )) {
+                    if( ( layerName === null && document.getElementById("multi_asset").files.length < 1)  || (  layerName === null)) {
                         setErrStacks((prev)=>({...prev, substate: state.currsubState.createbox, formdata: [{id: "LayerName", value: "", msg:"This field cannot be empty!"}] }));
                     }else if( document.getElementById("multi_asset").files.length < 1 ) {
                         setErrStacks((prev)=>({...prev, substate: state.currsubState.createbox, formdata: [{id: "LayerUpldLabel", value: "", msg:"Click the '+' to upload files!"}] }));
@@ -2010,7 +1998,7 @@ function Body(props){
                 currentSubState = <div className='LayerUpldBox'>
                     <DaInput data={( state.temp_index  !== null )? { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.createbox.layers[ state.temp_index ]?.name } : { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:(state.formVals !== null)?state.formVals:'Enter layer name.', onChange:collNameBox, onClick:(e)=>{ e.target.value = state.formVals;} } }/>
                     <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" to upload layer files${( state.temp_index !== null)?" for: "+state.data.createbox.layers[ state.temp_index ]?.name:""}.`}}/>
-                    <label className='LayerUpldBttn' id='LayerUpldLabel' htmlFor='multi_asset' onClick={(e)=>{ let ele_val = state.formVals; if(!ele_val) { e.preventDefault(); setErrStacks((prev)=>( {...prev, formdata:[{id:"LayerName", value: document.getElementById("LayerName").value, msg: "Enter a layer name!"}], substate:state.currsubState.createbox } )) }else{document.getElementById("LayerName").value = ele_val;} }}> <img src='./plus.svg' alt='' />
+                    <label className='LayerUpldBttn' id='LayerUpldLabel' htmlFor='multi_asset' onClick={(e)=>{ let ele_val = state.formVals; if( !ele_val && state.temp_index === null ) { e.preventDefault(); setErrStacks((prev)=>( {...prev, formdata:[{id:"LayerName", value: document.getElementById("LayerName").value, msg: "Enter a layer name!"}], substate:state.currsubState.createbox } )) } }}> <img src='./plus.svg' alt='' />
                         <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:'multi_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/>
                     </label>
                     <div className='layerContentBox'></div>
