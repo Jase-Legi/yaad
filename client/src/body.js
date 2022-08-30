@@ -800,14 +800,15 @@ function Body(props){
             let layerName;
 
             if(e.target.getAttribute("id") !== "bg_upld"){
-                layerName = state.formVals;
+                layerName = ( state.temp_index === null )? state.formVals:document.getElementById("LayerName").value;
                 // layerName = document.getElementById("LayerName").value.trim();
 
                 if( layerName === null || document.getElementById("multi_asset").files.length < 1){
                     
-                    if( ( layerName === null && document.getElementById("multi_asset").files.length < 1)  || (  layerName === null)) {
+                    if( ( layerName === null && document.getElementById("multi_asset").files.length < 1 )  || (  layerName === null)) {
                         setErrStacks((prev)=>({...prev, substate: state.currsubState.createbox, formdata: [{id: "LayerName", value: "", msg:"This field cannot be empty!"}] }));
-                    }else if( document.getElementById("multi_asset").files.length < 1 ) {
+                    }
+                    if( document.getElementById("multi_asset").files.length < 1 ) {
                         setErrStacks((prev)=>({...prev, substate: state.currsubState.createbox, formdata: [{id: "LayerUpldLabel", value: "", msg:"Click the '+' to upload files!"}] }));
                     }
 
@@ -1468,11 +1469,6 @@ function Body(props){
             }
 
             if(ele.getAttribute("id") === "LayerName"){
-                // if(the_value){
-                //     ele.value = state.data["createbox"].coll_name;
-                //     return;
-                // }
-
                 state.formVals = the_value;
                 ele.setAttribute("placeholder", the_value);
             }
