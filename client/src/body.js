@@ -984,9 +984,6 @@ function Body(props){
                     }
                     
                     state.data["createbox"].layers.splice( state.temp_index, 1);
-                    
-                    state.temp_index = null;
-
                     hideLoading();
                     closeLayerOptionsBox();
                 }else{
@@ -999,74 +996,34 @@ function Body(props){
             e.preventDefault();
             const ele = e.target;
             if(state.currsubState["createbox"] === "RandomGenerator-LayerOptions-Edit-Layer"){
-                state.currsubState.createbox = "RandomGenerator-LayerOptions-Rename_Layer"
-                setState((prev)=>({...prev}))
-                // return changeState(tmp_stte);
-
+                setState((prev)=>({...prev, currsubState: { createbox: "RandomGenerator-LayerOptions-Rename_Layer" }}));
             }else{
-
                 if(ele.value){
-                    // let eleindex = [].indexOf.call(document.getElementsByClassName(ele.getAttribute('class')), ele);
-                    // let eleindex = parseInt(ele.getAttribute('id').split('_')[1]);
-                    
                     state.data["createbox"].layers[ state.temp_index ].name = ele.value;
                     
                     ele.setAttribute('placeholder', ele.value);
-                    // trait_name
                 }
             }
 
         };
 
-        const backToPrev = async (e)=>{
-            let tmp_stte = JSON.parse(JSON.stringify(state));
-            
-            state.currsubState.createbox = state.previous;
-            setState((prev)=>({...prev}))
-            return changeState(tmp_stte);
-        }
-
         const closeLayerOptionsBox = (e)=>{
-            temp_state = JSON.parse(JSON.stringify(state));
-            
-            if(e){
-
-                switch (e.target.getAttribute('id')) {
-                    case "proj_name_closer":
-                        temp_state.state = "";
-                        temp_state.data["createbox"] = "";
-                        break;
-                    case "contractState":
-                        temp_state.currsubState["createbox"] = "RandomGenerator-RandomGenerated";
-                        break;
-                    case "generateNFT_Coll":
-                        temp_state.currsubState["createbox"] = "RandomGenerator";
-                        break;
-                
-                    default:
-                        temp_state.currsubState["createbox"] = "RandomGenerator";
-                        break;
-                }
-                hideLoading();
-                return changeState(temp_state);
+            switch (state.currsubState.createbox) {
+                case "RandomGenerator":
+                    setState((prev)=>({...prev, state:"", data:""}));
+                    break;
+                default:
+                    setState((prev)=>({...prev, currsubState:{ createbox: "RandomGenerator" } } ));
+                    break;
             }
-            
-            temp_state.currsubState["createbox"] = "RandomGenerator";
-
             hideLoading();
-            return changeState(temp_state);
-            
         }
         
         const expandbox = (e)=>{
-
             showLoading();
-
             let ele = e.target;
-            
             let indx = [].indexOf.call(document.getElementsByClassName(ele.getAttribute('class')), ele);
-
-
+            
             let me = 0;
             while(me < document.getElementsByClassName('deatail-edit-trait-box').length){
                 if(me !== indx){
@@ -1115,7 +1072,6 @@ function Body(props){
         }
         
         const generate_it = async (e)=>{
-            
             let conntd = await iswalletConnected();
             showLoading();
             if(conntd === false){
@@ -1475,7 +1431,6 @@ function Body(props){
         }
         
         function GenLayers (){
-
             function Layerz(props){
                 let mouseUpFired;
                 let initPositions = [];
@@ -1768,7 +1723,7 @@ function Body(props){
                 )
             }
 
-            if(state.currsubState["createbox"] === "RandomGenerator" && state.data.createbox.layers ){
+            if(state.currsubState.createbox === "RandomGenerator" && state.data.createbox.layers ){
 
                 if(state.data["createbox"].layers.length > 0){
                     
@@ -2032,7 +1987,7 @@ function Body(props){
                 currentSubState = <div className='LayerUpldBox'>
                     <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Select yes to delete ${state.data.createbox.layers[ state.temp_index ]?.name} layer.`}}/>
                     <Buttonz data={{class:'delLayerBttn', id:'', value:'YES', func: delLayer}} />
-                    <Buttonz data={{class:'nodelLayerBttn', id:'', value:'NO', func: backToPrev}} />
+                    <Buttonz data={{class:'nodelLayerBttn', id:'', value:'NO', func: closeLayerOptionsBox}} />
                 </div>
                 break;
             case "RandomGenerator-LayerOptions-ContractName":
