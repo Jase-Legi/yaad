@@ -285,7 +285,7 @@ function Body(props){
                 let the_msg = errStacks.formdata[i]?.msg;
                 let the_ele = document.getElementById(eleID);
                 bbx.push(
-                    <div key={i} className='errorbox' id='errorbox' style={{top: parseInt(the_ele.getBoundingClientRect().bottom)-5+"px", left: parseInt(the_ele.getBoundingClientRect().left)+15+"px"}}><BoxTitle data={{text:`${the_msg}`, type:"span", class:"errorboxEle" }}/><Buttonz data={{value:"X", class:"error-box-closer", func:()=>{setErrStacks((prev)=>(defaultErrorStack))} }} /> </div>
+                    <div key={i} className='errorbox' id='errorbox' style={{top: parseInt(the_ele.getBoundingClientRect().bottom)-5+"px", left: parseInt(the_ele.getBoundingClientRect().left)+15+"px"}}><BoxTitle data={{text:`${the_msg}`, type:"span", class:"errorboxEle" }}/><Buttonz data={{value:"X", class:"error-box-closer", func:(e)=>{ errStacks = defaultErrorStack; e.target.parentNode.remove() } }} /> </div>
                 )
             });
             return ( <div> {bbx} </div> )
@@ -650,7 +650,6 @@ function Body(props){
 
             return(
                 <div>
-                    <MsgBox/>
                     <form action={baseServerUri+"api/upldSingle"} method="post" id='createSingleAssetUpld' encType="multipart/form-data">
                         <input type="file" id='single_asset' name='single_asset' accept="image/*,video/*,audio/*,webgl/*,.glb,.gltf" style={{opacity:100, zIndex:1}} onChange={state.data["createbox"].func} hidden/>
                     </form>
@@ -708,23 +707,24 @@ function Body(props){
         };
 
         const handleAddLayer = (e)=>{
-            // showLoading();
-            
+            showLoading();
             const elementID = e.target.getAttribute('id');
-
             let eleIndex = [].indexOf.call(document.getElementsByClassName(e.target.getAttribute('class')), e.target);
-            console.log(`index now big:::::>>>> ${state.temp_index}, id: ${elementID}`)
+            
             switch (elementID) {
                 case null:
-                    state.temp_index = eleIndex;
-                    state.currsubState.createbox = "RandomGenerator-LayerOptions-AddLayer";
+                    // state.temp_index = eleIndex;
+                    // state.currsubState.createbox = "RandomGenerator-LayerOptions-AddLayer";
+                    setState((prev)=>({...prev, temp_index: eleIndex, currsubState:{ createbox: "RandomGenerator-LayerOptions-AddLayer" } }));
                     break;
                 case "selectBG":
-                    state.currsubState.createbox = "RandomGenerator-LayerOptions-BG-Upld";
+                    // state.currsubState.createbox = "RandomGenerator-LayerOptions-BG-Upld";
+                    setState((prev)=>({...prev, currsubState:{ createbox: "RandomGenerator-LayerOptions-BG-Upld" } }));
                     break;
                 default:
-                    state.temp_index = null;
-                    state.currsubState.createbox = "RandomGenerator-LayerOptions-AddLayer";
+                    // state.temp_index = null;
+                    // state.currsubState.createbox = "RandomGenerator-LayerOptions-AddLayer";
+                    setState((prev)=>({...prev, currsubState:{ createbox: "RandomGenerator-LayerOptions-AddLayer" } }));
                     break;
             }
             
@@ -2010,6 +2010,7 @@ function Body(props){
             default:
                 currentSubState = "";
                 state.formVals = null
+                state.temp_index = null;
                 addLayer = <AddLayer/>
                 mainBox = <div id='LayerGenBoxx'><GenLayers/></div>;
                 LayerUpldBoxTitle = <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" icon to create new layer`}}/>;
@@ -2055,7 +2056,7 @@ function Body(props){
             }
         }
         
-        return( <div> <MsgBox/> <MainContainer/> </div> )
+        return( <div> <MainContainer/> </div> )
     };
 
     function Bet (props){
@@ -2134,7 +2135,7 @@ function Body(props){
             currentState =<div className='popupBox'> <SingleNft/> </div>;
             break;
         case 'RandomGenerator':
-            currentState = <div className='popupBox'> <MsgBox/> <RandomGenerator/> </div>;
+            currentState = <div className='popupBox'> <RandomGenerator/> </div>;
             break;
         case 'SelectCreateOption':
             currentState = <div className='popup'> <div className='createOptions'> <SelectCreateOption state={state}/> </div> </div>;
@@ -2144,12 +2145,7 @@ function Body(props){
             break;
     }
 
-    return(
-        <div>
-            <LoadingBox/>
-            {currentState}
-        </div>
-    );
+    return( <div> <LoadingBox/> <MsgBox/> {currentState} </div> );
 }
 
 export default memo(Body);
