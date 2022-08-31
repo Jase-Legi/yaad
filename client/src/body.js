@@ -276,12 +276,12 @@ function Body(props){
 
     useEffect(()=>{
         console.log(`state obj: ${JSON.stringify(localStorage.getItem('state'))}`);
-        // if( JSON.parse(localStorage.getItem('state')) )
-        setState(JSON.parse(localStorage.getItem('state')) );
+        if( JSON.parse(window.sessionStorage.getItem('state')) )
+            setState(JSON.parse(window.sessionStorage.getItem('state')) );
     }, []);
 
     useEffect(()=>{
-        localStorage.setItem("state", JSON.stringify(state));
+        window.sessionStorage.setItem("state", JSON.stringify(state));
     }, [state]);
 
     useEffect(() => {
