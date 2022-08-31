@@ -152,6 +152,18 @@ function LoadingBox(props){
     )
 }
 
+const checkJsonParse = (str)=>{
+    if(typeof(str) !== 'string') return [true];
+    // console.log(`str:: ${str}`);
+    try {
+        return [null, JSON.parse(str)];
+
+    } catch (error) {
+        
+        return [error];
+    }
+}
+
 const isAplhaNumeric = (str)=>{
     
     for (let ind = 0; ind < str.length; ind++) {
@@ -262,6 +274,16 @@ function Body(props){
         return ()=> mounted = false;
     }
 
+    useEffect(()=>{
+        console.log(`state obj: ${JSON.stringify(localStorage.getItem('state'))}`);
+        // if( JSON.parse(localStorage.getItem('state')) )
+        setState(JSON.parse(localStorage.getItem('state')) );
+    }, []);
+
+    useEffect(()=>{
+        localStorage.setItem("state", JSON.stringify(state));
+    }, [state]);
+
     useEffect(() => {
         return ()=>{
             // if(errStacks.substate !== state.currsubState.createbox && errStacks.substate != null){
@@ -366,25 +388,24 @@ function Body(props){
             contractData.append('contractJSON', JSON.stringify(contractOptions));
 
             const compiledContract = await fetch(baseServerUri+"api/compileContract", {method:'POST',body: contractData} ).then((theresponse)=>theresponse.json()).then((compiled)=>compiled);
+            
             const abi = compiledContract.abi;
             const bytecode = compiledContract.bytecode;
             
             const factory = new ContractFactory(abi, bytecode, signer);
             const nftToken = await factory.deploy(state.data.createbox.coll_name, state.data.createbox.coll_symbol);
-            
-            console.log(`nft address: ${nftToken.address}`);
-            
+            hideLoading();
             contractData = null;
 
-            temp_state = JSON.parse(JSON.stringify(state));
-            temp_state.data.createbox["contract_address"] = nftToken.address;
-            temp_state.data.createbox["contract_link"] = `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`;
-            temp_state.currsubState.createbox = "RandomGenerator-ContractDeployed";
+            // temp_state = JSON.parse(JSON.stringify(state));
+            // temp_state.data.createbox.contract_address = nftToken.address;
+            // temp_state.data.createbox.contract_link = `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`;
+            // temp_state.currsubState.createbox = "RandomGenerator-ContractDeployed";
             // {"name":"ropsten","chainId":3,"ensAddress":"0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"}
-            setState((prev)=>({}))
-            hideLoading();
+
+            setState((prev)=>({...prev, currsubState: { createbox: "RandomGenerator-ContractDeployed" }, data:{...prev.createbox, createbox: {contract_address: nftToken.address, contract_link: `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`} }}));
             ele.classList.remove("inactive");
-            changeState(temp_state);
+            // changeState(temp_state);
         } catch (error) {
             console.log(`error: ${error}`)
             return false;
@@ -510,7 +531,6 @@ function Body(props){
             <div>
                 <button className='closeBox' onClick={()=> changeState({state:"", data:{"createbox":"", "bet":""}, currsubState:{"createbox":"createbox", "bet":"bet"}})} >X</button>
                 <DaInput data={{ typeId:'single_asset', name:'single_asset', type:'file', hidden:true, accept:'image/*,video/*,audio/*,webgl/*', onChange:handlesingleUload}}/>
-
                 <button className='popupBoxEle' id='createBox' onClick={()=>{document.getElementById('single_asset').click();}}>Single NFT</button>
                 <form action={baseServerUri+'api/upldSingle'} method="post" id='createSingleAssetUpld' encType="multipart/form-data"> </form>
                 <div>
@@ -696,14 +716,11 @@ function Body(props){
     }
 
     function RandomGenerator (props){
-        
-        temp_state.state = "RandomGenerator";
-        
+
         let imgbody = new FormData(); let da_files;
 
         const handleAddBGLayer = (e)=>{
-            // state.currsubState.createbox = "RandomGenerator-LayerOptions-BG-Upld";
-            return setState((prev)=>({...prev, currsubState:{ createbox:"RandomGenerator-LayerOptions-BG-Upld", bet: prev.currsubState.bet}}));
+            return setState((prev)=>({...prev, currsubState:{ createbox:"RandomGenerator-LayerOptions-BG-Upld" }}));
         };
 
         const handleAddLayer = (e)=>{
@@ -713,26 +730,15 @@ function Body(props){
             
             switch (elementID) {
                 case null:
-                    // state.temp_index = eleIndex;
-                    // state.currsubState.createbox = "RandomGenerator-LayerOptions-AddLayer";
                     setState((prev)=>({...prev, temp_index: eleIndex, currsubState:{ createbox: "RandomGenerator-LayerOptions-AddLayer" } }));
                     break;
                 case "selectBG":
-                    // state.currsubState.createbox = "RandomGenerator-LayerOptions-BG-Upld";
                     setState((prev)=>({...prev, currsubState:{ createbox: "RandomGenerator-LayerOptions-BG-Upld" } }));
                     break;
                 default:
-                    // state.temp_index = null;
-                    // state.currsubState.createbox = "RandomGenerator-LayerOptions-AddLayer";
                     setState((prev)=>({...prev, currsubState:{ createbox: "RandomGenerator-LayerOptions-AddLayer" } }));
                     break;
             }
-            
-            let homeScrollValue = null;
-            // state.currsubState["createbox"] = (e.target.getAttribute('id') === 'selectBG')?"RandomGenerator-LayerOptions-BG-Upld":"RandomGenerator-LayerOptions-AddLayer";
-            // e.target.setAttribute('id','generatePfps');
-            hideLoading();
-            return setState((prev)=>({...prev}));
         }
         
         const handleAddLayerUpld = async (e)=>{
@@ -1935,19 +1941,31 @@ function Body(props){
             )
         }
 
-        let currentSubState, LayerUpldBoxTitle, mainBox, daBattn, addLayer;
+        function CollNameBox(){
+            return(<div className='coll_name_box'>
+                <div className='contractNameContainer'>
+                    <BoxTitle data={{class:'contractNameText', type:'span', text:'Name:'}}/>
+                    <DaInput data={{ type:'text', typeId:'contractName', typeClass:'contractName', placeholder:(state["data"].createbox.coll_name)?state["data"].createbox.coll_name:"Enter a project name.", onChange:collNameBox, onClick:(e)=>{e.target.value = state["data"].createbox.coll_name}}}/>
+                </div>
+                <div className='contractSymbolContainer'>
+                    <BoxTitle data={{class:'contractSymbolText', type:'span', text:'Symbol:'}}/>
+                    <DaInput data={{ type:'text', typeId:'contractSymbol', typeClass:'contractSymbol', placeholder:(state["data"].createbox.coll_symbol)?state["data"].createbox.coll_symbol:'', onChange:collNameBox}}/>
+                </div>
+            </div>)
+        }
+        let currentSubState, LayerUpldBoxTitle, mainBox, daBattn, addLayer, coll_Name_Box;
 
         switch (state.currsubState.createbox) {
             case "RandomGenerator-ContractDeployed":
-                currentSubState = <div className='LayerUpldBox'>
-                    <DaInput data={( state.temp_index  !== null )? { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.createbox.layers[ state.temp_index ]?.name } : { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:(state.formVals !== null)?state.formVals:'Enter layer name.', onChange:collNameBox, onClick:(e)=>{ e.target.value = state.formVals;} } }/>
-                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" to upload layer files${( state.temp_index !== null)?" for: "+state.data.createbox.layers[ state.temp_index ]?.name:""}.`}}/>
-                    <label className='LayerUpldBttn' id='LayerUpldLabel' htmlFor='multi_asset' onClick={(e)=>{ let ele_val = state.formVals; if( !ele_val && state.temp_index === null ) { e.preventDefault(); setErrStacks((prev)=>( {...prev, formdata:[{id:"LayerName", value: document.getElementById("LayerName").value, msg: "Enter a layer name!"}], substate:state.currsubState.createbox } )) } }}> <img src='./plus.svg' alt='' />
-                        <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:'multi_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/>
-                    </label>
-                    <div className='layerContentBox'></div>
-                    <Buttonz data={{class:"LayerUpldBttn", id:'', value: (typeof( state.temp_index ) === "number")?'Add':'Create', func: handleAddLayerUpld}} />
+                // daBattn = <Buttonz data={{class:"LayerUpldBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />;
+                mainBox = <div className='contract-box' id='LayerGenBoxx'> 
+                    <div id='contract-container' className='contract-container'>
+                        <h2>Contract Deployed.</h2>
+                        <a href={state.data.createbox.contract_link}><span>contract address: {state.data.createbox.contract_address}</span></a>
+                    </div>
                 </div>;
+            // setState((prev)=>({...prev, currsubState: { createbox: "RandomGenerator-ContractDeployed" }, data:{...prev.createbox, createbox: {contract_address: nftToken.address, contract_link: `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`} }}));
+
                 break;
             case "RandomGenerator-RandomGenerated":
                 daBattn = <Buttonz data={{class:"LayerUpldBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />;
@@ -2011,7 +2029,8 @@ function Body(props){
                 currentSubState = "";
                 state.formVals = null
                 state.temp_index = null;
-                addLayer = <AddLayer/>
+                coll_Name_Box = <CollNameBox/>;
+                addLayer = <AddLayer/>;
                 mainBox = <div id='LayerGenBoxx'><GenLayers/></div>;
                 LayerUpldBoxTitle = <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" icon to create new layer`}}/>;
                 break;
@@ -2024,16 +2043,7 @@ function Body(props){
                     <div className='popupdark' id='popup'>
                         <button className='closeBox' onClick={()=> setState((prev)=>homeSate) }>X</button>
                         <div className='RandomGenerator'>
-                            <div className='coll_name_box'>
-                                <div className='contractNameContainer'>
-                                    <BoxTitle data={{class:'contractNameText', type:'span', text:'Name:'}}/>
-                                    <DaInput data={{ type:'text', typeId:'contractName', typeClass:'contractName', placeholder:(state["data"].createbox.coll_name)?state["data"].createbox.coll_name:"Enter a project name.", onChange:collNameBox, onClick:(e)=>{e.target.value = state["data"].createbox.coll_name}}}/>
-                                </div>
-                                <div className='contractSymbolContainer'>
-                                    <BoxTitle data={{class:'contractSymbolText', type:'span', text:'Symbol:'}}/>
-                                    <DaInput data={{ type:'text', typeId:'contractSymbol', typeClass:'contractSymbol', placeholder:(state["data"].createbox.coll_symbol)?state["data"].createbox.coll_symbol:'', onChange:collNameBox}}/>
-                                </div>
-                            </div>
+                            {coll_Name_Box}
                             <div className='LayerGenBox'>
                                 <BoxTitle data={{class:'generatorRightPanelTitle', type:'span', text:(contractZone)?'Contract':'LAYERS'}}/>
                                 <ContractBox/>
