@@ -329,6 +329,14 @@ h4{ font-family: tahoma; font-weight:bolder; }
     appearance: none;
 }
 
+.containerbox > h1 {
+    color: #000 !important;
+}
+
+.containerbox > h2 {
+    color: #000 !important;
+}
+
 .closeBox{
     position: fixed;
     top:20px;
@@ -650,25 +658,39 @@ h4{ font-family: tahoma; font-weight:bolder; }
 
 .generatorRightPanelTitle{
     font-size: 15px;
-    height: 40px;
-    line-height: 40px;
+    height:fit-content;
+    line-height:normal;
     vertical-align: middle;
     text-align: center;
     border-bottom:solid rgb(61, 61, 61) 1px;
     position: relative;
+    margin: 0px 0px 20px 0px;
     display: flex;
+    color: whitesmoke;
 }
 
 .generatorRightPanelTitle > span{
-    color: rgb(68, 68, 68);
-    font-size: 24px;
-    font-weight: 700;
-    /* letter-spacing: 2px; */
-    height: 40px;
-    line-height: 40px;
+    color: #999;
+    font-size: 11px;
+    height:fit-content;
+    text-align: left;
     vertical-align: middle;
-    text-align: center;
-    display: table-cell;
+}
+
+.generatorRightPanelTitle > h1 {
+    color: whitesmoke;
+    font-size: 24px;
+    height:fit-content;
+    margin: 0px;
+    vertical-align: middle;
+}
+
+.generatorRightPanelTitle > h2 {
+    color: whitesmoke;
+    font-size: 24px;
+    height:fit-content;
+    margin: 0px;
+    vertical-align: middle;
 }
 
 .generatorRightPanelAddNewBG{
@@ -713,6 +735,9 @@ h4{ font-family: tahoma; font-weight:bolder; }
     background-color: rgb(11, 10, 12);
 }
 
+.title{
+    color:#000;
+}
 .generatorRightPanelLayerBox{
     cursor: default;
     letter-spacing: 0;
@@ -1349,7 +1374,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     border-radius: 10px;
     background-color: #000;
     width: 100%;
-    padding: 5px;
+    padding: 15px;
     box-sizing: border-box;
     margin-bottom: 10px;
 }
@@ -1365,6 +1390,9 @@ h4{ font-family: tahoma; font-weight:bolder; }
     color: #ccc;
     font-size: 11px;
     border-top: 1px solid rgb(34, 34, 34);
+    border-bottom: none;
+    border-right: none;
+    border-left: none;
 }
 
 .expand-contract:hover{

@@ -152,18 +152,6 @@ function LoadingBox(props){
     )
 }
 
-const checkJsonParse = (str)=>{
-    if(typeof(str) !== 'string') return [true];
-    // console.log(`str:: ${str}`);
-    try {
-        return [null, JSON.parse(str)];
-
-    } catch (error) {
-        
-        return [error];
-    }
-}
-
 const isAplhaNumeric = (str)=>{
     
     for (let ind = 0; ind < str.length; ind++) {
@@ -204,9 +192,7 @@ function BoxTitle(props){
 
 function Buttonz(props){
     return (
-        <button className={(props.data.class)?props.data.class:''} id={(props.data.id)?props.data.id:''} style={{zIndex: 11}} onClick={props.data.func}>
-            {props.data.value}
-        </button>
+        <button className={(props.data.class)?props.data.class:''} id={(props.data.id)?props.data.id:''} style={{zIndex: 11}} onClick={props.data.func}> {props.data.value} </button>
     )
 };
 
@@ -251,8 +237,6 @@ function DaInput(props){
 
 function Body(props){
     const homeSate = {state:"", data:{ createbox : {coll_name : null, coll_symbol : null, layers:[] }, bet:""}, currsubState:{ createbox:"createbox", bet:"bet"}, temp_index: null};
-
-    let temp_state = {state:"", data:{ createbox : {coll_name : null, coll_symbol : null, layers:[] }, bet:""}, currsubState:{ createbox:"createbox", bet:"bet"}, temp_index: null};
 
     let [state, setState] = useState(homeSate);
 
@@ -380,32 +364,22 @@ function Body(props){
                 }
             };
 
-            let connected = await iswalletConnected();
-
-            if(connected === false){ hideLoading(); return false; }
-
+            const connected = await iswalletConnected();
             let contractData = new FormData();
-            contractData.append('contractJSON', JSON.stringify(contractOptions));
 
-            const compiledContract = await fetch(baseServerUri+"api/compileContract", {method:'POST',body: contractData} ).then((theresponse)=>theresponse.json()).then((compiled)=>compiled);
+            if(connected === false) { hideLoading(); return false; }
             
+            contractData.append('contractJSON', JSON.stringify(contractOptions));
+            const compiledContract = await fetch(baseServerUri+"api/compileContract", {method:'POST',body: contractData} ).then((theresponse)=>theresponse.json()).then((compiled)=>compiled);
             const abi = compiledContract.abi;
             const bytecode = compiledContract.bytecode;
-            
             const factory = new ContractFactory(abi, bytecode, signer);
             const nftToken = await factory.deploy(state.data.createbox.coll_name, state.data.createbox.coll_symbol);
             hideLoading();
             contractData = null;
-
-            // temp_state = JSON.parse(JSON.stringify(state));
-            // temp_state.data.createbox.contract_address = nftToken.address;
-            // temp_state.data.createbox.contract_link = `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`;
-            // temp_state.currsubState.createbox = "RandomGenerator-ContractDeployed";
             // {"name":"ropsten","chainId":3,"ensAddress":"0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"}
-
-            setState((prev)=>({...prev, currsubState: { createbox: "RandomGenerator-ContractDeployed" }, data:{...prev.createbox, createbox: {contract_address: nftToken.address, contract_link: `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`} }}));
+            setState( (prev)=>( { ...prev, currsubState: { createbox: "RandomGenerator-ContractDeployed" }, data:{...prev.createbox, createbox: {contract_address: nftToken.address, contract_link: `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`} } } ));
             ele.classList.remove("inactive");
-            // changeState(temp_state);
         } catch (error) {
             console.log(`error: ${error}`)
             return false;
@@ -414,7 +388,7 @@ function Body(props){
     
     const clickCreate = async (dastate)=>{
         showLoading();
-        let connected = await iswalletConnected();
+        const connected = await iswalletConnected();
         
         if(connected === false){
             // handle login failed logic here
@@ -466,7 +440,7 @@ function Body(props){
                         <div className="nav__content">
                             <ul className="nav__list" style={{cursor:"pointer"}}>
                                 <li className="nav__list-item_a" onClick={()=>setState((prev)=>homeSate) } > Home </li>
-                                <li className="nav__list-item_a" onClick={()=>changeState({state:'createbox', data: { "createbox": state.data["createbox"], "bet": state.data["bet"] }, currsubState:{"createbox":state.currsubState["createbox"], "bet":state.currsubState["bet"]}})}> Create </li>
+                                <li className="nav__list-item_a" onClick={()=> setState((prev)=>({...prev, state: "RandomGenerator" })) }> Create </li>
                                 <li className="nav__list-item_a"> About </li>
                             </ul>
                         </div>
@@ -479,9 +453,6 @@ function Body(props){
             <header className='header' >
                 <div className='headerElementlogo' onClick={()=>window.location = './'}>
                     <img src='./yaad.svg' alt='home'/>
-                    {/* <span>
-                        Yaad
-                    </span> */}
                 </div>
                 {/* <SearchBar style={logoBox}/> */}
                 <Dropdown/>
@@ -491,45 +462,29 @@ function Body(props){
 
     function handlesingleUload(e){
         let body = new FormData();
-
-        let newItemName = (state.data["createbox"].filename)?state.data["createbox"].filename.split('.'):null;
+        let newItemName = ( state.data.createbox.filename )? state.data["createbox"].filename.split('.'):null;
         
-        if(newItemName != null)newItemName.pop();
+        newItemName?.pop();
         
         let assetName = Date.now()+"."+e.target.files[0].name.split('.')[e.target.files[0].name.split('.').length-1];
         
-        body.append('single_asset',e.target.files[0],assetName);
+        body.append('single_asset', e.target.files[0], assetName);
         
         if ( state.data["createbox"].filename ) body.append( 'name', state.data["createbox"].filename );
         
-        fetch(`${baseServerUri}api/upldSingle`, {method:"POST", body, })
-        .then((res)=> res.json())
-        .then((piss)=>{
-
-            if(piss.error){
-                temp_state.data.createbox = piss;
-                
-                return changeState(temp_state);
+        const singleUploaded = fetch(`${baseServerUri}api/upldSingle`, {method:"POST", body, }).then( (res)=> res.json() ).then( (piss)=> piss );
         
-            }else{
-                
-                temp_state.state = "createbox";
-
-                temp_state.data["createbox"] = piss;
-
-                temp_state.currsubState["createbox"] = "SingleNFTDetailsForm";
-
-                return changeState(temp_state);
-        
-            }
-        
-        });
+        if(singleUploaded.error){
+            setState( (prev)=> ( {...prev, data: singleUploaded } ) );
+        }else{
+            setState( (prev)=>( {...prev, state: "createbox", data: { createbox: singleUploaded }, currsubState: { createbox: "SingleNFTDetailsForm" }} ));    
+        }
     }
 
     function SelectCreateOption(props) {
         return(
             <div>
-                <button className='closeBox' onClick={()=> changeState({state:"", data:{"createbox":"", "bet":""}, currsubState:{"createbox":"createbox", "bet":"bet"}})} >X</button>
+                <button className='closeBox' onClick={ ()=>setState((prev)=>homeSate) } >X</button>
                 <DaInput data={{ typeId:'single_asset', name:'single_asset', type:'file', hidden:true, accept:'image/*,video/*,audio/*,webgl/*', onChange:handlesingleUload}}/>
                 <button className='popupBoxEle' id='createBox' onClick={()=>{document.getElementById('single_asset').click();}}>Single NFT</button>
                 <form action={baseServerUri+'api/upldSingle'} method="post" id='createSingleAssetUpld' encType="multipart/form-data"> </form>
@@ -541,18 +496,12 @@ function Body(props){
     };
 
     function SingleNft (props){
-
-        temp_state.state = "createbox";
-        
         function SingleNFTDetailsForm (props){
             
-            function handlesingleCreate(e){
-                e.target.classList.add('inactive');
-                showLoading();
-                e.preventDefault();
+            const handlesingleCreate = async (e)=>{
+                e.target.classList.add('inactive'); showLoading(); e.preventDefault();
                 
                 const form = e.target.parentNode;
-                
                 const formElements = form.children;
                 
                 // Create a p element:
@@ -586,86 +535,36 @@ function Body(props){
 
                         }
                     }
-
                     n++;
                 }
 
                 let body = new FormData(form);
-                
                 body.append('filename',state.data["createbox"].filename);
-                
                 body.append('filepath',state.data["createbox"].path);
                 
-                fetch(form.action, {method:form.method, body})
-                .then((res)=> res.json())
-                .then((piss)=>{
-
-
-
-                    if(piss.error){
-
-                        // temp_state.state = "createbox";
-                        
-                        if(piss.error.message === "duplicate"){
-                            // Create a p element:
-                            const para = document.createElement("span");
-                            
-                            // Append text node to the p element:
-                            para.textContent = "'Name' cannot be empty.";
-                            para.classList.add('errortext');
-                            // state.data.createbox = {};
-
-                            temp_state.currsubState["createbox"] = "createbox";
-
-                            temp_state.data.createbox.msg = "This item was already uploaded to chain, please upload an original file"
-                            
-                            hideLoading();
-                            
-                            return changeState(temp_state);
-
-                        }
-                        // temp_state.state = "SingleNFTDetailsForm";
-                        
-                        temp_state.currsubState.createbox = "SingleNFTDetailsForm";
-                        temp_state.data["createbox"] = state.data["createbox"]
-                        hideLoading();
-                        
-                        return changeState(temp_state);
-                    
-                    }
-                    
-                    console.log(`state.data: ${JSON.stringify(piss)}`);
-
-                    if(piss.results){
-
-                        mintNEW(piss.results.IpfsHash)
-                        .finally((resp)=>{
-
-                            e.target.classList.remove('inactive');
-                            if (resp === false){
-                                
-                                temp_state.currsubState.createbox = "SingleNFTDetailsForm";
-
-                                // temp_state.state = "SingleNFTDetailsForm";
-
-                                changeState(temp_state);
-                            
-                            }
-
-                            e.target.classList.remove('inactive');
-                            
-                            hideLoading();
-                            
-                            temp_state.state = "";
-                            
-                            temp_state.currsubState.createbox = "createbox"
-                            
-                            return changeState(temp_state);
-
-                        });
-                    }
-                });
+                const createNft = await fetch(form.action, { method:form.method, body}).then((res)=> res.json()).then( (piss)=> piss );
                 
+                if(createNft.error){
+                    if(createNft.error.message === "duplicate"){
+                        // Create a p element:
+                        const para = document.createElement("span");
+                        // Append text node to the p element:
+                        para.textContent = "'Name' cannot be empty.";
+                        para.classList.add('errortext');
+                        setState( (prev)=>( {...prev, currsubState: { createbox: "createbox" }, data: { msg: "This item was already uploaded to chain, please upload an original file" } } ) )
+                        hideLoading();
+                    }
+                    hideLoading();
+                    setState( (prev)=>( {...prev, currsubState: { createbox: "SingleNFTDetailsForm" }} ));                
+                }
+                
+                if( createNft.results ){
+                    const minted = await mintNEW( createNft.results.IpfsHash ).finally((resp)=>resp);
+                    e.target.classList.remove('inactive');
+                    if (minted === false) { setState((prev)=>( {...prev, currsubState: { createbox: "SingleNFTDetailsForm" } } )); }
+                    e.target.classList.remove('inactive'); hideLoading();
+                    setState((prev)=>( {...prev, currsubState: { createbox: "createbox" }, state: "" } ));
+                }
             }
 
             return(
@@ -694,23 +593,15 @@ function Body(props){
         };
 
         function SingleNFTForm (props){
-            
             if(state.currsubState["createbox"] === "SingleNFTDetailsForm"){
-                (temp_state.data["createbox"] !== "")?temp_state.data["createbox"].func = handlesingleUload:temp_state.data["createbox"] = {func:handlesingleUload}
                 return(<SingleNFTDetailsForm/>)
-            }else{
-                return('');
             }
         };
 
         return (
             <div className='popup' id='popup'>
-                <button className='closeBox' onClick={()=> changeState({state:"", data:{"createbox":"", "bet":""}, currsubState:{"createbox":"createbox", "bet":"bet"}})} >
-                    X
-                </button>
-                <div className='popupBox'>
-                    <SingleNFTForm state={state}/>
-                </div>
+                <button className='closeBox' onClick={()=> setState((prev)=>homeSate) } >X</button>
+                <div className='popupBox'> <SingleNFTForm state={state}/> </div>
             </div>
         )
     }
@@ -742,11 +633,7 @@ function Body(props){
         }
         
         const handleAddLayerUpld = async (e)=>{
-            showLoading();
-            temp_state = JSON.parse(JSON.stringify(state));
-            e.target.classList.add('inactive');
-                        
-            e.preventDefault();
+            showLoading(); e.target.classList.add('inactive'); e.preventDefault();
             
             if (e.target.getAttribute('name') === 'bg_asset' && e.target.getAttribute('type') === 'file') {
                 let n = 0;
@@ -828,31 +715,15 @@ function Body(props){
 
             let conntd = await iswalletConnected();
             showLoading();
-            
-            console.log(`conntd: ${conntd}`);
-            
-            if(conntd !== false){
-
-                imgbody.append('account', conntd)
-            
-            }else{
-                
-                console.log(`Wallet not connected!!`);
-
-                return false;
-            
-            }
+            if ( conntd !== false ) { imgbody.append('account', conntd) }else{ return false; }
             
             if(e.target.getAttribute("id") === "bg_upld"){
                 if(!state.data["createbox"].background){
                     state.data["createbox"].background =[]
                 }
                 imgbody.append('background', 'background');
-
             }else{
-
                 imgbody.append('layerName', layerName);
-
             }
             
             imgbody.append('coll_name', state.data["createbox"].coll_name);
@@ -860,141 +731,80 @@ function Body(props){
             let n = 0;
 
             if((da_files === undefined || da_files.length === 0 || da_files.length === "") && e.target.getAttribute("id") === "bg_upld"){
-
                 return closeLayerOptionsBox();
-            
             }
             
             while(n < da_files.length){
-
                 let assetName = conntd+"_"+n+"_"+Date.now()+"."+da_files[n].name.split('.')[da_files[n].name.split('.').length-1];
-                
                 imgbody.append("files", da_files[n], assetName);
-
                 n++;
-                
             }
             
-            await fetch(baseServerUri+'api/addGenlayer', {method:"post", body:imgbody})
-            .then((res)=> res.json())
-            .then((piss)=>{
-                if(piss.error){
-
-                    temp_state.currsubState["createbox"] = "RandomGenerator-LayerOptions-AddLayer";
-
-                    console.log("an error occured!");
-
-                    return changeState(temp_state);
-                
-                }else if(piss.response.backgrounds){
-
-                    // let dataArray = piss.response.data;
-
-                    if(state.data["createbox"].background.length > 0){
-                        
-                        let p = 0; 
-                            
-                        while(p < piss.response.data.length){
-
-                            state.data["createbox"].background.push(piss.response.data[p]);
-                            
-                            p++;
-                            
-                        }
-                        
-                        e.target.classList.remove('inactive');
-
-                        return closeLayerOptionsBox();
-
-                    }
-
-                    state.data["createbox"].background = piss.response.data;
-                    
-                    e.target.classList.remove('inactive');
-
-                    return closeLayerOptionsBox();
-
-                }else{
-
-                    let dataArray = piss.response.data;
-
-                    // console.log(`layer name: ${JSON.stringify(piss.response.layer_name)}`);
-
-                    if(state.data["createbox"].layers.length > 0){
-                        let v = 0;
-
-                        while(v < state.data["createbox"].layers.length){
-
-                            if(state.data["createbox"].layers[v].name === piss.response.layer_name){
-
-                                let p = 0; 
-                                
-                                while(p < piss.response.data.length){
-
-                                    state.data["createbox"].layers[v].traits.push(piss.response.data[p]);
-                                    // e.target.classList.remove('inactive');
-
-                                    p++;
-                                    
-                                }
-                                return closeLayerOptionsBox();
-                            }
-
-                            v++;
-                        }
-
-                        state.data["createbox"].layers.push({name:piss.response.layer_name, traits:dataArray});
-                        e.target.classList.remove('inactive');
-
-                        return closeLayerOptionsBox();
-
-                    }
-
-                    state.data["createbox"].layers.push({name:piss.response.layer_name, traits:dataArray});
-                    
-                    e.target.classList.remove('inactive');
-
-                    return closeLayerOptionsBox();
-                    // console.log(`Uploaded successfully: \n addy: ${piss.response.address}\n collection: ${piss.response.coll_name}\n layer name: ${piss.response.layer_name}\n files info: ${piss.response.data}`);
-                }
-            });
+            const addedLayer = await fetch(baseServerUri+'api/addGenlayer', {method:"post", body:imgbody}).then((res)=> res.json()).then((piss)=> piss);
             
+            if (addedLayer.error) { setState((prev)=>( {...prev, currsubState: { createbox: "RandomGenerator-LayerOptions-AddLayer" } } )) };
+
+            if(addedLayer.response.backgrounds){
+                if(state.data["createbox"].background.length > 0){
+                    let p = 0; 
+                    while( p < addedLayer.response.data.length ){
+                        state.data["createbox"].background.push(addedLayer.response.data[p]);
+                        p++;
+                    }
+                    e.target.classList.remove('inactive');
+                    return closeLayerOptionsBox();
+                }
+
+                state.data["createbox"].background = addedLayer.response.data;
+                return closeLayerOptionsBox();
+            }else{
+                let dataArray = addedLayer.response.data;
+                if(state.data["createbox"].layers.length > 0){
+                    let v = 0;
+                    while( v < state.data["createbox"].layers.length ){
+                        if(state.data["createbox"].layers[v].name === addedLayer.response.layer_name){
+                            let p = 0; 
+                            while( p < addedLayer.response.data.length ){
+                                state.data["createbox"].layers[v].traits.push(addedLayer.response.data[p]);
+                                p++;
+                            }
+                            return closeLayerOptionsBox();
+                        }
+                        v++;
+                    }
+
+                    state.data["createbox"].layers.push({ name: addedLayer.response.layer_name, traits:dataArray });
+                    return closeLayerOptionsBox();
+
+                }
+
+                state.data["createbox"].layers.push({ name: addedLayer.response.layer_name, traits:dataArray });
+                return closeLayerOptionsBox();
+            }      
         }
 
         const delLayer = async (e)=>{
             if(state.currsubState["createbox"] === "RandomGenerator-LayerOptions-Edit-Layer"){
-                state.currsubState["createbox"] = "RandomGenerator-LayerOptions-Del-Layer";
-                return setState((prev)=>({...prev, previous: prev.currsubState.createbox}));
+                return setState((prev)=>( {...prev, currsubState: { createbox: "RandomGenerator-LayerOptions-Del-Layer" }, previous: prev.currsubState.createbox} ));
             }else{
                 showLoading();
                 if( state.temp_index !== null ){
-                    let delVal = state.data["createbox"].layers[ state.temp_index ];
+                    let delVal = state.data.createbox.layers[ state.temp_index ];
                     let boddy = new FormData();
-                    let conntd = await iswalletConnected();
+                    const conntd = await iswalletConnected();
+                    ( conntd !== false ) ? boddy.append('account', conntd) : closeLayerOptionsBox();
 
-                    if(conntd !== false){
-                        boddy.append('account', conntd)
-                    }else{
-                        closeLayerOptionsBox();
-                        // return false;
-                    }
-
-                    boddy.append('index', state.temp_index );
-                    boddy.append('values', JSON.stringify(delVal));
+                    boddy.append('index', state.temp_index ); boddy.append('values', JSON.stringify(delVal) );
 
                     const deletedLayer = await fetch(baseServerUri+'api/delLayer', {method:"post", body: boddy,}).then((res)=> res.json()).then((piss)=>piss);
                     
-                    if(deletedLayer.error){
-                        state.data.createbox.msg = deletedLayer.error;
-                        closeLayerOptionsBox();
-                    }
+                    if(deletedLayer.error){ state.data.createbox.msg = deletedLayer.error; closeLayerOptionsBox(); }
                     
                     state.data["createbox"].layers.splice( state.temp_index, 1);
                     hideLoading();
-                    closeLayerOptionsBox();
-                }else{
-                    closeLayerOptionsBox();
+                    return closeLayerOptionsBox();
                 }
+                return closeLayerOptionsBox();
             }
         }
         
@@ -1005,12 +815,10 @@ function Body(props){
                 setState((prev)=>({...prev, currsubState: { createbox: "RandomGenerator-LayerOptions-Rename_Layer" }}));
             }else{
                 if(ele.value){
-                    state.data["createbox"].layers[ state.temp_index ].name = ele.value;
-                    
+                    state.data.createbox.layers[ state.temp_index ].name = ele.value;
                     ele.setAttribute('placeholder', ele.value);
                 }
             }
-
         };
 
         const closeLayerOptionsBox = (e)=>{
@@ -1022,15 +830,11 @@ function Body(props){
                     setState((prev)=>({...prev, currsubState:{ createbox: "RandomGenerator" } } ));
                     break;
             }
-            hideLoading();
         }
         
         const expandbox = (e)=>{
             showLoading();
-            let ele = e.target;
-            let indx = [].indexOf.call(document.getElementsByClassName(ele.getAttribute('class')), ele);
-            
-            let me = 0;
+            const ele = e.target; const indx = [].indexOf.call(document.getElementsByClassName(ele.getAttribute('class')), ele); let me = 0;
             while(me < document.getElementsByClassName('deatail-edit-trait-box').length){
                 if(me !== indx){
                     if(!document.getElementsByClassName('deatail-edit-trait-box')[me].classList.contains('inactive')){
@@ -1044,84 +848,51 @@ function Body(props){
             }
 
             if(document.getElementsByClassName('deatail-edit-trait-box')[indx].classList.contains('inactive')){
-
                 document.getElementsByClassName('generatorRightPanelLayerBox-title-img')[indx].classList.add('rotateExpander');
-
                 document.getElementsByClassName('deatail-edit-trait-box')[indx].classList.remove('inactive');
-
             }else{
-
                 document.getElementsByClassName('generatorRightPanelLayerBox-title-img')[indx].classList.remove('rotateExpander');
-
                 document.getElementsByClassName('deatail-edit-trait-box')[indx].classList.add('inactive');
             }
 
             hideLoading();
         };
 
-        const checkWorkInterval = (url, interval, callback)=>{
+        const checkWorkInterval = async ( url, interval, callback )=>{
             if(!intervalId){
-                intervalId = setInterval(() => {
-                    fetch(url)
-                    .then((res)=>res.json())
-                    .then((rez)=>{
-                        console.log(`da res:: ${rez}`)
-                        callback(rez);
-                    })
+                intervalId = setInterval( async () => {
+                    const checkedWork = await fetch(url).then((res)=>res.json()).then((rez)=> rez );
+                    callback( checkedWork );
                 }, interval);
             }
         };
 
-        const stopCheckWork = ()=>{
-            clearInterval(intervalId);
-            intervalId = null;
-        }
+        const stopCheckWork = ()=>{ clearInterval(intervalId); intervalId = null; };
         
         const generate_it = async (e)=>{
-            let conntd = await iswalletConnected();
             showLoading();
-            if(conntd === false){
-                
-                console.log(`Wallet not connected!!`);
-
-                return false;
+            let conntd = await iswalletConnected();
+            if( conntd === false ){ return false; }
             
-            }
+            state.data.createbox.account = conntd;
             
-            state.data["createbox"].account = conntd;
-            
-            const get_all_possible_combos =  async (input, output, n, da_path)=>{
-
+            const get_all_possible_combos =  async ( input, output, n, da_path )=>{
                 da_path = (da_path === null || da_path === undefined)? []: da_path;
-            
                 n = (n === null || n === undefined)? 0:n;
             
                 if(n < input.length){
-            
-                    // console.log(`running in the loop!`);
-                    let current_item = input[n];
-                    let gogo = 0;
+                    const current_item = input[n]; let gogo = 0;
                     
                     while(gogo < current_item.length){
-                        // console.log(`running in the loop!`);
                         let val = current_item[gogo];
-            
                         da_path.push(val);
-                        // console.log(`testerr!!!! n: ${n}, gogo:${gogo}`);
                         get_all_possible_combos(input, output, n+1, da_path);
-                        // console.log(`da_path before: ${JSON.stringify(da_path)}\n\n`);
                         da_path.pop();
-                        // console.log(`da_path after: ${JSON.stringify(da_path)}`);
                         gogo++;
-            
                     }
-            
                 }else{
-            
                     output.push(da_path.slice());
-            
                 }
-                
             };
 
             const loop_and_pin_layers = async (collName, layers)=>{
@@ -1130,11 +901,9 @@ function Body(props){
                 layers.reverse();
             
                 for(let indx = 0; indx < layers.length; indx++){
-            
-                    emptyComboArray.push({name: layers[indx].name, traits:[]});
+                    emptyComboArray.push( { name: layers[indx].name, traits:[] } );
                     
-                    for(let pin = 0; pin < layers[indx].traits.length; pin++){
-            
+                    for( let pin = 0; pin < layers[indx].traits.length; pin++ ){
                         const options = {
                             pinataMetadata:{
                             name: `${layers[indx].traits[pin].trait_name}`,
@@ -1146,29 +915,13 @@ function Body(props){
                             pinataOptions: {
                                 cidVersion: 0
                             }
-                            
                         };
                         
-                        let body = {
-                            "description": `nft trait element from ${collName} collection. generated by Yaad labs.`,
-                            "external_url": "", 
-                            "image": "", 
-                            "name": (layers[indx].traits[pin].trait_name)? layers[indx].traits[pin].trait_name: layers[indx].name,
-                            "attributes": []
-                        }
-                        
                         let pin_body = new FormData();
-
-                        pin_body.append('path',layers[indx].traits[pin].path);
-                        pin_body.append('the_options', options);
-                        await fetch(`${baseServerUri}api/pinnit`, {method:'POST', body: pin_body})
-                        .then((resp)=>resp.json())
-                        .then((pinned)=>{
-
-                            console.log(`pinned:: ${JSON.stringify(pinned)}`);
-
-                            emptyComboArray[indx].traits.push({ trait_name: layers[indx].traits[pin].trait_name, path: pinned.IpfsHash });
-                        });
+                        pin_body.append( 'path',layers[indx].traits[pin].path );
+                        pin_body.append( 'the_options', options );
+                        const pinnedItem = await fetch( `${baseServerUri}api/pinnit`, {method:'POST', body: pin_body} ).then((resp)=>resp.json()).then((pinned)=> pinned );
+                        emptyComboArray[indx].traits.push({ trait_name: layers[indx].traits[pin].trait_name, path: pinnedItem.IpfsHash });
                     }
                 }
                 
@@ -1176,7 +929,6 @@ function Body(props){
             };
 
             const loop_and_pin_background = async (backgrounds)=>{
-                
                 for(let f = 0; f < backgrounds.length; f++){
                     const options = {
                         pinataMetadata:{
@@ -1192,109 +944,77 @@ function Body(props){
                     };
                     
                     let pin_body = new FormData();
-                    pin_body.append('path',backgrounds[f].path);
-                    pin_body.append('the_options', options);
-                    let pinnedBG = await fetch(`${baseServerUri}api/pinnit`, {method:'POST', body: pin_body}).then((resp)=>resp.json()).then((pinned)=>pinned);
-                    console.log(`background: ${JSON.stringify(backgrounds[f])}`);
+                    pin_body.append( 'path',backgrounds[f].path ); pin_body.append( 'the_options', options );
+                    const pinnedBG = await fetch( `${baseServerUri}api/pinnit`, {method:'POST', body: pin_body}).then((resp)=>resp.json()).then((pinned)=>pinned);
                     backgrounds[f].path = pinnedBG.IpfsHash;
                 }
-                
                 return backgrounds;
             };
 
             const mapTraitTypes = async (comboz) => {
-                // let comboz = res.locals.comboz;
-            
                 let len = 0; let traitTypes = []; let ego;
-            
-                while(len < comboz.length){
-                    // console.log(`comboz:::::::>> ${JSON.stringify(comboz)}\n`);
-            
-                    ego = comboz[len].traits.map((x,v,arr) => {
-
+                while( len < comboz.length ){
+                    ego = comboz[len].traits.map(( x,v ) => {
                         return { trait_type: comboz[len].name, trait_name: comboz[len].traits[v].trait_name, value: x.path};
-
                     });
             
-                    traitTypes.push(ego)
-            
+                    traitTypes.push(ego);            
                     len++;
                 }
-
-                ego = "";
-                
+                ego = null;
                 return traitTypes;
             };
             
             const traitTypesPushNA = async (traitTypes) => {
-                // let traitTypes = res.locals.traitTypes;
                 let endo = 0;
-
-                while (endo < traitTypes.length) {
-
+                while ( endo < traitTypes.length ) {
                     traitTypes[endo].push({trait_type: traitTypes[endo][0].trait_type, value: 'N/A'});
                     endo++;
-
                 }
-
                 return traitTypes
             };
 
             const insertBackground = async (comboz) =>{
-                let d = 0;
-                // let comboz = res.locals.comboz;
-                let backgrounds = await loop_and_pin_background(state.data["createbox"].background)
+                let d = 0; const backgrounds = await loop_and_pin_background( state.data.createbox.background );
 
-                while(d < comboz.length){
-            
-                    let newBG = backgrounds[Math.floor(Math.random() * backgrounds.length)]
-                    
+                while( d < comboz.length ){
+                    let newBG = backgrounds[ Math.floor(Math.random() * backgrounds.length) ];
                     comboz[d].splice(0, 0, { trait_type: "background", trait_name: newBG.trait_name, value: newBG.path });
-                    
                     d++;
                 }
             };
 
             const allPossibleCombos = async ()=> {
                 let comboz = [];
-                const layerz = JSON.parse(JSON.stringify(state.data["createbox"].layers));
-                let loop_and_pin = await loop_and_pin_layers(state.data["createbox"].coll_name, layerz);
-                let map_traits = await mapTraitTypes(loop_and_pin);
-                let traittypes_fin = await traitTypesPushNA(map_traits);
+                let layerz = JSON.parse( JSON.stringify(state.data.createbox.layers) );
+                const loop_and_pin = await loop_and_pin_layers( state.data.createbox.coll_name, layerz );
+                const map_traits = await mapTraitTypes(loop_and_pin);
+                const traittypes_fin = await traitTypesPushNA(map_traits);
                 
                 await get_all_possible_combos(traittypes_fin, comboz);
                 await shuffle(comboz);
                 await insertBackground(comboz);
-                
                 return comboz;
             };
 
-            let combo =  await allPossibleCombos();
-            
-            let possibleCombos = combo.length;
+            let combo =  await allPossibleCombos(); const possibleCombos = combo.length;
 
             const pinCombo = async (combo, optns)=> {
-                
                 let pin_body = new FormData();
-                
-                pin_body.append('path', JSON.stringify(combo));
-                
-                pin_body.append('the_options', JSON.stringify(optns));
-                console.log(`about to pin combo!`);
-                let pinnedCombo = await fetch(`${baseServerUri}api/pinnit`,{method:'POST', body: pin_body}).then((rezz)=>rezz.json()).then((pinned)=>pinned);
-                console.log(`pinned the combo!`)
+                pin_body.append('path', JSON.stringify(combo)); pin_body.append('the_options', JSON.stringify(optns));
+                const pinnedCombo = await fetch(`${baseServerUri}api/pinnit`,{method:'POST', body: pin_body}).then((rezz)=>rezz.json()).then((pinned)=>pinned);
                 pin_body = null;
                 return pinnedCombo;
             }
 
-            let optns = { pinataMetadata:{ name: state.data["createbox"].coll_name, keyvalues: {} }, pinataOptions: { cidVersion: 0 } };
+            let optns = { pinataMetadata:{ name: state.data.createbox.coll_name, keyvalues: {} }, pinataOptions: { cidVersion: 0 } };
 
-            let pinnedCombo = await pinCombo(combo, optns);
+            const pinnedCombo = await pinCombo( combo, optns );
             
             const drawimage = async (traitTypes, width, height) => {
-                let sampleArray = [], cap_it = traitTypes.length;
+                let sampleArray = []; const cap_it = traitTypes.length;
                 
-                for(let v = 0; v < cap_it; v++){
+                for( let v = 0; v < cap_it; v++ ){
                     const options = {
                         pinataMetadata:{
                             name: `${v}`,
@@ -1308,50 +1028,31 @@ function Body(props){
                         }
                     };
 
-                    const  drawableTraits = traitTypes[v].filter(x=>  x.value !== 'N/A');
+                    const  drawableTraits = traitTypes[v].filter( x=>  x.value !== 'N/A');
                     
-                    let bdy = new FormData();
+                    let bdy = new FormData(); bdy.append('width', width); bdy.append('height', height); bdy.append('traits', JSON.stringify(drawableTraits)); bdy.append('imgindex', v ); bdy.append('account', conntd); bdy.append('collname', state.data.createbox.coll_name);
 
-                    bdy.append('width', width);
-                    bdy.append('height', height);
-                    bdy.append('traits', JSON.stringify(drawableTraits));
-                    bdy.append('imgindex', v);
-                    bdy.append('account', conntd);
-                    bdy.append('collname', state.data['createbox'].coll_name);
-
-                    let drewimg = await fetch(`${baseServerUri}api/drawimage`, {method:'POST',body: bdy} ).then((theresponse)=>theresponse.json()).then((drewimg)=>drewimg);
+                    const drewimg = await fetch(`${baseServerUri}api/drawimage`, { method:'POST', body: bdy } ).then((theresponse)=>theresponse.json()).then((drewimg)=>drewimg);
                     
-                    bdy = "";
-                    bdy = new FormData();
-                    bdy.append('path', drewimg.path);
-                    bdy.append('the_options', JSON.stringify(options));
+                    bdy = null; bdy = new FormData(); bdy.append('path', drewimg.path); bdy.append('the_options', JSON.stringify(options));
 
-                    let pinnedSample = await fetch(`${baseServerUri}api/pinnit`,{method:'POST', body: bdy}).then((rezz)=>rezz.json()).then((pinned)=>pinned);
-                    
-                    let metadataJSON = { name: `sample turd #${v}`, attributes: drawableTraits, path: pinnedSample.IpfsHash};
-
+                    const pinnedSample = await fetch(`${baseServerUri}api/pinnit`,{method:'POST', body: bdy}).then((rezz)=>rezz.json()).then((pinned)=>pinned);
                     bdy = null;
-                    sampleArray.push(metadataJSON);
+                    sampleArray.push( { name: `sample turd #${v}`, attributes: drawableTraits, path: pinnedSample.IpfsHash } );
                 }
-                
                 return sampleArray;
             };
 
             const getSamplesAndClearComboData = async (comboz, cap)=>{
-                // const cap = 5;
-                let cap_it = (cap)?cap:comboz.length;
+                const cap_it = (cap)?cap:comboz.length;
                 let sampleImgs = [];
                 for(let v = 0; v < cap_it; v++){
                     sampleImgs.push(comboz[v]);
                 }
-                console.log(`sample img: ${JSON.stringify(sampleImgs)}`);
-
-                
                 return drawimage(sampleImgs, 1000, 1000);
             };
 
-            let samples = await getSamplesAndClearComboData(combo, 4);
-
+            const samples = await getSamplesAndClearComboData(combo, 4);
             combo = null;
 
             const updateDB = async (data, collname, account, thesamples, combo_ipfs_hash)=>{
@@ -1362,20 +1063,17 @@ function Body(props){
                 payload.append('account', conntd);
                 payload.append('ipfs_uri', combo_ipfs_hash);
                 payload.append('samples', JSON.stringify(thesamples));
-
-                let saveCollection = await fetch(`${baseServerUri}api/savenftcollection`, {method:'POST', body:payload}).then((response)=>response.json()).then((ress)=>ress); payload = null;
-                
+                let saveCollection = await fetch(`${baseServerUri}api/savenftcollection`, {method:'POST', body:payload}).then((response)=>response.json()).then((ress)=>ress);
+                payload = null;
                 let newcontract = JSON.parse(JSON.stringify(yaadcontract));
-                
                 newcontract.name = state.data.createbox.coll_name.split(" ").join("_");
-                console.log(`contract name: ${newcontract.names}`);
                 return setState((prev)=>({...prev, data:{ createbox: { coll_name: prev.data.createbox.coll_name, coll_symbol: prev.data.createbox.coll_symbol, samples: thesamples, possibleCombos, contracts: [newcontract] }}, currsubState:{ createbox: "RandomGenerator-RandomGenerated"}}));
             };
 
-            updateDB(state.data.createbox, state.data['createbox'].coll_name, conntd, samples, pinnedCombo.IpfsHash);
+            updateDB(state.data.createbox, state.data.createbox.coll_name, conntd, samples, pinnedCombo.IpfsHash);
         }
         
-        const handleSol = async(e)=>{
+        const handleSol = async (e)=>{
             showLoading();
             let elem  = (e)?e.target:null;
             let elemFiles = elem.files;
@@ -1953,24 +1651,22 @@ function Body(props){
                 </div>
             </div>)
         }
-        let currentSubState, LayerUpldBoxTitle, mainBox, daBattn, addLayer, coll_Name_Box;
+        let currentSubState, LayerUpldBoxTitle, mainBox, daButtn, addLayer, coll_Name_Box;
 
         switch (state.currsubState.createbox) {
             case "RandomGenerator-ContractDeployed":
-                // daBattn = <Buttonz data={{class:"LayerUpldBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />;
                 mainBox = <div className='contract-box' id='LayerGenBoxx'> 
                     <div id='contract-container' className='contract-container'>
-                        <h2>Contract Deployed.</h2>
+                        <BoxTitle data={{class:'generatorRightPanelTitle', type:'h1', text:'Contract Deployed.'}}/>
                         <a href={state.data.createbox.contract_link}><span>contract address: {state.data.createbox.contract_address}</span></a>
                     </div>
                 </div>;
-            // setState((prev)=>({...prev, currsubState: { createbox: "RandomGenerator-ContractDeployed" }, data:{...prev.createbox, createbox: {contract_address: nftToken.address, contract_link: `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`} }}));
-
                 break;
             case "RandomGenerator-RandomGenerated":
-                daBattn = <Buttonz data={{class:"LayerUpldBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />;
-                mainBox = <div id='LayerGenBoxx'><ThaSamples/></div>;
-                LayerUpldBoxTitle = <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the Yaad button to view the NFT contract. \nIf you already have a contract, click "Already have a contract" to link your contract.` }}/>
+                coll_Name_Box = <CollNameBox/>;
+                daButtn = <Buttonz data={{class:"LayerUpldBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />;
+                mainBox = <div><ContractBox/><div id='LayerGenBoxx'><ThaSamples/></div></div>;
+                LayerUpldBoxTitle = <div> <BoxTitle data={{class:'generatorRightPanelTitle', type:'h1', text:'Contract.'}}/><BoxTitle data={{class:'generatorRightPanelTitle', type:'span', text:`Click the "${(activeContract)?state.data["createbox"]["contracts"][activeContract]?.name:state.data["createbox"]["contracts"][0]?.name}" button to view the NFT contract. \nIf you already have a contract, click "Already have a contract" to link your contract.` }}/></div>
                 break;
             case "RandomGenerator-LayerOptions-AddLayer":
                 currentSubState = <div className='LayerUpldBox'>
@@ -2026,16 +1722,14 @@ function Body(props){
                 </div>
                 break;
             default:
-                currentSubState = "";
-                state.formVals = null
-                state.temp_index = null;
-                coll_Name_Box = <CollNameBox/>;
-                addLayer = <AddLayer/>;
+                daButtn = <Dabttn/>
+                currentSubState = ""; state.formVals = null; state.temp_index = null;
+                coll_Name_Box = <CollNameBox/>; addLayer = <AddLayer/>;
                 mainBox = <div id='LayerGenBoxx'><GenLayers/></div>;
-                LayerUpldBoxTitle = <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" icon to create new layer`}}/>;
+                LayerUpldBoxTitle = <div> <BoxTitle data={{class:'generatorRightPanelTitle', type:'h2', text:'LAYERS'}}/> <BoxTitle data={{class:'generatorRightPanelTitle', type:'span', text:`Click the "+" icon to create new layer`}}/></div>;
                 break;
         }
-        // console.log(`temporary value:::::: ${state.temp_index}`);
+        
         function MainContainer (){
             hideLoading();
             if(!currentSubState){
@@ -2045,13 +1739,10 @@ function Body(props){
                         <div className='RandomGenerator'>
                             {coll_Name_Box}
                             <div className='LayerGenBox'>
-                                <BoxTitle data={{class:'generatorRightPanelTitle', type:'span', text:(contractZone)?'Contract':'LAYERS'}}/>
-                                <ContractBox/>
                                 {LayerUpldBoxTitle}
                                 {addLayer}
                                 {mainBox}
-                                {daBattn}
-                                <Dabttn/>
+                                {daButtn}
                             </div>
                         </div>
                     </div>
@@ -2088,47 +1779,31 @@ function Body(props){
         return (
             <div className='welcomeBox'>
                 <div className="welcomeBoxElement">
-                    <button className='containerbox' onClick={ async()=>{ showLoading(); let conndt = await iswalletConnected(); if(conndt === false){ hideLoading(); }else{ hideLoading(); setState((prev)=>({...prev, state: "SelectCreateOption"})) } }} >
-                        <div className='title'>
-                            <h1>
-                                Create
-                            </h1>
-                        </div>
+                    <button className='containerbox' onClick={ async()=>{ showLoading(); const conndt = await iswalletConnected(); if(conndt === false){ hideLoading(); }else{ hideLoading(); setState((prev)=>({...prev, state: "SelectCreateOption"})) } }} >
+                        <div className='title'> <h1>Create</h1> </div>
                     </button>
                 </div>
                 <div className="welcomeBoxElement">
-                    <button className='containerbox' style={{backgroundColor: "#999"}} onClick={()=>""} >
+                    <button className='containerbox' style={{backgroundColor: "#999"}} onClick={()=>nullFunc} >
                         <div className='title'>
-                            <h1>
-                                {props.data.message}
-                            </h1>
-                            <span style={{display:"block", textAlign:"center", }}>
-                                coming soon
-                            </span>
+                            <h1> {props.data.message} </h1>
+                            <span style={{display:"block", textAlign:"center", }}> coming soon </span>
                         </div>
                     </button>
                 </div>
                 <div className="welcomeBoxElement">
                     <button className='containerbox' style={{backgroundColor: "#999"}} onClick={()=>''} >
                         <div className='title'>
-                            <h1>
-                                De-fi
-                            </h1>
-                            <span style={{display:"block", textAlign:"center"}}>
-                                coming soon
-                            </span>
+                            <h1> De-fi </h1>
+                            <span style={{display:"block", textAlign:"center"}}> coming soon </span>
                         </div>
                     </button>
                 </div>
                 <div className="welcomeBoxElement">
                     <button className='containerbox' style={{backgroundColor: "#999"}} onClick={()=>''} >
                         <div className='title'>
-                            <h1>
-                                trade
-                            </h1>
-                            <span style={{display:"block", textAlign:"center"}}>
-                                coming soon
-                            </span>
+                            <h1> trade </h1>
+                            <span style={{display:"block", textAlign:"center"}}> coming soon </span>
                         </div>
                     </button>
                 </div>
