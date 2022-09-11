@@ -11,7 +11,7 @@
     margin: 0px auto;
     display:flex;
     flex-flow:wrap;
-    background-color: black;
+    background-color: rgb(11, 11, 12);
 }
 
 .welcomeBoxElement{
@@ -41,7 +41,7 @@
         margin: 0px auto;
         display:flex;
         flex-flow:wrap;
-        background-color: black;
+        background-color: rgb(11, 11, 12);
     }
     .welcomeBoxElement{
         width: 75vw !important;
@@ -64,7 +64,7 @@
         margin: 0px auto;
         display:flex;
         flex-flow:wrap;
-        background-color: black;
+        background-color: rgb(11, 11, 12);
     }
     .welcomeBoxElement{
         height: 38vw;
@@ -88,7 +88,7 @@
         margin: 0px auto;
         display:flex;
         flex-flow:wrap;
-        background-color: black;
+        background-color: rgb(11, 11, 12);
     }
     .welcomeBoxElement{
         height: 42vw;
@@ -112,7 +112,7 @@
         margin: 0px auto;
         display:flex;
         flex-flow:wrap;
-        background-color: black;
+        background-color: rgb(11, 11, 12);
     }
     .welcomeBoxElement{
         height: 20vw;
@@ -133,7 +133,7 @@
     display: flex;
     flex-direction: row;
     margin: 0px 10px 0px 0px;
-    background-color: black;
+    background-color: rgb(11, 11, 12);
     border: solid #222 1px;
     border-radius: 5px;
     padding: 0px 10px;

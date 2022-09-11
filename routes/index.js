@@ -307,7 +307,27 @@ let pinnit = async (pathh, options)=>{
     }
 };
 
-index.post('/pinnit', multer({ limits: { fieldSize : 25 * 1024 * 1024}}).none(), async (req, res, next)=>{
+index.post('/pinnit', multer({ limits: { fieldSize : 25 * 1024 * 1024 }}).none(), async (req, res, next)=>{
+    const [err, json_to_pin] = checkJsonParse(req.body.path);
+
+    let img_path = (!err)?json_to_pin:normalize(theDir+sep+req.body.path);
+    if(err){ console.log(`an error occurred :${err}`); }
+
+    let tha_options = JSON.parse(req.body.the_options);
+    
+    try {
+        let pinned = await pinnit(img_path, tha_options);
+    
+        console.log(`pinned: ${JSON.stringify(pinned)}\n`);
+        
+        return res.json(pinned);
+    } catch (error) {
+        return res.json(error,)
+    }
+    
+});
+
+index.post('/pinBig', multer({ limits: { fieldSize : 55 * 1024 * 1024 }}).none(), async (req, res, next)=>{
     // console.log(`req.body.path:::: ${req.body.path}`);
 
     const [err, json_to_pin] = checkJsonParse(req.body.path);
@@ -316,14 +336,14 @@ index.post('/pinnit', multer({ limits: { fieldSize : 25 * 1024 * 1024}}).none(),
     
     let img_path = (!err)?json_to_pin:normalize(theDir+sep+req.body.path);
     if(err)
-        console.log(`path is :${img_path}`)
+        console.log(`an error occurred :${err}`)
     let tha_options = req.body.the_options;
     
     // console.log(`options: ${tha_options}`);
     try {
         let pinned = await pinnit(img_path, tha_options);
     
-        console.log(`pinned: ${JSON.stringify(pinned)}\n`);
+        // console.log(`pinned: ${JSON.stringify(pinned)}\n`);
         
         return res.json(pinned);
 

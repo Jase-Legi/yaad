@@ -25,7 +25,7 @@ body{
 	clear: both;
 	height: 100%;
 	font-size:13px;
-    background-color: #000;
+    background-color: rgb(11, 11, 12);
 	/*background: url(../images/background/likeaholics.png) no-repeat center center fixed;*/ 
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
@@ -44,7 +44,7 @@ body{
 
 select {
     /*margin: 50px;*/
-    border: 3px solid #000;
+    border: 3px solid rgb(11, 11, 12);
     background: transparent;
     width: 100%;
     padding: 0px 0px 0px 3px;
@@ -83,13 +83,12 @@ option {
 }
 
 ::-webkit-scrollbar-thumb{
-    background-color: #000;
+    background-color: rgb(11, 11, 12);
 }
 
 button:hover { background: yellow; border:none; color: #000;}
 
 label:hover { background: yellow; border:none; color: #000;}
-
 
 /* CAUTION: IE hackery ahead */
 select::-ms-expand { display: none; /* remove default arrow in IE 10 and 11 */ }
@@ -118,8 +117,6 @@ text {
 }
 
 /* svg { width: 40%; height: 35px; } */
-
-h4{ font-family: tahoma; font-weight:bolder; }
 
 .inactive{
     display: none !important; visibility: hidden !important; 
@@ -208,7 +205,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     color: #fff;
     font-weight: bold;
     border:none;
-    background-color: rgb(0, 0, 0);
+    background-color: rgb(11, 11, 12);
     border-radius: 10px;
     font-size: 10px;
     cursor: pointer;
@@ -217,6 +214,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     background-color: #fff;
     color: #000;
 }
+
 #loadingbttn{
     z-index: 2100 !important;
     position:absolute;
@@ -224,7 +222,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     width: 120px;
     top: calc(50vh - 60px);
     left: calc(50vw - 60px);
-    background-color: #000;
+    background-color: rgb(11, 11, 12);
     border-radius: 10px;
 }
 
@@ -311,6 +309,9 @@ h4{ font-family: tahoma; font-weight:bolder; }
     scrollbar-width: thin;
 }
 
+.welcomeBox{
+    background-color: rgb(11, 11, 12);
+}
 .containerbox{
     /* button */
     height: 100% !important;
@@ -445,7 +446,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     min-width: 150px;
     height: 200px;
     text-align: center;
-    background-color: #000;
+    background-color: rgb(11, 11, 12);
     color: white;
     font-size:1.5em;
     font-weight: 700;
@@ -569,7 +570,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     display: table;
     align-content: center;
     border:#222 1px solid;
-    background-color: rgb(2,2,2);
+    background-color: rgb(11, 11, 12);
     border-radius: 5px;
     /* font */
     font-size: 35px;
@@ -577,8 +578,6 @@ h4{ font-family: tahoma; font-weight:bolder; }
     line-height: 35px;
     color: yellow;
 }
-
-/* .generatorRightPanelAddNewLayer > h1:hover { color: #000;} */
 
 .generatorRightPanelAddNewLayer:hover { background: yellow; border:none; color: #000 !important; }
 
@@ -596,7 +595,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     float: right;
     color: #fff;
     font-weight: bold;
-    border: #000 solid 1px;
+    border: rgb(11, 11, 12) solid 1px;
     background-color: rgb(48, 48, 48);
     border-radius: 10px;
     font-size: 10px;
@@ -617,7 +616,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
 .coll_name_box{
     width: 93vw;
     max-width: 1000px;
-    background-color: #000;
+    background-color: rgb(11, 11, 12);
     padding: 10px 30px;
     margin: 10px auto 0px auto;
     color: #222;
@@ -644,7 +643,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     top: 0;
     width: 110px;
     z-index: 98;
-    background-color: black;
+    background-color: rgb(11, 11, 18);
 }
 
 .layer-box{
@@ -662,9 +661,10 @@ h4{ font-family: tahoma; font-weight:bolder; }
     line-height:normal;
     vertical-align: middle;
     text-align: center;
-    border-bottom:solid rgb(61, 61, 61) 1px;
+    border-bottom:solid #222 1px;
     position: relative;
-    margin: 0px 0px 20px 0px;
+    margin: 10px 0px;
+    width: 100%;
     display: flex;
     color: whitesmoke;
 }
@@ -687,7 +687,23 @@ h4{ font-family: tahoma; font-weight:bolder; }
 
 .generatorRightPanelTitle > h2 {
     color: whitesmoke;
-    font-size: 24px;
+    font-size: 20px;
+    height:fit-content;
+    margin: 0px;
+    vertical-align: middle;
+}
+
+.generatorRightPanelTitle > h3 {
+    color: whitesmoke;
+    font-size: 18px;
+    height:fit-content;
+    margin: 0px;
+    vertical-align: middle;
+}
+
+.generatorRightPanelTitle > h4 {
+    color: whitesmoke;
+    font-size: 12px;
     height:fit-content;
     margin: 0px;
     vertical-align: middle;
@@ -703,7 +719,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     width: 100%;
     display: table;
     align-content: center;
-    border-bottom:dotted rgb(61, 61, 61) 2px ;
+    border-bottom:dotted #222 2px ;
 }
 
 .generatorRightPanelAddNewBG > h1{
@@ -718,8 +734,6 @@ h4{ font-family: tahoma; font-weight:bolder; }
     flex-grow: 2;
     height: fit-content;
     height:70px;
-    /* border-radius: 7.5px; */
-    /* border-top:dotted rgb(61, 61, 61) 2px ; */
 }
 
 .deatail-edit-trait-box{
@@ -854,10 +868,8 @@ h4{ font-family: tahoma; font-weight:bolder; }
     /* position: absolute; */
     max-width: 460px;
     width: 92vw;
-
     /* left: calc(50vw - 230px); */
-
-    background-color: #000;
+    background-color: rgb(11, 11, 12);
     border-radius: 20px;
     box-sizing: border-box;
     padding: 30px;
@@ -948,7 +960,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     float: right;
     color: #fff;
     font-weight: bold;
-    border: #000 solid 1px;
+    border: rgb(11, 11, 12) solid 1px;
     background-color: rgb(48, 48, 48);
     border-radius: 10px;
     font-size: 10px;
@@ -1075,11 +1087,13 @@ h4{ font-family: tahoma; font-weight:bolder; }
 .LayerUpldContentBxAdd:hover{
     background-color: rgb(11, 10, 12);
 }
+
 .LayerUpldContentBxAdd{
     box-sizing: border-box;
     width: 100px;
     height: 113.27px;
     padding: 0px;
+    cursor: pointer;
     margin: 0px auto;
     border-radius: 5px;
     display: inline-block;
@@ -1130,7 +1144,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     color:#ccc;
     font-weight:500;
     background-color: rgb(11, 10, 12);
-    margin: 10px auto;
+    margin: auto;
     width: 100%;
 }
 
@@ -1160,8 +1174,8 @@ h4{ font-family: tahoma; font-weight:bolder; }
 
 .LayerUpldContentBox{
     box-sizing: border-box;
-    width: 100px;
-    height: 100px;
+    width: 100px !important;
+    height: 100px !important;
     height:fit-content;
     padding: 5px;
     display: inline-block;
@@ -1174,14 +1188,15 @@ h4{ font-family: tahoma; font-weight:bolder; }
     width: 90px;
     height: 90px;
     box-sizing: border-box;
-    object-fit: cover; height: 100%; width: 100%;
+    object-fit: cover !important; 
+    height: 100%; width: 100%;
 }
 
 .layerContentBox{
-    width:fit-content;
+    width:100%;
     height: fit-content;
     margin: 0px auto;
-    max-height: 300px;
+    /* max-height: 300px; */
 }
 
 .LayerbgAdd{
@@ -1226,7 +1241,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     padding: 1vw;
     user-select: none;
     text-align: center;
-    background-color: rgb(23, 23, 23);
+    background-color: rgb(14, 14, 14);
     border-radius: 25px;
 }
 
@@ -1234,7 +1249,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     /* position: absolute; */
     width: 93vw;
     max-width: 1000px;
-    background-color: #000;
+    background-color: rgb(11, 11, 12);
     border-radius: 20px;
     box-sizing: border-box;
     padding: 30px;
@@ -1250,7 +1265,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     /* position: absolute; */
     width: 93vw;
     max-width: 1000px;
-    background-color: #000;
+    background-color: rgb(11, 11, 12);
     border-radius: 20px;
     box-sizing: border-box;
     padding: 30px;
@@ -1284,8 +1299,6 @@ h4{ font-family: tahoma; font-weight:bolder; }
 .bg_container_Box{
     flex-grow: 2;
     height: fit-content;
-    /* border-radius: 7.5px; */
-    /* border-top:dotted rgb(61, 61, 61) 2px ; */
 }
 
 .bg_title_box{
@@ -1372,7 +1385,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
 .contract-box{
     border: solid 1px #222;
     border-radius: 10px;
-    background-color: #000;
+    background-color: rgb(11, 11, 12);
     width: 100%;
     padding: 15px;
     box-sizing: border-box;
@@ -1381,7 +1394,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
 
 .expand-contract{
     width: 100%;
-    background-color:#000;
+    background-color:rgb(11, 11, 12);
     height: 30px;
     border-bottom-left-radius: 7.5px;
     border-bottom-right-radius: 7.5px;
@@ -1440,7 +1453,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     height: 40px;
     user-select: none;
     text-align:left;
-    background-color: rgb(2,2,2);
+    background-color: rgb(11, 11, 12);
     border:solid 1px #222 !important;
     box-sizing: border-box !important;
     color: #555;
@@ -1480,10 +1493,10 @@ h4{ font-family: tahoma; font-weight:bolder; }
     height: 40px;
     user-select: none;
     text-align:left;
-    background-color: rgb(2,2,2);
+    background-color: rgb(11, 11, 12);
     border:solid 1px #222 !important;
     box-sizing: border-box !important;
-    color: #555;
+    color: rgb(83, 83, 83);
     font-size:14px;
     font-weight: 500;
     border-radius: 10px;
@@ -1513,7 +1526,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     box-sizing: border-box;
     padding: 9.5px 0px;
     float: left;
-    color: #333;
+    color: rgb(255, 255, 255);
 }
 
 .contractSymbolText{
@@ -1525,7 +1538,7 @@ h4{ font-family: tahoma; font-weight:bolder; }
     box-sizing: border-box;
     padding: 9.5px 0px;
     float: left;
-    color: #333;
+    color: rgb(255, 255, 255);
 }
 
 .contractNameText > span{

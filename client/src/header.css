@@ -5,7 +5,7 @@
     display: flex;
     position: relative;
     color: #FFF;
-    background-color: #000;
+    background-color: rgb(11, 11, 12);
     font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
     width: 100% !important;
     max-width: 100% !important;

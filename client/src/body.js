@@ -122,6 +122,10 @@ const readFile = async (dFile)=>{
     reader.readAsText(dFile);
 }
 
+const logit = async ( itemToLog )=>{
+    console.log(itemToLog);
+};
+
 const shuffle = (arra1)=> {
   var ctr = arra1.length, temp, index;
 
@@ -608,7 +612,45 @@ function Body(props){
 
     function RandomGenerator (props){
 
-        let imgbody = new FormData(); let da_files;
+        let imgbody = new FormData(), wrongFiles = [], da_files;
+
+        const readAndShowFiles = async (demFiles, childClassName, parentClassName) => {
+            for (let n = 0; n < demFiles.length; n++ ) {
+                let dafile = demFiles[n];
+                let readr = new FileReader();
+                readr.onloadend = ()=>{
+                    let buffArray = ( new Uint8Array( readr.result )).subarray(0, 4);
+                    let fileSignature = "";
+                    for(let m = 0; m < buffArray.length; m++){
+                        fileSignature +=buffArray[m].toString(16);
+                    }
+                    
+                    switch (fileSignature) {
+                        case '89504e47'.toLowerCase():
+                        case 'FFD8FFE0'.toLowerCase():
+                        case 'FFD8FFE1'.toLowerCase():
+                        case 'FFD8FFE2'.toLowerCase():
+                        case 'FFD8FFE8'.toLowerCase():
+                            const para = document.createElement("div");
+                            // Append text node to the p element:
+                            para.innerHTML = "<img src="+URL.createObjectURL(dafile)+" />";
+                            para.classList.add((childClassName)?childClassName:'LayerUpldContentBox')
+                            document.getElementsByClassName((parentClassName)?parentClassName:'layerContentBox')[0].appendChild(para);
+                            // para.getElementsByTagName("img")[n].addEventListener("load",(e)=>{logit(`loaded>>>> ${e}`)})
+                            break;
+                        default:
+                            wrongFiles.push(n);
+                            break;
+                    }
+                    
+                    if( n === (demFiles.length-1) ){
+                        return (wrongFiles.length > 0)?wrongFiles:null;
+                    }
+                }
+
+                readr.readAsArrayBuffer(dafile);
+            }
+        }
 
         const handleAddBGLayer = (e)=>{
             return setState((prev)=>({...prev, currsubState:{ createbox:"RandomGenerator-LayerOptions-BG-Upld" }}));
@@ -634,59 +676,39 @@ function Body(props){
         
         const handleAddLayerUpld = async (e)=>{
             showLoading(); e.target.classList.add('inactive'); e.preventDefault();
-            
+
             if (e.target.getAttribute('name') === 'bg_asset' && e.target.getAttribute('type') === 'file') {
-                let n = 0;
+                // let n = 0;
 
                 document.getElementsByClassName('layerContentBox')[0].innerHTML = "";
 
                 document.getElementById('bg_upld').textContent = (e.target.files.length > 0)?'NEXT':'No Background';
+                
+                const pisss = await readAndShowFiles(e.target.files, 'LayerUpldContentBox', 'layerContentBox').then((piss)=>piss);
+                logit(`pisss:::::>>> ${wrongFiles}`);
+                // let imgsLen = document.getElementsByClassName('layerContentBox')[0].getElementsByTagName("img").forEach((v,i,arr)=>{
+                //     v.addEventListener("load",(e)=>{logit(`loaded>>>> ${e}`)})
+                // });
+                // let loadedImgs = 0;
+                // if(++loadedImgs > imgsLen){
+                hideLoading();
 
-                while(n < e.target.files.length){ 
-                    // console.log(e.target.files[0]);
-                    const para = document.createElement("div");
-                    
-                    // Append text node to the p element:
-                    para.innerHTML = "<img src="+URL.createObjectURL(e.target.files[n])+" />";
-    
-                    para.classList.add('LayerUpldContent');
-
-                    document.getElementsByClassName('layerContentBox')[0].appendChild(para);
-                    
-                    n++
-                }
-
+                // }
                 da_files = (e.target.files.length === 0 )?[]:e.target.files;
                 e.target.classList.remove('inactive');
-
-                hideLoading();
-                
                 return;
             }
 
             if(e.target.getAttribute('type') === 'file' && e.target.getAttribute('name') === 'multi_asset'){
-
-                let n = 0;
+                
                 document.getElementsByClassName('layerContentBox')[0].innerHTML = "";
-
-                while( n < e.target.files.length ) {
-                    const para = document.createElement("div");
-                    
-                    // Append text node to the p element:
-                    para.innerHTML = "<img src="+URL.createObjectURL(e.target.files[n])+" />";
-    
-                    para.classList.add('LayerUpldContentBox');
-
-                    document.getElementsByClassName('layerContentBox')[0].appendChild(para);
-                    
-                    n++
-                }
-
+                // await readAndShowFiles(e.target.files);
+                const pisss = await readAndShowFiles(e.target.files).then((piss)=>piss);
+                
                 da_files = e.target.files;
                 // e.target.classList.remove('inactive');
 
                 hideLoading();
-                
                 return;
             }
 
@@ -727,17 +749,20 @@ function Body(props){
             }
             
             imgbody.append('coll_name', state.data["createbox"].coll_name);
-
-            let n = 0;
-
+            
             if((da_files === undefined || da_files.length === 0 || da_files.length === "") && e.target.getAttribute("id") === "bg_upld"){
                 return closeLayerOptionsBox();
             }
             
-            while(n < da_files.length){
+            loop1:
+            for (let n = 0; n < da_files.length; n++){
+                loop2:
+                for( const p of wrongFiles ){
+                    if( p  === n ){ continue loop1; }
+                }
+
                 let assetName = conntd+"_"+n+"_"+Date.now()+"."+da_files[n].name.split('.')[da_files[n].name.split('.').length-1];
                 imgbody.append("files", da_files[n], assetName);
-                n++;
             }
             
             const addedLayer = await fetch(baseServerUri+'api/addGenlayer', {method:"post", body:imgbody}).then((res)=> res.json()).then((piss)=> piss);
@@ -919,7 +944,7 @@ function Body(props){
                         
                         let pin_body = new FormData();
                         pin_body.append( 'path',layers[indx].traits[pin].path );
-                        pin_body.append( 'the_options', options );
+                        pin_body.append( 'the_options', JSON.stringify(options) );
                         const pinnedItem = await fetch( `${baseServerUri}api/pinnit`, {method:'POST', body: pin_body} ).then((resp)=>resp.json()).then((pinned)=> pinned );
                         emptyComboArray[indx].traits.push({ trait_name: layers[indx].traits[pin].trait_name, path: pinnedItem.IpfsHash });
                     }
@@ -944,7 +969,7 @@ function Body(props){
                     };
                     
                     let pin_body = new FormData();
-                    pin_body.append( 'path',backgrounds[f].path ); pin_body.append( 'the_options', options );
+                    pin_body.append( 'path',backgrounds[f].path ); pin_body.append( 'the_options', JSON.stringify(options) );
                     const pinnedBG = await fetch( `${baseServerUri}api/pinnit`, {method:'POST', body: pin_body}).then((resp)=>resp.json()).then((pinned)=>pinned);
                     backgrounds[f].path = pinnedBG.IpfsHash;
                 }
@@ -998,19 +1023,41 @@ function Body(props){
             };
 
             let combo =  await allPossibleCombos(); const possibleCombos = combo.length;
+            const byteSize = async (obj)=>{
+                let str = null;
+                if( typeof(obj) === 'string' ){
+                    str = obj;
+                }else{
+                    str = JSON.stringify(obj);
+                }
+                const bytes = new TextEncoder().encode(str).length;
+                return bytes;
+            };
 
-            const pinCombo = async (combo, optns)=> {
+            const getBytes = await byteSize(combo).then((res)=>res);
+
+            console.log(`size of combo: ${getBytes} bytes`);
+
+            const pinCombo = async (combo, optns, pinUrl)=> {
                 let pin_body = new FormData();
-                pin_body.append('path', JSON.stringify(combo)); pin_body.append('the_options', JSON.stringify(optns));
-                const pinnedCombo = await fetch(`${baseServerUri}api/pinnit`,{method:'POST', body: pin_body}).then((rezz)=>rezz.json()).then((pinned)=>pinned);
+                pin_body.append('path', JSON.stringify(combo)); 
+                pin_body.append('the_options', JSON.stringify(optns));
+                const pinnedCombo = await fetch(pinUrl,{method:'POST', body: pin_body}).then((rezz)=>rezz.json()).then((pinned)=>pinned);
                 pin_body = null;
                 return pinnedCombo;
             }
 
             let optns = { pinataMetadata:{ name: state.data.createbox.coll_name, keyvalues: {} }, pinataOptions: { cidVersion: 0 } };
-
-            const pinnedCombo = await pinCombo( combo, optns );
             
+            let pinnedCombo;
+            if(getBytes < 20000000){
+
+                pinnedCombo = await pinCombo( combo, optns, `${baseServerUri}api/pinnit` );
+            }else{
+
+                pinnedCombo = await pinCombo( combo, optns, `${baseServerUri}api/pinBig` );
+            }
+
             const drawimage = async (traitTypes, width, height) => {
                 let sampleArray = []; const cap_it = traitTypes.length;
                 
@@ -1419,7 +1466,7 @@ function Body(props){
                                     <div className='LayerUpldContentadd'>
                                         <img className='LayerUpldContentaddimg' src="./plus.svg" alt=""/>
                                     </div>
-                                    <BoxTitle data={{text:"Add image.", class:"addHeaderText", type:"h4"}} />
+                                    <h4 className='addHeaderText'>Add image.</h4>
                                 </div>
                             </div>
                         </div>
@@ -1665,13 +1712,13 @@ function Body(props){
             case "RandomGenerator-RandomGenerated":
                 coll_Name_Box = <CollNameBox/>;
                 daButtn = <Buttonz data={{class:"LayerUpldBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />;
-                mainBox = <div><ContractBox/><div id='LayerGenBoxx'><ThaSamples/></div></div>;
+                mainBox = <div><ContractBox/><div id='LayerGenBoxx'><BoxTitle data={{class:'generatorRightPanelTitle', type:'h4', text:'Generated Samples.'}}/><ThaSamples/></div></div>;
                 LayerUpldBoxTitle = <div> <BoxTitle data={{class:'generatorRightPanelTitle', type:'h1', text:'Contract.'}}/><BoxTitle data={{class:'generatorRightPanelTitle', type:'span', text:`Click the "${(activeContract)?state.data["createbox"]["contracts"][activeContract]?.name:state.data["createbox"]["contracts"][0]?.name}" button to view the NFT contract. \nIf you already have a contract, click "Already have a contract" to link your contract.` }}/></div>
                 break;
             case "RandomGenerator-LayerOptions-AddLayer":
                 currentSubState = <div className='LayerUpldBox'>
                     <DaInput data={( state.temp_index  !== null )? { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.createbox.layers[ state.temp_index ]?.name } : { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:(state.formVals !== null)?state.formVals:'Enter layer name.', onChange:collNameBox, onClick:(e)=>{ e.target.value = state.formVals;} } }/>
-                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Click the "+" to upload layer files${( state.temp_index !== null)?" for: "+state.data.createbox.layers[ state.temp_index ]?.name:""}.`}}/>
+                    <BoxTitle data={{class:"generatorRightPanelTitle", type:'span', text:`Click the "+" to upload layer files${( state.temp_index !== null)?" for: "+state.data.createbox.layers[ state.temp_index ]?.name:""}.`}}/>
                     <label className='LayerUpldBttn' id='LayerUpldLabel' htmlFor='multi_asset' onClick={(e)=>{ let ele_val = state.formVals; if( !ele_val && state.temp_index === null ) { e.preventDefault(); setErrStacks((prev)=>( {...prev, formdata:[{id:"LayerName", value: document.getElementById("LayerName").value, msg: "Enter a layer name!"}], substate:state.currsubState.createbox } )) } }}> <img src='./plus.svg' alt='' />
                         <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:'multi_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/>
                     </label>
@@ -1681,7 +1728,7 @@ function Body(props){
                 break;
             case "RandomGenerator-LayerOptions-BG-Upld":
                 currentSubState = <div className='LayerUpldBox'>
-                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:'Click the "+" to upload background files.'}}/>
+                    <BoxTitle data={{class:"generatorRightPanelTitle", type:'span', text:'Click the "+" to upload background files.'}}/>
                     <label className='LayerUpldBttn' htmlFor='multi_asset'> <img src='./plus.svg' alt='' />
                         <DaInput data={{typeClass:'LayerName', typeId:'multi_asset', name:'bg_asset', type:'file', multiple:'multiple', hidden:true, accept:'image/*', onChange:handleAddLayerUpld}}/>
                     </label>
@@ -1691,31 +1738,31 @@ function Body(props){
                 break;
             case "RandomGenerator-LayerOptions-Edit-Layer":
                 currentSubState = <div className='LayerUpldBox'>
-                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:'Rename layer.'}}/>
+                    <BoxTitle data={{class:"generatorRightPanelTitle", type:'h4', text:'Rename layer.'}}/>
                     <input type="text" id='multi_asset' name='bg_asset' multiple="multiple" accept="image/*" style={{opacity:100, zIndex:1}} onChange={handleAddLayerUpld} hidden/>
                     <Buttonz data={{class:'renameLayerBttn', id:'bg_upld', value:'Rename', func: renameLayer}} />
                     <div className='layerContentBox'></div>
-                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Delete ${state.data.createbox.layers[ state.temp_index ]?.name} layer.`}}/>
+                    <BoxTitle data={{class:"generatorRightPanelTitle", type:'h4', text:`Delete ${state.data.createbox.layers[ state.temp_index ]?.name} layer.`}}/>
                     <Buttonz data={{class:"delLayerBttn", id:'bg_upld', value: 'DELETE', func: delLayer}} />
                 </div>
                 break;
             case "RandomGenerator-LayerOptions-Rename_Layer":
                 currentSubState = <div className='LayerUpldBox'>
-                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'h2', text:'Change layer name.'}}/>
+                    <BoxTitle data={{class:"generatorRightPanelTitle", type:'h4', text:'Change layer name.'}}/>
                     <DaInput data={{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:state.data["createbox"].layers[ state.temp_index ]?.name, onChange:renameLayer}}/>
                     <Buttonz data={{class:"nodelLayerBttn", id:'', value:'SUBMIT', func: closeLayerOptionsBox}} />
                 </div>
                 break;
             case "RandomGenerator-LayerOptions-Del-Layer":
                 currentSubState = <div className='LayerUpldBox'>
-                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'span', text:`Select yes to delete ${state.data.createbox.layers[ state.temp_index ]?.name} layer.`}}/>
+                    <BoxTitle data={{class:"generatorRightPanelTitle", type:'h4', text:`Select yes to delete ${state.data.createbox.layers[ state.temp_index ]?.name} layer.`}}/>
                     <Buttonz data={{class:'delLayerBttn', id:'', value:'YES', func: delLayer}} />
                     <Buttonz data={{class:'nodelLayerBttn', id:'', value:'NO', func: closeLayerOptionsBox}} />
                 </div>
                 break;
             case "RandomGenerator-LayerOptions-ContractName":
                 currentSubState = <div className='LayerUpldBox'>
-                    <BoxTitle data={{class:'LayerUpldBoxTitle', type:'h2', text:'enter contract name.'}}/>
+                    <BoxTitle data={{class:"generatorRightPanelTitle", type:'h2', text:'enter contract name.'}}/>
                     <DaInput data={{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:"Enter main contract name.", onChange:collNameBox}}/>
                     <ContractBox/>
                     <Buttonz data={{class:"nodelLayerBttn", id:'', value:'SUBMIT', func: nullFunc}} />
