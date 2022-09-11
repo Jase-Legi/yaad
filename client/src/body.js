@@ -614,9 +614,11 @@ function Body(props){
 
         let imgbody = new FormData(), wrongFiles = [], da_files;
 
-        const readAndShowFiles = async (demFiles, childClassName, parentClassName) => {
+        const validateIMGtype = async ( demFiles, childClassName, parentEle ) => {
+            parentEle.innerHTML = "";
             for (let n = 0; n < demFiles.length; n++ ) {
                 let dafile = demFiles[n];
+                // let wrongFiles = []
                 let readr = new FileReader();
                 readr.onloadend = ()=>{
                     let buffArray = ( new Uint8Array( readr.result )).subarray(0, 4);
@@ -635,21 +637,23 @@ function Body(props){
                             // Append text node to the p element:
                             para.innerHTML = "<img src="+URL.createObjectURL(dafile)+" />";
                             para.classList.add((childClassName)?childClassName:'LayerUpldContentBox')
-                            document.getElementsByClassName((parentClassName)?parentClassName:'layerContentBox')[0].appendChild(para);
+                            parentEle.appendChild(para);
                             // para.getElementsByTagName("img")[n].addEventListener("load",(e)=>{logit(`loaded>>>> ${e}`)})
                             break;
                         default:
                             wrongFiles.push(n);
+                            if(demFiles.length === wrongFiles.length){
+                                logit(`lengths are equal!`);
+                                return setErrStacks((prev)=>({...prev, substate: state.currsubState.createbox, formdata: [{id: "LayerUpldLabel", value: "", msg:"Unsupported file types! JPG, JPEG, PNG only."}] }));
+                            }
                             break;
-                    }
-                    
-                    if( n === (demFiles.length-1) ){
-                        return (wrongFiles.length > 0)?wrongFiles:null;
                     }
                 }
 
                 readr.readAsArrayBuffer(dafile);
+
             }
+            return;
         }
 
         const handleAddBGLayer = (e)=>{
@@ -678,36 +682,18 @@ function Body(props){
             showLoading(); e.target.classList.add('inactive'); e.preventDefault();
 
             if (e.target.getAttribute('name') === 'bg_asset' && e.target.getAttribute('type') === 'file') {
-                // let n = 0;
-
-                document.getElementsByClassName('layerContentBox')[0].innerHTML = "";
-
                 document.getElementById('bg_upld').textContent = (e.target.files.length > 0)?'NEXT':'No Background';
-                
-                const pisss = await readAndShowFiles(e.target.files, 'LayerUpldContentBox', 'layerContentBox').then((piss)=>piss);
-                logit(`pisss:::::>>> ${wrongFiles}`);
-                // let imgsLen = document.getElementsByClassName('layerContentBox')[0].getElementsByTagName("img").forEach((v,i,arr)=>{
-                //     v.addEventListener("load",(e)=>{logit(`loaded>>>> ${e}`)})
-                // });
-                // let loadedImgs = 0;
-                // if(++loadedImgs > imgsLen){
-                hideLoading();
-
-                // }
+                wrongFiles = ( wrongFiles.length > 0)?[]:[];
+                await validateIMGtype( e.target.files, 'LayerUpldContentBox', document.getElementsByClassName('layerContentBox')[0] );
                 da_files = (e.target.files.length === 0 )?[]:e.target.files;
-                e.target.classList.remove('inactive');
+                hideLoading();
                 return;
             }
 
             if(e.target.getAttribute('type') === 'file' && e.target.getAttribute('name') === 'multi_asset'){
-                
-                document.getElementsByClassName('layerContentBox')[0].innerHTML = "";
-                // await readAndShowFiles(e.target.files);
-                const pisss = await readAndShowFiles(e.target.files).then((piss)=>piss);
-                
-                da_files = e.target.files;
-                // e.target.classList.remove('inactive');
-
+                wrongFiles = ( wrongFiles.length > 0)?[]:[];
+                await validateIMGtype( e.target.files, 'LayerUpldContentBox', document.getElementsByClassName('layerContentBox')[0] );
+                da_files = (e.target.files.length === 0 )?[]:e.target.files;
                 hideLoading();
                 return;
             }
@@ -715,9 +701,7 @@ function Body(props){
             let layerName;
 
             if(e.target.getAttribute("id") !== "bg_upld"){
-                layerName = ( state.temp_index === null )? state.formVals:document.getElementById("LayerName").value;
-                // layerName = document.getElementById("LayerName").value.trim();
-
+                layerName = ( state.temp_index === null )? state.formVals:document.getElementById("LayerName").value.trim();
                 if( layerName === null || document.getElementById("multi_asset").files.length < 1){
                     
                     if( ( layerName === null && document.getElementById("multi_asset").files.length < 1 )  || (  layerName === null)) {
@@ -728,21 +712,17 @@ function Body(props){
                     }
 
                     e.target.classList.remove('inactive');
-
                     hideLoading();
-                    
                     return false;
                 }
             }
 
             let conntd = await iswalletConnected();
             showLoading();
-            if ( conntd !== false ) { imgbody.append('account', conntd) }else{ return false; }
+            if ( conntd !== false ) { imgbody.append('account', conntd) } else { return false; }
             
             if(e.target.getAttribute("id") === "bg_upld"){
-                if(!state.data["createbox"].background){
-                    state.data["createbox"].background =[]
-                }
+                if(!state.data["createbox"].background){ state.data["createbox"].background = []; }
                 imgbody.append('background', 'background');
             }else{
                 imgbody.append('layerName', layerName);
@@ -754,11 +734,13 @@ function Body(props){
                 return closeLayerOptionsBox();
             }
             
+            logit(`wrong files array = ${ wrongFiles.length }`);
+
             loop1:
             for (let n = 0; n < da_files.length; n++){
                 loop2:
                 for( const p of wrongFiles ){
-                    if( p  === n ){ continue loop1; }
+                    if( p  === n ) { continue loop1; }
                 }
 
                 let assetName = conntd+"_"+n+"_"+Date.now()+"."+da_files[n].name.split('.')[da_files[n].name.split('.').length-1];
