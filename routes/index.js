@@ -317,8 +317,7 @@ index.post('/pinnit', multer({ limits: { fieldSize : 25 * 1024 * 1024 }}).none()
     
     try {
         let pinned = await pinnit(img_path, tha_options);
-    
-        console.log(`pinned: ${JSON.stringify(pinned)}\n`);
+        // console.log(`pinned: ${JSON.stringify(pinned)}\n`);
         
         return res.json(pinned);
     } catch (error) {

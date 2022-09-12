@@ -101,7 +101,10 @@ select::-ms-expand { display: none; /* remove default arrow in IE 10 and 11 */ }
     }
 }
 
-h1{ font-family: tahoma; font-weight:bolder; }
+a{
+    user-select: none;
+    text-decoration: none;
+}
 
 img{
     -webkit-user-drag: none;
@@ -200,7 +203,7 @@ text {
     height:20px;
     width: 20px;
     /* display: inline-block; */
-    float: right;
+    float: left;
     margin:0px;
     color: #fff;
     font-weight: bold;

@@ -112,16 +112,6 @@ const iswalletConnected = async ()=>{
     }
 };
 
-const readFile = async (dFile)=>{
-    let reader = new FileReader();
-    reader.onloadend = (e)=>{
-        let content = reader.result;
-        return content;
-    }
-
-    reader.readAsText(dFile);
-}
-
 const logit = async ( itemToLog )=>{
     console.log(itemToLog);
 };
@@ -295,7 +285,7 @@ function Body(props){
                 let the_msg = errStacks.formdata[i]?.msg;
                 let the_ele = document.getElementById(eleID);
                 bbx.push(
-                    <div key={i} className='errorbox' id='errorbox' style={{top: parseInt(the_ele.getBoundingClientRect().bottom)-5+"px", left: parseInt(the_ele.getBoundingClientRect().left)+15+"px"}}><BoxTitle data={{text:`${the_msg}`, type:"span", class:"errorboxEle" }}/><Buttonz data={{value:"X", class:"error-box-closer", func:(e)=>{ errStacks = defaultErrorStack; e.target.parentNode.remove() } }} /> </div>
+                    <div key={i} className='errorbox' id='errorbox' style={{top: parseInt(the_ele.getBoundingClientRect().bottom)-5+"px", left: parseInt(the_ele.getBoundingClientRect().left)+15+"px"}}><Buttonz data={{value:"X", class:"error-box-closer", func:(e)=>{ errStacks.intervalId=null; errStacks.formdata=[]; errStacks.substate=null; e.target.parentNode.remove() } }} /><BoxTitle data={{text:`${the_msg}`, type:"span", class:"errorboxEle" }}/></div>
                 )
             });
             return ( <div> {bbx} </div> )
@@ -347,10 +337,17 @@ function Body(props){
     }
     
     const deployContract = async (e)=>{
-        showLoading();
+        // showLoading();
         const ele = e.target;
         ele.classList.add("inactive");
+        if(!state.data.createbox.coll_name || state.data.createbox.coll_name.trim() === ""){
+            return setErrStacks( (prev)=>({...prev, formdata:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState.createbox }) );
+        }
         
+        if(!state.data.createbox.coll_symbol || state.data.createbox.coll_symbol.trim() === ""){
+            return setErrStacks( (prev)=>({...prev, formdata:[{id:"contractSymbol", value: document.getElementById("contractSymbol").value, msg: "Enter a symbol!"}], substate:state.currsubState.createbox }) );
+        }
+
         try {
             let contractOptions = {
                 language: "Solidity", 
@@ -370,20 +367,25 @@ function Body(props){
 
             const connected = await iswalletConnected();
             let contractData = new FormData();
-
             if(connected === false) { hideLoading(); return false; }
-            
             contractData.append('contractJSON', JSON.stringify(contractOptions));
             const compiledContract = await fetch(baseServerUri+"api/compileContract", {method:'POST',body: contractData} ).then((theresponse)=>theresponse.json()).then((compiled)=>compiled);
             const abi = compiledContract.abi;
             const bytecode = compiledContract.bytecode;
             const factory = new ContractFactory(abi, bytecode, signer);
-            const nftToken = await factory.deploy(state.data.createbox.coll_name, state.data.createbox.coll_symbol);
-            hideLoading();
+            const nftToken = await factory.deploy(state.data.createbox.coll_name, state.data.createbox.coll_symbol).then((tx)=>tx).catch((e)=>e);
             contractData = null;
+            if(nftToken.code === "ACTION_REJECTED"){
+                ele.classList.remove("inactive");
+                // hideLoading();
+                return;
+            }
+
             // {"name":"ropsten","chainId":3,"ensAddress":"0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"}
-            setState( (prev)=>( { ...prev, currsubState: { createbox: "RandomGenerator-ContractDeployed" }, data:{...prev.createbox, createbox: {contract_address: nftToken.address, contract_link: `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`} } } ));
-            ele.classList.remove("inactive");
+            if(nftToken.address){
+                logit(`deployed token details: ${nftToken}`);
+                setState( (prev)=>( { ...prev, currsubState: { createbox: "RandomGenerator-ContractDeployed" }, data:{...prev.createbox, createbox: {contract_address: nftToken.address, contract_link: `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`} } } ));
+            }
         } catch (error) {
             console.log(`error: ${error}`)
             return false;
@@ -1139,12 +1141,13 @@ function Body(props){
             
             if(ele.getAttribute("id") === "contractSymbol"){
                 if(the_value.length > 4 || !isAplhaNumeric(the_value)){
-                    ele.value = state.data["createbox"].coll_symbol;
+                    ele.value = state.data.createbox.coll_symbol;
                     return;
                 }
 
                 state.data["createbox"]["coll_symbol"] = the_value;
-                ele.setAttribute("placeholder", the_value)
+                ele.setAttribute("placeholder", the_value);
+                return;
             }
             
             if(ele.getAttribute("id") === "contractName"){
@@ -1413,7 +1416,7 @@ function Body(props){
 
                         while (indxx < state.data["createbox"].layers[props.obj.key].traits.length){
                             
-                            boxcont.push(<div key={indxx} className='LayerUpldContentBx'><div className='LayerUpldContent'><img style={{backgroundColor: '#222'}} src={baseServerUri+state.data["createbox"].layers[props.obj.key].traits[indxx].path} alt=''/><div className='traitName'><input className='traitNameBox' id={"traitName_"+indxx} placeholder={state.data["createbox"].layers[props.obj.key].traits[indxx].trait_name} type="text" name='name' onChange={setTrait} /><Buttonz data={{class:"edit-trait-img-svg", id:'delele_'+indxx, value:'X', func: delTrait}} /></div></div></div>)
+                            boxcont.push(<div key={indxx} className='LayerUpldContentBx'><div className='LayerUpldContent'><img style={{backgroundColor: '#222'}} src={baseServerUri+state.data["createbox"].layers[props.obj.key].traits[indxx].path} alt=''/><div className='traitName'><input className='traitNameBox' id={"traitName_"+indxx} placeholder={state.data["createbox"].layers[props.obj.key].traits[indxx].trait_name} type="text" name='name' onClick={(e)=>{ e.target.value = state.data["createbox"].layers[props.obj.key].traits[parseInt(e.target.getAttribute("id").split("_")[1])].trait_name}} onChange={setTrait} /><Buttonz data={{class:"edit-trait-img-svg", id:'delele_'+indxx, value:'X', func: delTrait}} /></div></div></div>)
 
                             indxx++;
                         }
@@ -1542,7 +1545,7 @@ function Body(props){
                         let indxx = 0; let bgstack = [];
 
                         while (indxx < state.data["createbox"].background.length){
-                            bgstack.push(<div key={indxx} className='BG_UpldContentBx'><div className='BG_UpldContent'><img style={{backgroundColor: '#222'}} src={baseServerUri+state.data["createbox"].background[indxx].path} alt=''/><DaInput data={{class:'traitName', typeClass:'BG_traitNameBox', typeId:"BGName_"+indxx, placeholder:state.data["createbox"].background[indxx].trait_name, type:'text', name:'name', onChange:setBGTrait }}/></div><Buttonz data={{class:"delBG", id:'deleteBGUpldContentBx_'+indxx, value:'X', func: delBG}} /></div>)
+                            bgstack.push(<div key={indxx} className='BG_UpldContentBx'><div className='BG_UpldContent'><img style={{backgroundColor: '#222'}} src={baseServerUri+state.data["createbox"].background[indxx].path} alt=''/><DaInput data={{class:'traitName', typeClass:'BG_traitNameBox', typeId:"BGName_"+indxx, placeholder:state.data["createbox"].background[indxx].trait_name, type:'text', name:'name', onClick:(e)=>{ e.target.value = state.data["createbox"].background[parseInt(e.target.getAttribute("id").split("_")[1])].trait_name}, onChange:setBGTrait }}/></div><Buttonz data={{class:"delBG", id:'deleteBGUpldContentBx_'+indxx, value:'X', func: delBG}} /></div>)
 
                             indxx++;
                         }
@@ -1663,7 +1666,7 @@ function Body(props){
             return(
                 <div style={{marginBottom:"20px"}}>
                     <input type="file" id={(contractZone)?'project_contract':'single_asset'} name={(contractZone)?'project_contract':'single_asset'} accept={(contractZone)?'*':"image/*"} multiple="multiple" style={{opacity:100, zIndex:1}} onChange={(contractZone)?handleSol:state.data["createbox"].func} hidden/>
-                    <button className='generatorRightPanelAddNewLayer' id='generatorRightPanelAddNewLayer' onClick={(e)=>{if(!contractZone){ if(state.data.createbox.coll_name?.length > 0){ state.temp_index = null; handleAddLayer(e); }else{ setErrStacks((prev)=>({...prev, formdata:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState.createbox }) )} }else{ return nullFunc(e)}}} > + </button>
+                    <button className='generatorRightPanelAddNewLayer' id='generatorRightPanelAddNewLayer' onClick={(e)=>{if(!contractZone){ if(state.data.createbox.coll_name?.length > 0){ state.temp_index = null; handleAddLayer(e); }else{ setErrStacks( (prev)=>({...prev, formdata:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState.createbox }) )} }else{ return nullFunc(e)}}} > + </button>
                 </div>
             )
         }
@@ -1672,11 +1675,11 @@ function Body(props){
             return(<div className='coll_name_box'>
                 <div className='contractNameContainer'>
                     <BoxTitle data={{class:'contractNameText', type:'span', text:'Name:'}}/>
-                    <DaInput data={{ type:'text', typeId:'contractName', typeClass:'contractName', placeholder:(state["data"].createbox.coll_name)?state["data"].createbox.coll_name:"Enter a project name.", onChange:collNameBox, onClick:(e)=>{e.target.value = state["data"].createbox.coll_name}}}/>
+                    <DaInput data={{ type:'text', typeId:'contractName', typeClass:'contractName', placeholder:(state["data"].createbox.coll_name)?state["data"].createbox.coll_name:"Enter your project name.", onChange:collNameBox, onClick:(e)=>{e.target.value = state["data"].createbox.coll_name}}}/>
                 </div>
                 <div className='contractSymbolContainer'>
                     <BoxTitle data={{class:'contractSymbolText', type:'span', text:'Symbol:'}}/>
-                    <DaInput data={{ type:'text', typeId:'contractSymbol', typeClass:'contractSymbol', placeholder:(state["data"].createbox.coll_symbol)?state["data"].createbox.coll_symbol:'', onChange:collNameBox}}/>
+                    <DaInput data={{ type:'text', typeId:'contractSymbol', typeClass:'contractSymbol', placeholder:(state["data"].createbox.coll_symbol)?state["data"].createbox.coll_symbol:"Enter project symbol.", onChange:collNameBox}}/>
                 </div>
             </div>)
         }
