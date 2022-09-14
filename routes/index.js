@@ -276,19 +276,16 @@ pinata.testAuthentication().then((result) => {
 });
 
 let checkJsonParse = (str)=>{
-    if(typeof(str) !== 'string') return [true];
-    // console.log(`str:: ${str}`);
+    if(typeof(str) !== 'string' && typeof(str) !== 'string') return [null, JSON.parse(str)];
     try {
         return [null, JSON.parse(str)];
 
     } catch (error) {
-        
         return [error];
     }
 }
 
 let pinnit = async (pathh, options)=>{
-    
     try {
         // let pookie = ( typeof(pathh) === 'object' )? await pinata.pinJSONToIPFS( pathh, options ) : await pinata.pinFromFS( pathh , options);
         if( typeof(pathh) !== 'object' ){
@@ -299,11 +296,8 @@ let pinnit = async (pathh, options)=>{
             let pookie = await pinata.pinJSONToIPFS( pathh, options );
             return pookie;
         }
-    
     } catch (error) {
-        
         return {error,}
-    
     }
 };
 
@@ -492,7 +486,7 @@ index.post('/upldSingle',(req,res, next)=>{
             const lastPart = pathArray.length-1;
             const fileStaticPath = pathArray[lastPart-1]+sep+pathArray[lastPart]
             
-            // console.log(`resolve which paaaat: ${fileStaticPath}`);
+            console.log(`resolve which paaaat: ${fileStaticPath}`);
 
             const readableStreamForFile = dirname(myFile.path);
             const folder = basename(dirname(myFile.path))
@@ -504,11 +498,11 @@ index.post('/upldSingle',(req,res, next)=>{
                 unlinkSync(normalize(upldDir+'/'+req.body.name));
             
             }
-            // console.log(`the path:::: ${basename(dirname(myFile.path))}`);
+            console.log(`the path:::: ${basename(dirname(myFile.path))}`);
             
-            // console.log(`::::::::${JSON.stringify(folder)}`);
+            console.log(`::::::::${JSON.stringify(folder)}`);
 
-            return res.json({message:"Uloaded an NFT", folder,filename,path: fileStaticPath});
+            return res.json({ folder, filename, path: fileStaticPath });
         })    
     } catch (error) {
         // console.log(`thisssssssssssssssssss: ${error}`);
@@ -516,84 +510,52 @@ index.post('/upldSingle',(req,res, next)=>{
     }
 });
 
-index.post('/createone', multer().none(), (req,res, next)=>{
-  
-    try {
-
-        const pinata = pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_API_SECRET);
-        
-        pinata.testAuthentication().then((result) => {
-            
-            //handle successful authentication here
-            console.log(result);
-            
-        }).catch((err) => {
-            
-            //handle error here
-            console.log(err);
-            
-        });
-
-        let NFTname = req.body.name;
-        
-        let desc = req.body.desc;
-        
-        let responseData = null;
-
-        const options = {
-            pinataMetadata:{
-                name: NFTname,
-                keyvalues: {
-                    description: desc,
-                    name: NFTname
-                }
-            },
-            pinataOptions: {
-                cidVersion: 0
+index.post('/createone', multer().none(), async (req,res, next)=>{
+    const [err, payload] = checkJsonParse(req.body.data);
+    const NFTname = payload.name, desc = payload.desc;    
+    let responseData = null;
+    const options = {
+        pinataMetadata:{
+            name: `${NFTname}`,
+            keyvalues: {
+                description: `${desc}`,
+                name: `${NFTname}`
             }
-        };
+        },
+        pinataOptions: {
+            cidVersion: 0
+        }
+    };
 
-        let body = {
-            "description": desc, 
-            "external_url": "", 
-            "image": "", 
-            "name": NFTname,
-            "attributes": []
+    let body = {
+        "description": desc, 
+        "external_url": "", 
+        "image": "", 
+        "name": NFTname,
+        "attributes": []
+    }
+
+    const filePath = normalize(upldDir+'/'+payload.filename);
+    try {
+        const pinned = await pinnit(filePath, options);
+        if ( pinned.isDuplicate == true ){
+            const error = {message: "duplicate"};
+            return res.json({error, nftDetails:body, link: pinned.IpfsHash })
+        }
+        console.log(`blllaaaaaahhh`);
+        if( pinned.error ){
+            return res.json({error: {message: "Failed to upload nft."}});
         }
 
-        let filePath = normalize(upldDir+'/'+req.body.filename);
-
-        pinata.pinFromFS(filePath, options).then((result) => {
-                    
-            unlinkSync(filePath);
-            
-            console.log(`img data:: ${JSON.stringify(result)}`);
-
-            if(result.isDuplicate == true){
-
-                return res.json({error: {message: "duplicate"}, nftDetails:body, link: result.IpfsHash});
-            
-            }
-
-            body.image = result.IpfsHash;
-
-            pinata.pinJSONToIPFS(body, options).then((rez) => {
-                //handle results here
-                console.log(`metadata:: ${JSON.stringify(rez)}`);
-                // responseData = rez;
-                return res.json({message:"uploaded", nftDetails:body, results:rez});
-            }).catch((err) => {
-                
-                return res.json({error: {message: "Failed to save asset metadata, try reloading page. If problem persist email dev team: jasonlegister@gmail.com"}});
-            });
-
-        }).catch((err) => {
-        
-            return res.json({error: {message: "Failed to upload nft."}});
-        });
-        
+        body.image = pinned.IpfsHash;
+        const pinnedJSON = await pinnit( body, options );
+        if( pinnedJSON.error ){
+            return res.json({error: {message: "Failed to save asset metadata, try reloading page. If problem persist email dev team: jasonlegister@gmail.com"}});
+        }
+        console.log(`wiiiisssshhh`);
+        return res.json({message:"uploaded", nftDetails:body, results:pinnedJSON});
     } catch (error) {
-        return res.json({error: {message: "An error occurred: "+error}});
+        return res.json(error,)
     }
 });
 
