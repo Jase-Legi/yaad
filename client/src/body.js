@@ -107,8 +107,9 @@ const iswalletConnected = async ()=>{
             return (accounts === false)? false : accounts[0];
         }
     }else{
-        alert("get metamask");
-        return false;
+        // alert("get metamask");
+        // window.location
+        return window.location = "https://metamask.app.link/dapp/www.yaadlabs.com";
     }
 };
 
@@ -1468,15 +1469,12 @@ function Body(props){
         
         function Dabttn(){
             const setBGTrait = (e)=>{
-
                 e.preventDefault();
-
                 const ele = e.target;
                 
                 if(ele.value){
                     if(ele.getAttribute('id').split('_')[0] === 'BGName'){
                         let eleKey = [].indexOf.call(document.getElementsByClassName('BG_traitNameBox'), ele);
-                        
                         state.data.background[eleKey].trait_name = ele.value;
                         ele.setAttribute('placeholder', ele.value);
                     }
@@ -1484,19 +1482,13 @@ function Body(props){
             };
 
             const delBG = async (e)=>{
-                showLoading();
-                e.preventDefault();
-    
-                const ele = e.target;
+                showLoading(); e.preventDefault(); const ele = e.target;
                 
-                let eleindex = parseInt(ele.getAttribute('id').split('_')[1]);
-                
-                let delVal = state.data.background.splice(eleindex, 1);
-                console.log(`the id = ${ele.getAttribute('id')}, this key is ${eleindex}, gggooo ${delVal}`);
-                
+                const eleindex = parseInt(ele.getAttribute('id').split('_')[1]);
+                const delVal = state.data.background.splice(eleindex, 1);
                 let boddy = new FormData();
-                let conntd = await iswalletConnected();
-                
+
+                const conntd = await iswalletConnected();
                 if(conntd !== false){
                     boddy.append('account', conntd);
                 }else{
@@ -1521,7 +1513,6 @@ function Body(props){
             };
             
             if(state.data.layers?.length > 1){
-
                 let Bgwords = (state.data.background)?'GENERATE':'Choose Backgrounds';
                 
                 function TheBGs(){
@@ -1559,7 +1550,6 @@ function Body(props){
         let activeContract = state.data["activeContract"], conDetails = {};
         
         useEffect(()=>{
-            // console.log(`pisssing: ${activeContract}`);
             if(state.data["contracts"] && activeContract){
                 conDetails["name"] = state.data["contracts"][activeContract].name;
                 conDetails["contract"] = state.data["contracts"][activeContract].contract;
