@@ -1,7 +1,6 @@
 const express = require('express');
 let app = express();
 require('dotenv').config();
-
 let cors = require('cors');
 let daORigin = (process.env.NODE_ENV === 'dev')?'http://localhost:3000':'https://yaadlabs.com';
 const corsOptions = {
@@ -31,6 +30,47 @@ const pinataSDK = require('@pinata/sdk');
 
 const PORT = process.env.PORT || 5000;
 
+const extendTimeOut = (req, res, next)=>{
+    const space = " ";
+    let isFinished = false, dataSent = false;
+
+    if(!req.url.includes("/api/drawimage")){
+        next();
+        return;
+    }
+
+    res.once( "finish", ()=>{ isFinished = true; });
+
+    res.once( "end", ()=>{ isFinished = true; });
+
+    res.once( "close", ()=>{ isFinished = true; });
+
+    res.once( "data", (data)=>{
+        if( data !== space ){
+            dataSent = true;
+        }
+    });
+
+    const waitAndSend = async ()=>{
+        setTimeout(()=>{
+            if(!isFinished && !dataSent){
+                console.log(`extend this`);
+
+                if(!res.headersSent){
+                    res.writeHead(202);
+                }
+                res.write(space);
+                waitAndSend();
+            }
+        }, 15000)
+    };
+
+    waitAndSend();
+    next();
+};
+
+app.use(extendTimeOut);
+
 app.use(bodyParser.urlencoded({extended: true}));
 
 // app.options('/api/generate', cors(corsOptions));
@@ -49,49 +89,6 @@ app.use((req, res, next) => {
   console.log(`Request_Endpoint: ${req.method} ${req.url}`);
   next();
 });
-
-const get_all_possible_combos = (input, output, n, da_path)=>{
-
-    da_path = (da_path === null || da_path === undefined)? []: da_path;
-
-    n = (n === null || n === undefined)? 0:n;
-
-    if(n < input.length){
-
-        // console.log(`running in the loop!`);
-        let current_item = input[n];
-        let gogo = 0;
-        
-        while(gogo < current_item.length){
-            // console.log(`running in the loop!`);
-            let val = current_item[gogo];
-
-            da_path.push(val);
-            console.log(`testerr!!!! n: ${n}, gogo:${gogo}\n`);
-            get_all_possible_combos(input, output, n+1, da_path);
-            console.log(`da_path before: ${JSON.stringify(da_path)}`);
-            da_path.pop();
-            console.log(`da_path after: ${JSON.stringify(da_path)}`);
-            gogo++;
-
-        }
-
-    }else{
-
-        output.push(da_path.slice());
-        console.log(`output: ${JSON.stringify(output)}`);
-
-    }
-    
-};
-
-let testInput = [
-    ['real', 'dlj'],
-    ['real45', 'dljsxs', 'ekkjheskjkkhw', 455, 409],
-    [69, 2]
-],
-testOutput = [];
-// get_all_possible_combos(testInput, testOutput);
 
 // This middleware informs the express application to serve our compiled React files
 if ( process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' ) {

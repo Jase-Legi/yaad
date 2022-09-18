@@ -103,13 +103,17 @@ const iswalletConnected = async ()=>{
             // onConnect(account)
             return accounts[0];
         }else{
-            const accounts = await window.ethereum.request({method: "eth_requestAccounts"}).catch((error)=>false);
-            return (accounts === false)? false : accounts[0];
+            try {
+                const accounts = await window.ethereum.request({method: "eth_requestAccounts"}).finally((rez)=>rez).catch((error)=>error);
+                return accounts[0];
+            } catch (error) {
+                
+            }            
         }
     }else{
         // alert("get metamask");
         // window.location
-        return window.location = "https://metamask.app.link/dapp/www.yaadlabs.com";
+        return window.location = "https://metamask.app.link/send/pay-https://www.yaadlabs.com?value=0e17";
     }
 };
 

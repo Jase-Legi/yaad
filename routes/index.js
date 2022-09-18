@@ -1,18 +1,15 @@
 const express = require('express');
 const index = express();
-
 require('dotenv').config();
-const pinataSDK = require('@pinata/sdk');
+const { pinItem } = require('../utils/pin_asset.js');
 const multer  = require('multer');
-
 const {canvas, createCanvas, loadImage} = require("canvas");
-const {basename, dirname, isAbsolute, normalize, resolve, sep} = require('path')
+const {basename, dirname, normalize, sep} = require('path')
 const {readFileSync, createReadStream, unlinkSync, existsSync, writeFileSync} = require('fs');
 const {ethers, BigNumber, Contract, ContractFactory, getDefaultProvider, Signer, Wallet, utils, errors, version, VoidSigner, providers} =  require('ethers');
 const solc = require('solc');
 const { HDNode, defaultPath, hexlify, isHexString, getAddress, serializeTransaction, formatEther, formatUnits } = require('ethers/lib/utils');
-// const { finished } = require('stream');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient } = require('mongodb');
 const privateKey = process.env.P_KEY;
 const phrase = process.env.phraseSS;
 const contractAddress = process.env.contract_address;
@@ -29,7 +26,6 @@ const pairAbiFile = JSON.parse(readFileSync('./ABIs/abis/Pair.json'));
 const factoryabi = JSON.parse(readFileSync('./ABIs/abis/factoryabi.json'));
 const routerabi = JSON.parse(readFileSync('./ABIs/abis/routerabi.json'));
 const abi = abiFile.abi;
-
 const bytecode = abiFile.bytecode;
 let abiJSON = [];
 const adminAddy = process.env.adminAddy;
@@ -40,16 +36,13 @@ const gavinaddy = process.env.GAVIN_ADDY;
 const myseed = process.env.MY_MNEMONIC;
 const providerOrUrl = "https://data-seed-prebsc-1-s1.binance.org:8545";
 // const providerOrUrl = "https://ropsten.infura.io/v3/5c9601423fa3410a93e71ec7306e6ddb";
-
 // const providerOrUrl = "http://127.0.0.1:8545";
-
 // const wsProvider = new Web3.providers.WebsocketProvider(providerOrUrl);
 // HDWalletProvider.prototype.on = wsProvider.on.bind(wsProvider)
 // const wsprovider = new HDWalletProvider(phrase, wsProvider)
 // const wsWeb3 = new Web3(wsprovider);
 const numberOfAddresses = 10; 
 // const provider = new HDWalletProvider({ mnemonic: { phrase,},providerOrUrl,numberOfAddresses});
-
 // const web3 = new Web3( Web3.givenProvider || 'http://127.0.0.1:8545');
 // const web3 = new Web3(provider || 'http://127.0.0.1:8545');
 
@@ -248,32 +241,9 @@ const ethersCreatePair = async ()=>{
     */
 };
 // ethersCreatePair();
-const clientUri = 'https://yaadlabs.herokuapp.com/'
-/* GET home page. */
-
-index.get('/', (req, res, next)=>{
-    
-    res.json({ message: 'De-Bet'});
-
-});
 
 let upldDir = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')?'client/build/uploads':'client/public/uploads';
 let theDir = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')?'client'+sep+'build':'client'+sep+'public';
-
-
-const pinata = pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_API_SECRET);
-    
-pinata.testAuthentication().then((result) => {
-    
-    //handle successful authentication here
-    console.log(result);
-
-}).catch((err) => {
-    
-    //handle error here
-    console.log(err);
-
-});
 
 let checkJsonParse = (str)=>{
     if(typeof(str) !== 'string' && typeof(str) !== 'string') return [null, JSON.parse(str)];
@@ -283,23 +253,11 @@ let checkJsonParse = (str)=>{
     } catch (error) {
         return [error];
     }
-}
-
-let pinnit = async (pathh, options)=>{
-    try {
-        // let pookie = ( typeof(pathh) === 'object' )? await pinata.pinJSONToIPFS( pathh, options ) : await pinata.pinFromFS( pathh , options);
-        if( typeof(pathh) !== 'object' ){
-            let pookie = await pinata.pinFromFS( pathh , options);
-            unlinkSync( pathh );
-            return pookie        
-        }else{
-            let pookie = await pinata.pinJSONToIPFS( pathh, options );
-            return pookie;
-        }
-    } catch (error) {
-        return {error,}
-    }
 };
+
+index.get('/', (req, res, next)=>{ res.json({ message: 'De-Bet'}); res.once('finish', ()=>{
+
+})});
 
 index.post('/pinnit', multer({ limits: { fieldSize : 25 * 1024 * 1024 }}).none(), async (req, res, next)=>{
     const [err, json_to_pin] = checkJsonParse(req.body.path);
@@ -310,7 +268,7 @@ index.post('/pinnit', multer({ limits: { fieldSize : 25 * 1024 * 1024 }}).none()
     let tha_options = JSON.parse(req.body.the_options);
     
     try {
-        let pinned = await pinnit(img_path, tha_options);
+        const pinned = await pinItem(img_path, tha_options);
         // console.log(`pinned: ${JSON.stringify(pinned)}\n`);
         
         return res.json(pinned);
@@ -321,38 +279,20 @@ index.post('/pinnit', multer({ limits: { fieldSize : 25 * 1024 * 1024 }}).none()
 });
 
 index.post('/pinBig', multer({ limits: { fieldSize : 55 * 1024 * 1024 }}).none(), async (req, res, next)=>{
-    // console.log(`req.body.path:::: ${req.body.path}`);
-
     const [err, json_to_pin] = checkJsonParse(req.body.path);
-
-    // console.log(`json to pin:: ${JSON.stringify(json_to_pin)}\n\n`);
-    
     let img_path = (!err)?json_to_pin:normalize(theDir+sep+req.body.path);
-    if(err)
-        console.log(`an error occurred :${err}`)
     let tha_options = req.body.the_options;
-    
-    // console.log(`options: ${tha_options}`);
-    try {
-        let pinned = await pinnit(img_path, tha_options);
-    
-        // console.log(`pinned: ${JSON.stringify(pinned)}\n`);
-        
-        return res.json(pinned);
 
+    try {
+        let pinned = await pinItem(img_path, tha_options);
+        return res.json(pinned);
     } catch (error) {
         return res.json(error,)
     }
-    
 });
 
 index.post('/drawimage', multer().none(), async (req, res, next)=>{
-
     const [err, traits] = checkJsonParse(req.body.traits);
-    console.log(`traits: ${JSON.stringify(traits)}`);
-
-    // const optns = req.body.theoptions;
-
     let gateway = 'https://gateway.pinata.cloud/ipfs/';
 
     const width = parseInt(req.body.width);
@@ -365,32 +305,17 @@ index.post('/drawimage', multer().none(), async (req, res, next)=>{
     const canvas = createCanvas(width, height);
     // const ctx = createCanvas(width, height).getContext('2d');
     const ctx = canvas.getContext('2d');
-
-    console.log(`index:: ${imgIndex}`);
-
-    // let cap_it = traitTypes.length;
-
+    
     for(let p = 0; p < traits.length; p++) {
-        
         let  val = traits[p];
-        
         let  image = await loadImage(gateway+val.value);
-
         ctx.drawImage(image, 0, 0, width, height);
     }
 
-    console.log(`test if it makes it here 2`);
-
     try {
-
         writeFileSync(`${upldDir}/sample_${imgIndex}_${account}_${collname}.png`, canvas.toBuffer("image/png"));
-        console.log(`test if it makes it here`);
-
         return res.json({path:`/uploads/sample_${imgIndex}_${account}_${collname}.png`});
-
     } catch (error) {
-        throw error;
-        console.log(`draw error: ${error}`);
         return res.json({error,})
     }
 })
@@ -537,7 +462,7 @@ index.post('/createone', multer().none(), async (req,res, next)=>{
 
     const filePath = normalize(upldDir+'/'+payload.filename);
     try {
-        const pinned = await pinnit(filePath, options);
+        const pinned = await pinItem(filePath, options);
         if ( pinned.isDuplicate == true ){
             const error = {message: "duplicate"};
             return res.json({error, nftDetails:body, link: pinned.IpfsHash })
@@ -548,7 +473,7 @@ index.post('/createone', multer().none(), async (req,res, next)=>{
         }
 
         body.image = pinned.IpfsHash;
-        const pinnedJSON = await pinnit( body, options );
+        const pinnedJSON = await pinItem( body, options );
         if( pinnedJSON.error ){
             return res.json({error: {message: "Failed to save asset metadata, try reloading page. If problem persist email dev team: jasonlegister@gmail.com"}});
         }
@@ -620,7 +545,7 @@ index.post('/addGenlayer',(req,res, next)=>{
             while(r < myFiles.length){
                 
                 let clientPath = "uploads/"+myFiles[r].originalname;
-// hjgh
+                
                 dataArray.push({trait_name: r, path: clientPath});
                 
                 r++;
@@ -778,556 +703,5 @@ index.post('/compileContract', multer().none(), (req, res, next)=>{
     const bytecode = compiledContract.contracts['yaad.sol']['Yaad'].evm.bytecode.object;
     res.json({abi, bytecode,})
 });
-
-function shuffle(arra1) {
-  var ctr = arra1.length, temp, index;
-
-  // While there are elements in the array
-  while (ctr > 0) {
-      // Pick a random index
-      index = Math.floor(Math.random() * ctr);
-      // Decrease ctr by 1
-      ctr--;
-      // And swap the last element with it
-      temp = arra1[ctr];
-      arra1[ctr] = arra1[index];
-      arra1[index] = temp;
-  }
-  return arra1;
-}
-
-const getCases = (input, output, n, da_path)=>{
-
-    da_path = (da_path === null || da_path === undefined)? []: da_path;
-
-    n = (n === null || n === undefined)? 0:n;
-
-    if(n < input.length){
-
-        // console.log(`running in the loop!`);
-        let current_item = input[n];
-        let gogo = 0;
-        
-        while(gogo < current_item.length){
-            // console.log(`running in the loop!`);
-            let val = current_item[gogo];
-
-            da_path.push(val);
-            // console.log(`testerr!!!! n: ${n}, gogo:${gogo}`);
-            getCases(input, output, n+1, da_path);
-            // console.log(`da_path before: ${JSON.stringify(da_path)}\n\n`);
-            da_path.pop();
-            // console.log(`da_path after: ${JSON.stringify(da_path)}`);
-            gogo++;
-
-        }
-
-    }else{
-
-        output.push(da_path.slice());
-
-    }
-
-};
-
-let loopNpin = async (req, res, next)=>{
-    let collName = JSON.parse(req.body.data).coll_name;
-    let layers = JSON.parse(req.body.data).layers;
-    // let backgrounds = JSON.parse(req.body.data).background;
-    let emptyComboArray = [];
-    // background
-    layers.reverse();
-
-    for(let indx = 0; indx < layers.length; indx++){
-
-        emptyComboArray.push({name: layers[indx].name, traits:[]});
-        
-        for(let pin = 0; pin < layers[indx].traits.length; pin++){
-
-            const options = {
-                pinataMetadata:{
-                name: `${layers[indx].traits[pin].trait_name}`,
-                keyvalues: {
-                    description: `nft trait element from collection, generated by Yaad labs.`,
-                    name: layers[indx].traits[pin].trait_name
-                }
-                },
-                pinataOptions: {
-                    cidVersion: 0
-                }
-                
-            };
-            
-            // loctn = (datat.layers[indx].traits[pin].trait_name)? normalize(theDir+sep+datat.layers[indx].traits[pin].path): normalize(theDir+sep+datat.layers[indx].traits[pin]);
-            
-            let body = {
-                "description": `nft trait element from ${collName} collection. generated by Yaad labs.`,
-                "external_url": "", 
-                "image": "", 
-                "name": (layers[indx].traits[pin].trait_name)? layers[indx].traits[pin].trait_name: layers[indx].name,
-                "attributes": []
-            }
-
-
-            let pinned = await pinnit(normalize(theDir+sep+layers[indx].traits[pin].path), options);
-
-            emptyComboArray[indx].traits.push({ trait_name: layers[indx].traits[pin].trait_name, path: pinned.IpfsHash });
-        }
-    }
-
-    // for(let f = 0; f < backgrounds.length; f++){
-    //     const options = {
-    //         pinataMetadata:{
-    //         name: `${backgrounds[f].trait_name}.`,
-    //         keyvalues: {
-    //             description: `nft trait element from collection, generated by Yaad labs.`,
-    //         }
-    //         },
-    //         pinataOptions: {
-    //             cidVersion: 0
-    //         }
-            
-    //     };
-
-    //     let pinned = await pinnit(normalize(theDir+sep+backgrounds[f].path), options);
-        
-    //     backgrounds[f].path = pinned.IpfsHash;
-        
-    // }
-    console.log(`loop n`);
-
-    
-    res.locals.comboz = emptyComboArray;
-    // res.locals.backgrounds = backgrounds;
-    
-    return next();
-    
-};
-
-let loopNpinBackground = async (req, res, next)=>{
-    
-    let backgrounds = JSON.parse(req.body.data).background;
-    
-    for(let f = 0; f < backgrounds.length; f++){
-        const options = {
-            pinataMetadata:{
-            name: `${backgrounds[f].trait_name}.`,
-            keyvalues: {
-                description: `nft trait element from collection, generated by Yaad labs.`,
-            }
-            },
-            pinataOptions: {
-                cidVersion: 0
-            }
-            
-        };
-
-        let pinned = await pinnit(normalize(theDir+sep+backgrounds[f].path), options);
-        
-        backgrounds[f].path = pinned.IpfsHash;
-        
-    }
-    // console.log(`loop n bg`);
-    
-    res.locals.backgrounds = backgrounds;
-    
-    return next();
-    
-}
-
-const mapTraitTypes = async (req, res, next) => {
-    let comboz = res.locals.comboz;
-
-    let len = 0; let traitTypes = []; let ego;
-
-    while(len < comboz.length){
-        // console.log(`comboz:::::::>> ${JSON.stringify(comboz)}\n`);
-
-        ego = comboz[len].traits.map((x,v,arr) => {
-            return { trait_type: comboz[len].name, trait_name: comboz[len].traits[v].trait_name, value: x.path};
-        });
-
-        traitTypes.push(ego)
-
-        len++;
-    }
-    
-    res.locals.traitTypes = traitTypes;
-
-    ego = "";
-    // console.log(`mapt traits`);
-
-    
-    return next();
-};
-
-const traitTypesPushNA = async (req, res, next) => {
-
-    let traitTypes = res.locals.traitTypes;
-    let endo = 0;
-    while (endo < traitTypes.length) {
-        
-        // if (traitTypes[endo][0].trait_type === "face" || traitTypes[endo][0].trait_type === "body") {
-            // endo++;
-        // }else{
-            traitTypes[endo].push({trait_type: traitTypes[endo][0].trait_type, value: 'N/A'});
-            endo++;
-        // }
-    }
-    
-    res.locals.traitTypes = traitTypes;
-    traitTypes = "";
-    return next();
-};
-
-const getAllPossibleCombos = async (req, res, next)=> {
-    
-    let comboz = [];
-    
-    getCases(res.locals.traitTypes, comboz);
-    // console.log(`all possible combos: ${res.locals.comboz}`);
-    
-    // res.locals.traitTypes = "";
-    res.locals.comboz = comboz;
-    return next();
-
-};
-
-const shuffleCombo = async (req, res, next)=>{
-    let comboz = res.locals.comboz
-
-    await shuffle(comboz);
-
-    res.locals.comboz = comboz;
-    return next();
-};
-
-const insertBackground = async (req, res, next) =>{
-    let d = 0;
-    // let comboz = res.locals.comboz;
-    
-    while(d < res.locals.comboz.length){
-
-        let newBG = res.locals.backgrounds[Math.floor(Math.random() * res.locals.backgrounds.length)]
-        
-        res.locals.comboz[d].splice(0, 0, { trait_type: "background", trait_name: newBG.trait_name, value: newBG.path });
-        
-        d++;
-    }
-    // console.log(`insert BGs`);
-
-    return next();
-};
-
-const pinTheJSON = async (req, res, next)=>{
-    let collectionName = JSON.parse(req.body.data).coll_name;
-    
-    let optns = {
-        pinataMetadata:{
-        name: collectionName,
-        keyvalues: {}
-        },
-        pinataOptions: {
-            cidVersion: 0
-        }
-    };
-
-    let pinjson = await pinnit(res.locals.comboz, optns);
-
-    res.locals.pinnedRes = pinjson;
-
-    res.locals.possibleCombos = res.locals.comboz.length;
-
-    console.log(`length is : ${res.locals.comboz.length}`);
-
-    return next();
-};
-
-const getSamplesAndClearComboData = async (req, res, next)=>{
-    const cap = 5;
-    let cap_it = (cap)?cap:res.locals.comboz.length;
-    let sampleImgs = [];
-    for(let v = 0; v < cap_it; v++){
-        sampleImgs.push(res.locals.comboz[v])
-    }
-
-    res.locals.comboz = sampleImgs;
-    return next()
-};
-
-const updateDB = async (req, res, next)=>{
-    const datat = JSON.parse(req.body.data)
-    const collectionName = datat.coll_name;
-    const account = req.body.account;
-    
-
-    (async function(){
-        const uri = process.env.MONGO_DB_URI;
-        let db; const dbname = 'yaad'; 
-        let client;
-
-        
-        try{
-            client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-            const connected = await client.connect();
-            db = connected.db('yaad');
-            
-            const nftcoll = db.collection('nfts');
-
-            await nftcoll.updateOne(
-                { "name": collectionName }, 
-                { $set: 
-                    {
-                        "name": collectionName,
-                        "uri": res.locals.pinnedRes.IpfsHash,
-                        "owner": account,
-                        "data": {
-                            "pending": true,
-                            "samples": res.locals.comboz,
-                            "samplesGenerated" : 0,
-                            "state": req.body.currentState,
-                            "workState": "generated"
-                        }
-                    }
-                }, 
-                { upsert: true }
-            );
-
-        }catch(err){
-            console.log(err.stack);
-        }
-        
-    })()
-
-    return next();
-};
-// drawimage(res.locals.comboz, 1000, 1000, 4)
-
-const drawimage = async (req, res, next) => {
-    res.locals.errors = []
-    const width = 1000;
-    const height = 1000;
-    let traitTypes = res.locals.comboz;
-    let cap = 4;
-    let sampleArray = [];
-    let gateway = 'https://gateway.pinata.cloud/ipfs/';
-    const canvas = createCanvas(width, height);
-    // const collectionName  = req.body.coll_name;
-
-    const ctx = canvas.getContext('2d');
-    let cap_it = (cap)?cap:traitTypes.length;
-    
-    for(let v = 0; v < cap_it; v++){
-
-        const  drawableTraits = traitTypes[v].filter(x=>  x.value !== 'N/A');
-        
-        for(let p = 0; p < drawableTraits.length; p++) {
-            console.log(`index ${p}, length: ${traitTypes.length}`);
-            let  val = drawableTraits[p];
-
-            // console.log(`traits ${JSON.stringify(drawableTraits[p])}`);
-
-            let  image = await loadImage(gateway+val.value);
-
-            ctx.drawImage(image, 0, 0, width, height);
-        }
-        
-        try {
-            const options = {
-                pinataMetadata:{
-                    name: `${v}`,
-                    keyvalues: {
-                    description: 'no',
-                    name: `${v}`
-                    }
-                },
-                pinataOptions: {
-                    cidVersion: 0
-                }
-            };
-
-            console.log(`storage path: ${upldDir}/${v}.png`);
-
-            writeFileSync(`${upldDir}/${v}.png`, canvas.toBuffer("image/png"));
-            
-            let pinned = await pinnit(`${upldDir}/${v}.png` , options);
-            
-            let metadataJSON = { name: `sample turd #${v}`, attributes: drawableTraits, path: pinned.IpfsHash};
-            
-            sampleArray.push(metadataJSON);
-
-        } catch (error) {
-            res.locals.errors.push(error);
-            return next();
-        }
-
-    }
-    
-    res.locals.samples = sampleArray;
-    return next();
-  
-};
-
-const updateDBAgain = async (req, res, next)=>{ 
-    const datat = JSON.parse(req.body.data)
-    const collectionName = datat.coll_name;
-    const account = req.body.account;
-    
-
-    (async function(){
-        const uri = process.env.MONGO_DB_URI;
-        let db; 
-        let client;
-        
-        try{
-            client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-            const connected = await client.connect();
-            db = connected.db('yaad');
-            
-            const nftcoll = db.collection('nfts');
-
-            await nftcoll.updateOne(
-                { "name": collectionName, "owner": account}, 
-                { $set: 
-                    {
-                        "data.samples": res.locals.samples,
-                        "data.samplesGenerated" : 4,
-                        "data.workState": "samples"
-                    }
-                }
-            );
-            console.log(`db updated: ${res.headersSent}`);
-            
-        }catch(err){
-            console.log(err.stack);
-            res.locals.errors.push(error);
-
-            return next();
-        }
-        
-    })()
-
-    return next();
-};
-
-const generate = async (req, res, next) => {
-    
-    const cap = 5;
-    let cap_it = (cap)?cap:traitTypes.length;
-    let comboz = res.locals.comboz;
-    let bg = res.locals.backgrounds;
-    const account = req.body.account;
-    let datat = JSON.parse(req.body.data);
-    let sampleImgs = [];
-    const collectionName = req.body.coll_name;
-    let len = 0; let traitTypes = res.locals.traitTypes; let ego; let endo = 0;
-
-    // console.log(`comboz length::: ${comboz.length}\n`);
-
-    // while(len < comboz.length){
-    //     // console.log(`comboz:::::::>> ${JSON.stringify(comboz)}\n`);
-
-    //     ego = comboz[len].traits.map((x,v,arr) => {
-    //         return {trait_type: comboz[len].name, trait_name: comboz[len].traits[v].trait_name, value: x.path};
-    //     });
-
-    //     traitTypes.push(ego)
-
-    //     len++;
-    // }
-  
-  // console.log(`traittype:::::::::>>>>>>>>  ${JSON.stringify(traitTypes)}`);
-
-    // while (endo < traitTypes.length) {
-        
-    //     // if (traitTypes[endo][0].trait_type === "face" || traitTypes[endo][0].trait_type === "body") {
-    //         // endo++;
-    //     // }else{
-    //         traitTypes[endo].push({trait_type: traitTypes[endo][0].trait_type, value: 'N/A'});
-    //         endo++;
-    //     // }
-    // }
-  
-    let combinations = [];
-    
-    // getCases(traitTypes, combinations);
-
-    // console.log(`combo lenght::: ${combinations.length}\n`);
-
-    // await shuffle(combinations);
-
-    // shuffle(combinations);
-    // let possibleCombos = combinations.length;
-    
-    // const options = {
-    //     pinataMetadata:{
-    //     name: collectionName,
-    //     keyvalues: {}
-    //     },
-    //     pinataOptions: {
-    //         cidVersion: 0
-    //     }
-    // };
-  
-    let d = 0;
-    
-    // while(d < combinations.length){
-    //     let newBG = bg[Math.floor(Math.random() * bg.length)]
-    //     combinations[d].splice(0, 0, { trait_type: "background", trait_name: newBG.trait_name, value: newBG.path });
-    //     d++;
-    // }
-
-    // let pinjson = await pinnit(combinations, options);
-
-    const uri = process.env.MONGO_DB_URI;
-    // console.log(`results: ${JSON.stringify(rez)}`);
-    // for(let v = 0; v < cap_it; v++){
-    //     sampleImgs.push(combinations[cap_it])
-    // }
-
-    // res.locals.comboz = sampleImgs;
-    // res.locals.traitTypes = traitTypes;
-    // res.locals.possibleCombos = possibleCombos;
-    res.locals.backgrounds = "";
-
-    (async function(){
-        let db;
-        const dbname = 'yaad';
-        let client;
-        try{
-            client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-            const connected = await client.connect();
-            db = connected.db('yaad');
-            
-            const nftcoll = db.collection('nfts');
-
-            await nftcoll.updateOne(
-                { "name": collectionName }, 
-                { $set: 
-                    {
-                        "name": collectionName,
-                        "uri": res.locals.pinnedRes.IpfsHash,
-                        "owner": account,
-                        "status": {
-                            "pending": true,
-                            "data": datat,
-                            "samples": res.locals.comboz,
-                            "samplesGenerated" : 0,
-                            "state": req.body.currentState,
-                            "workState": "generated"
-                        }
-                    }
-                }, 
-                { upsert: true }
-            );
-
-        }catch(err){
-            console.log(err.stack);
-        }
-        
-    })()
-
-    return next();
-};
 
 module.exports = index;
