@@ -1,9 +1,9 @@
 import './body.css'; import './App.css'; import './header.css';
-import {useState, memo, useEffect, useMemo} from 'react'; //useRef
-import {providers, Contract, utils, BigNumber, ContractFactory} from "ethers";
+import { useState, memo, useEffect } from 'react'; //useRef
+import { providers, Contract, utils, BigNumber, ContractFactory } from "ethers";
+import { createCanvas, loadImage } from 'canvas';
 import yaadtokenAbi from './contracts/ABIs/Yaad.json';
 import yaadcontract from './contracts/yaad.json';
-
 const pumpum = window.location.host;
 
 let baseServerUri = (pumpum  === "localhost:3000")?'./':'https://yaadlabs.herokuapp.com/';
@@ -93,26 +93,19 @@ const getGas = async (trans)=>{ return (trans)?trans.estimateGas():false; };
 const iswalletConnected = async ()=>{
     if(window.ethereum){
         const accounts = await window.ethereum.request({method:'eth_accounts'});
-        // console.log(`gasPrice: ${await getGas().finally((eee)=>eee)}`);
-
         // let gaslimit = gasNow.add(50000)
 
         if(accounts.length  > 0){
-            // const account = accounts[0];
-            // console.log(`account:: ${accounts[0]}`);
-            // onConnect(account)
             return accounts[0];
         }else{
             try {
                 const accounts = await window.ethereum.request({method: "eth_requestAccounts"}).finally((rez)=>rez).catch((error)=>error);
                 return accounts[0];
             } catch (error) {
-                
+                return error;
             }            
         }
     }else{
-        // alert("get metamask");
-        // window.location
         return window.location = "https://metamask.app.link/send/pay-https://www.yaadlabs.com?value=0e17";
     }
 };
@@ -138,19 +131,6 @@ const shuffle = (arra1)=> {
   return arra1;
 }
 
-function LoadingBox(props){
-    return(
-        <div id='loadingpopup' className='inactive'>
-            <div id='loadingbttn' >
-                <img src="./loading.svg" alt=""/>
-                <div className='loadingbttn_text_box'>
-                    <span style={{color:"white"}}>Please Wait</span>
-                </div>
-            </div>
-        </div>
-    )
-}
-
 const isAplhaNumeric = (str)=>{
     
     for (let ind = 0; ind < str.length; ind++) {
@@ -164,6 +144,19 @@ const isAplhaNumeric = (str)=>{
 };
 
 const nullFunc = (e)=>{ return; };
+
+function LoadingBox(props){
+    return(
+        <div id='loadingpopup' className='inactive'>
+            <div id='loadingbttn' >
+                <img src="./loading.svg" alt=""/>
+                <div className='loadingbttn_text_box'>
+                    <span style={{color:"white"}}>Please Wait</span>
+                </div>
+            </div>
+        </div>
+    )
+}
 
 function BoxTitle(props){
     let textType;
@@ -245,7 +238,8 @@ function Body(props){
     
     let [scrollPosition, setScrollPosition] = useState(0);
 
-    const ipfs_gateway = 'https://gateway.pinata.cloud/ipfs/';
+    // const ipfs_gateway = 'https://gateway.pinata.cloud/ipfs/';
+    const ipfs_gateway = 'https://ipfs.io/ipfs/';
 
     const changeStack = (val, setname)=>{
         showLoading();
@@ -1033,7 +1027,7 @@ function Body(props){
 
             const drawimage = async (traitTypes, width, height) => {
                 let sampleArray = []; const cap_it = traitTypes.length;
-                
+
                 for( let v = 0; v < cap_it; v++ ){
                     const options = {
                         pinataMetadata:{
@@ -1050,15 +1044,22 @@ function Body(props){
 
                     const  drawableTraits = traitTypes[v].filter( x=>  x.value !== 'N/A');
                     
-                    let bdy = new FormData(); bdy.append('width', width); bdy.append('height', height); bdy.append('traits', JSON.stringify(drawableTraits)); bdy.append('imgindex', v ); bdy.append('account', conntd); bdy.append('collname', state.data.coll_name);
-
+                    let bdy = new FormData();
+                    bdy.append('width', width);
+                    bdy.append('height', height);
+                    bdy.append('traits', JSON.stringify(drawableTraits));
+                    bdy.append('imgindex', v ); 
+                    bdy.append('account', conntd);
+                    bdy.append('collname', state.data.coll_name);
                     const drewimg = await fetch(`${baseServerUri}api/drawimage`, { method:'POST', body: bdy } ).then((theresponse)=>theresponse.json()).then((drewimg)=>drewimg);
-                    
-                    bdy = null; bdy = new FormData(); bdy.append('path', drewimg.path); bdy.append('the_options', JSON.stringify(options));
-
+                    bdy = null; 
+                    bdy = new FormData(); 
+                    bdy.append('path', drewimg.path); 
+                    bdy.append('the_options', JSON.stringify(options));
                     const pinnedSample = await fetch(`${baseServerUri}api/pinnit`,{method:'POST', body: bdy}).then((rezz)=>rezz.json()).then((pinned)=>pinned);
-                    bdy = null;
                     sampleArray.push( { name: `sample turd #${v}`, attributes: drawableTraits, path: pinnedSample.IpfsHash } );
+                    
+                    bdy = null;
                 }
                 return sampleArray;
             };

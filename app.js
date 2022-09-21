@@ -30,47 +30,6 @@ const pinataSDK = require('@pinata/sdk');
 
 const PORT = process.env.PORT || 5000;
 
-const extendTimeOut = (req, res, next)=>{
-    const space = " ";
-    let isFinished = false, dataSent = false;
-
-    if(!req.url.includes("/api/drawimage")){
-        next();
-        return;
-    }
-
-    res.once( "finish", ()=>{ isFinished = true; });
-
-    res.once( "end", ()=>{ isFinished = true; });
-
-    res.once( "close", ()=>{ isFinished = true; });
-
-    res.once( "data", (data)=>{
-        if( data !== space ){
-            dataSent = true;
-        }
-    });
-
-    const waitAndSend = async ()=>{
-        setTimeout(()=>{
-            if(!isFinished && !dataSent){
-                console.log(`extend this`);
-
-                if(!res.headersSent){
-                    res.writeHead(202);
-                }
-                res.write(space);
-                waitAndSend();
-            }
-        }, 15000)
-    };
-
-    waitAndSend();
-    next();
-};
-
-app.use(extendTimeOut);
-
 app.use(bodyParser.urlencoded({extended: true}));
 
 // app.options('/api/generate', cors(corsOptions));

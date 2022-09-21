@@ -246,10 +246,12 @@ let upldDir = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV ===
 let theDir = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')?'client'+sep+'build':'client'+sep+'public';
 
 let checkJsonParse = (str)=>{
-    if(typeof(str) !== 'string' && typeof(str) !== 'string') return [null, JSON.parse(str)];
+    // if(typeof(str) !== 'string') {
+    //     return [null, JSON.parse(str)]
+    // };
     try {
+        JSON.parse(str);
         return [null, JSON.parse(str)];
-
     } catch (error) {
         return [error];
     }
@@ -291,33 +293,37 @@ index.post('/pinBig', multer({ limits: { fieldSize : 55 * 1024 * 1024 }}).none()
     }
 });
 
-index.post('/drawimage', multer().none(), async (req, res, next)=>{
+index.post('/drawimage', multer({ limits: { fieldSize : 10 * 1024 * 1024 }}).none(), async (req, res, next)=>{
+    // checkDirectory(upldDir);
     const [err, traits] = checkJsonParse(req.body.traits);
-    let gateway = 'https://gateway.pinata.cloud/ipfs/';
-
+    // const gateway = 'https://gateway.pinata.cloud/ipfs/';
+    const gateway = 'https://ipfs.io/ipfs/'
     const width = parseInt(req.body.width);
     const height = parseInt(req.body.height);
+    // const the_img =  req.body.the_img;
     const imgIndex =  req.body.imgindex;
     const collname =  req.body.collname;
     const account =  req.body.account;
 
-    // const collectionName  = req.body.coll_name;
+    const collectionName  = req.body.coll_name;
     const canvas = createCanvas(width, height);
-    // const ctx = createCanvas(width, height).getContext('2d');
     const ctx = canvas.getContext('2d');
-    
+    console.log(`traita: ${JSON.stringify(traits)}`);
     for(let p = 0; p < traits.length; p++) {
+        console.log(`merging layers:: ${p}`)
         let  val = traits[p];
         let  image = await loadImage(gateway+val.value);
+        console.log(`img height:: ${image.height}`);
         ctx.drawImage(image, 0, 0, width, height);
     }
 
     try {
-        writeFileSync(`${upldDir}/sample_${imgIndex}_${account}_${collname}.png`, canvas.toBuffer("image/png"));
+        writeFileSync(`${upldDir}/sample_${imgIndex}_${account}_${collname}.png`, canvas.toBuffer() );
         return res.json({path:`/uploads/sample_${imgIndex}_${account}_${collname}.png`});
     } catch (error) {
         return res.json({error,})
     }
+    
 })
 
 index.post('/savenftcollection', multer().none(), async (req, res, next)=>{
@@ -369,29 +375,20 @@ index.post('/upldSingle',(req,res, next)=>{
     try {
 
         checkDirectory(upldDir);
-        
         const storage = multer.diskStorage({
-
             destination: function (req, file, cb) {
                 cb(null, upldDir)
             },
-
             filename: function (req, file, cb) {
                 cb(null, (file.originalname))
             }
-
         });
 
         const upload = multer({
-
             storage: storage,
-
             limits: { fileSize: 10**9},
-            
             fileFilter(req, file, cb) {
-                
                 if (!file.originalname.toLowerCase().match(/\.(png|jpg|jpeg|ico|gif|mp3|mp4|svg|mov|webp|webm|mpg|avi|ogg|wmv|bmp|tiff)$/)){
-                
                     cb(new Error('Please upload an image.'));
                 
                 }
