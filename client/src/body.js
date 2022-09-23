@@ -597,13 +597,12 @@ function Body(props){
 
     function RandomGenerator (props){
 
-        let imgbody = new FormData(), da_files; state.data.activeContract = 0;
-        
-        var wrongFiles = [];
+        let imgbody = new FormData(), da_files, wrongFiles;
+        state.data.activeContract = 0;
 
-        const validateIMGtype = async ( demFiles, childClassName, parentEle, wrngfiles) => {
+        const validateIMGtype = async ( demFiles, childClassName, parentEle ) => {
             parentEle.innerHTML = "";
-            wrngfiles = ( wrngfiles.length > 0 )? wrngfiles:[];
+            let wrngfiles = []
             for (let n = 0; n < demFiles.length; n++ ) {
                 let dafile = demFiles[n];
                 let readr = new FileReader();
@@ -638,7 +637,7 @@ function Body(props){
                 }
                 readr.readAsArrayBuffer(dafile);
             }
-            return;
+            return wrngfiles;
         }
 
         const handleAddBGLayer = (e)=>{
@@ -669,7 +668,8 @@ function Body(props){
             if (e.target.getAttribute('name') === 'bg_asset' && e.target.getAttribute('type') === 'file') {
                 document.getElementById('bg_upld').textContent = (e.target.files.length > 0)?'NEXT':'No Background';
                 wrongFiles = ( wrongFiles.length > 0)?[]:[];
-                await validateIMGtype( e.target.files, 'LayerUpldContentBox', document.getElementsByClassName('layerContentBox')[0] );
+                let validataed = await validateIMGtype( e.target.files, 'LayerUpldContentBox', document.getElementsByClassName('layerContentBox')[0] );
+                console.log(`validated::: ${JSON.stringify(validataed)}`);
                 da_files = (e.target.files.length === 0 )?[]:e.target.files;
                 hideLoading();
                 return;
@@ -677,7 +677,8 @@ function Body(props){
 
             if(e.target.getAttribute('type') === 'file' && e.target.getAttribute('name') === 'multi_asset'){
                 wrongFiles = ( wrongFiles.length > 0)?[]:[];
-                await validateIMGtype( e.target.files, 'LayerUpldContentBox', document.getElementsByClassName('layerContentBox')[0] );
+                let validataed = await validateIMGtype( e.target.files, 'LayerUpldContentBox', document.getElementsByClassName('layerContentBox')[0] );
+                console.log(`validated::: ${JSON.stringify(validataed)}`);
                 da_files = (e.target.files.length === 0 )?[]:e.target.files;
                 hideLoading();
                 return;
