@@ -2,15 +2,6 @@ const express = require('express');
 let app = express();
 require('dotenv').config();
 let cors = require('cors');
-let daORigin = (process.env.NODE_ENV === 'dev')?'http://localhost:3000':'https://yaadlabs.com';
-const corsOptions = {
-    "origin": daORigin,
-    "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
-    "preflightContinue": true,
-    "optionsSuccessStatus": 200
-}
-
-app.use(cors(corsOptions));
 // app.options('*', cors());
 
 const {createReadStream} = require("fs");
@@ -29,7 +20,19 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const pinataSDK = require('@pinata/sdk');
 
 const PORT = process.env.PORT || 5000;
+let daORigin = (process.env.NODE_ENV === 'dev')?'http://localhost:3000':'https://yaadlabs.com';
 
+const corsOptions = {
+    "origin": daORigin,
+    "methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+    "preflightContinue": true,
+    "optionsSuccessStatus": 200
+}
+
+app.use(cors(corsOptions));
+app.use((req, res, next)=>{
+    res.setHeader
+})
 app.use(bodyParser.urlencoded({extended: true}));
 
 // app.options('/api/generate', cors(corsOptions));
@@ -50,13 +53,13 @@ app.use((req, res, next) => {
 });
 
 // This middleware informs the express application to serve our compiled React files
-if ( process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' ) {
-    app.use(express.static(join(__dirname, 'client/build')));
+// if ( process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' ) {
+//     app.use(express.static(join(__dirname, 'client/build')));
 
-    app.get('*', function (req, res) {
-        res.sendFile(join(__dirname, 'client/build', 'index.html'));
-    });
-}
+//     app.get('*', function (req, res) {
+//         res.sendFile(join(__dirname, 'client/build', 'index.html'));
+//     });
+// }
 
 if (process.env.NODE_ENV === 'dev') {
     app.use(express.static(join(__dirname, 'client/public')));

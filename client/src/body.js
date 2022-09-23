@@ -597,10 +597,13 @@ function Body(props){
 
     function RandomGenerator (props){
 
-        let imgbody = new FormData(), wrongFiles = [], da_files; state.data.activeContract = 0;
+        let imgbody = new FormData(), da_files; state.data.activeContract = 0;
+        
+        var wrongFiles = [];
 
-        const validateIMGtype = async ( demFiles, childClassName, parentEle ) => {
+        const validateIMGtype = async ( demFiles, childClassName, parentEle, wrngfiles) => {
             parentEle.innerHTML = "";
+            wrngfiles = ( wrngfiles.length > 0 )? wrngfiles:[];
             for (let n = 0; n < demFiles.length; n++ ) {
                 let dafile = demFiles[n];
                 let readr = new FileReader();
@@ -625,8 +628,8 @@ function Body(props){
                             // para.getElementsByTagName("img")[n].addEventListener("load",(e)=>{logit(`loaded>>>> ${e}`)})
                             break;
                         default:
-                            wrongFiles.push(n);
-                            if(demFiles.length === wrongFiles.length){
+                            wrngfiles.push(n);
+                            if(demFiles.length === wrngfiles.length){
                                 logit(`lengths are equal!`);
                                 return setErrStacks((prev)=>({...prev, substate: state.currsubState, formdata: [{id: "LayerUpldLabel", value: "", msg:"Unsupported file types! JPG, JPEG, PNG only."}] }));
                             }

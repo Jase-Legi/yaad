@@ -117,7 +117,8 @@
     .welcomeBoxElement{
         height: 20vw;
         width: 20vw;
-        max-width: 20vw;
+        max-width: 290px;
+        max-height: 290px;
         min-width: 150px;
         min-height: 150px;
         margin: 15px auto;
