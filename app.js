@@ -30,9 +30,7 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions));
-app.use((req, res, next)=>{
-    res.setHeader
-})
+
 app.use(bodyParser.urlencoded({extended: true}));
 
 // app.options('/api/generate', cors(corsOptions));

@@ -597,21 +597,21 @@ function Body(props){
 
     function RandomGenerator (props){
 
-        let imgbody = new FormData(), da_files, wrongFiles;
+        let imgbody = new FormData(), da_files;
+        var wrongFiles = [];
         state.data.activeContract = 0;
 
         const validateIMGtype = async ( demFiles, childClassName, parentEle ) => {
             parentEle.innerHTML = "";
-            let wrngfiles = []
-            for (let n = 0; n < demFiles.length; n++ ) {
+            const demlen = demFiles.length;
+            const last_indx = demFiles.length-1;
+            for (let n = 0; n < demlen ; n++ ) {
                 let dafile = demFiles[n];
                 let readr = new FileReader();
                 readr.onloadend = ()=>{
                     let buffArray = ( new Uint8Array( readr.result )).subarray(0, 4);
                     let fileSignature = "";
-                    for(let m = 0; m < buffArray.length; m++){
-                        fileSignature +=buffArray[m].toString(16);
-                    }
+                    for(let m = 0; m < buffArray.length; m++){ fileSignature +=buffArray[m].toString(16); }
                     
                     switch (fileSignature) {
                         case '89504e47'.toLowerCase():
@@ -619,25 +619,35 @@ function Body(props){
                         case 'FFD8FFE1'.toLowerCase():
                         case 'FFD8FFE2'.toLowerCase():
                         case 'FFD8FFE8'.toLowerCase():
-                            const para = document.createElement("div");
-                            // Append text node to the p element:
-                            para.innerHTML = "<img src="+URL.createObjectURL(dafile)+" />";
-                            para.classList.add((childClassName)?childClassName:'LayerUpldContentBox')
-                            parentEle.appendChild(para);
-                            // para.getElementsByTagName("img")[n].addEventListener("load",(e)=>{logit(`loaded>>>> ${e}`)})
+                            let img = document.createElement("img");
+                            img.onload = ()=>{
+                                console.log(`width iss::: ${img.width}`);
+                                if( img.width <= 2000  && img.height <= 2000 ){
+                                    const para = document.createElement("div");
+                                    para.appendChild(img);
+                                    // para.innerHTML = "<img src="+URL.createObjectURL(dafile)+" />";
+                                    para.classList.add((childClassName)?childClassName:'LayerUpldContentBox')
+                                    parentEle.appendChild(para);
+                                }else{
+                                    img.remove();
+                                    wrongFiles.push(n);
+                                }
+                            }
+                            img.src = URL.createObjectURL(dafile);
                             break;
                         default:
-                            wrngfiles.push(n);
-                            if(demFiles.length === wrngfiles.length){
+                            wrongFiles.push(n);
+                            console.log(`wrong file value:: ${JSON.stringify(wrongFiles)}`);
+                            if(demFiles.length === wrongFiles.length){
                                 logit(`lengths are equal!`);
                                 return setErrStacks((prev)=>({...prev, substate: state.currsubState, formdata: [{id: "LayerUpldLabel", value: "", msg:"Unsupported file types! JPG, JPEG, PNG only."}] }));
                             }
                             break;
                     }
+                    if ( last_indx === n ){ hideLoading(); }
                 }
                 readr.readAsArrayBuffer(dafile);
             }
-            return wrngfiles;
         }
 
         const handleAddBGLayer = (e)=>{
@@ -668,19 +678,15 @@ function Body(props){
             if (e.target.getAttribute('name') === 'bg_asset' && e.target.getAttribute('type') === 'file') {
                 document.getElementById('bg_upld').textContent = (e.target.files.length > 0)?'NEXT':'No Background';
                 wrongFiles = ( wrongFiles.length > 0)?[]:[];
-                let validataed = await validateIMGtype( e.target.files, 'LayerUpldContentBox', document.getElementsByClassName('layerContentBox')[0] );
-                console.log(`validated::: ${JSON.stringify(validataed)}`);
+                await validateIMGtype( e.target.files, 'LayerUpldContentBox', document.getElementsByClassName('layerContentBox')[0] );
                 da_files = (e.target.files.length === 0 )?[]:e.target.files;
-                hideLoading();
                 return;
             }
 
             if(e.target.getAttribute('type') === 'file' && e.target.getAttribute('name') === 'multi_asset'){
                 wrongFiles = ( wrongFiles.length > 0)?[]:[];
-                let validataed = await validateIMGtype( e.target.files, 'LayerUpldContentBox', document.getElementsByClassName('layerContentBox')[0] );
-                console.log(`validated::: ${JSON.stringify(validataed)}`);
+                await validateIMGtype( e.target.files, 'LayerUpldContentBox', document.getElementsByClassName('layerContentBox')[0] );
                 da_files = (e.target.files.length === 0 )?[]:e.target.files;
-                hideLoading();
                 return;
             }
 
@@ -947,10 +953,10 @@ function Body(props){
             const mapTraitTypes = async (comboz) => {
                 let len = 0; let traitTypes = []; let ego;
                 while( len < comboz.length ){
-                    ego = comboz[len].traits.map(( x,v ) => {
+                    ego = comboz[len].traits.map(( x, v ) => {
                         return { trait_type: comboz[len].name, trait_name: comboz[len].traits[v].trait_name, value: x.path};
                     });
-            
+
                     traitTypes.push(ego);            
                     len++;
                 }
