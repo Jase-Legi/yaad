@@ -1,5 +1,5 @@
 import './body.css'; import './App.css'; import './header.css';
-import { useState, memo, useEffect } from 'react'; //useRef
+import { useState, memo, useEffect } from 'react';
 import { providers, Contract, utils, BigNumber, ContractFactory } from "ethers";
 import { createCanvas, loadImage } from 'canvas';
 import yaadtokenAbi from './contracts/ABIs/Yaad.json';
@@ -286,7 +286,6 @@ function Body(props){
                 bbx.push(
                     <div key={i} className='errorbox' id='errorbox' style={{top: parseInt(the_ele.getBoundingClientRect().bottom)-5+"px", left: parseInt(the_ele.getBoundingClientRect().left)+15+"px"}}><Buttonz data={{value:"X", class:"error-box-closer", func:(e)=>{ errStacks.intervalId=null; errStacks.formdata=[]; errStacks.substate=null; e.target.parentNode.remove() } }} /><BoxTitle data={{text:`${the_msg}`, type:"span", class:"errorboxEle" }}/></div>
                 )
-
             });
             return ( <div> {bbx} </div> )
         }
@@ -307,7 +306,6 @@ function Body(props){
     }
 
     const mintNEW = async (uri)=>{
-        
         let isconnected = await iswalletConnected();
         if(isconnected !== false){
             console.log(`uri: ${JSON.stringify(uri)}`);
@@ -325,7 +323,6 @@ function Body(props){
                 console.log(`mint error:: ${error}`);
                 return error;
             }
-            
         }
         // IpfsHash: 'QmZuPdu8HACXJo5LUB6MUYCs2HpWndsqaZmYBSUpUFYR4M',
         // window.ethereum.on('accountsChanged', function (accounts) {
@@ -1559,7 +1556,6 @@ function Body(props){
                 conDetails["name"] = state.data["contracts"][activeContract].name;
                 conDetails["contract"] = state.data["contracts"][activeContract].contract;
             }
-            
         },[activeContract])
 
         function ThaSamples (){
@@ -1567,7 +1563,7 @@ function Body(props){
                 let sampleLen = 0; let boxcont = [];
 
                 while (sampleLen < 4){
-                    boxcont.push(<div key={sampleLen} className='LayerUpldContentBx'><div className={(state.currsubState === "RandomGenerator-ContractDeployed")?"LayerUpldContent":"LayerUpldContent"}><img className='sampleImage' src={ipfs_gateway+state.data.samples[sampleLen].path+"?"+ new Date().getTime()} alt=''/></div></div>)
+                    boxcont.push(<div key={sampleLen} className='LayerUpldContentBx'><div className={(state.currsubState === "RandomGenerator-ContractDeployed")?"LayerUpldContent":"LayerUpldContent"}><img className='sampleImage' src={ipfs_gateway+state.data.samples[sampleLen].path} alt=''/></div></div>);
                     sampleLen++;
                 }
                 

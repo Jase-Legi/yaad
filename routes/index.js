@@ -246,9 +246,7 @@ let upldDir = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV ===
 let theDir = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')?'client'+sep+'build':'client'+sep+'public';
 
 let checkJsonParse = (str)=>{
-    // if(typeof(str) !== 'string') {
-    //     return [null, JSON.parse(str)]
-    // };
+    // if(typeof(str) !== 'string') { return [null, JSON.parse(str)] };
     try {
         JSON.parse(str);
         return [null, JSON.parse(str)];
@@ -257,22 +255,22 @@ let checkJsonParse = (str)=>{
     }
 };
 
-index.get('/', (req, res, next)=>{ res.json({ message: 'De-Bet'}); res.once('finish', ()=>{
-
-})});
+index.get('/', (req, res, next)=>{
+    res.json({ message: 'De-Bet'}); 
+    // res.once('finish', ()=>{
+    // });
+});
 
 index.post('/pinnit', multer({ limits: { fieldSize : 25 * 1024 * 1024 }}).none(), async (req, res, next)=>{
     const [err, json_to_pin] = checkJsonParse(req.body.path);
 
     let img_path = (!err)?json_to_pin:normalize(theDir+sep+req.body.path);
-    if(err){ console.log(`an error occurred :${err}`); }
+    // if(err){ console.log(`an error occurred :${err}`); }
 
     let tha_options = JSON.parse(req.body.the_options);
     
     try {
         const pinned = await pinItem(img_path, tha_options);
-        // console.log(`pinned: ${JSON.stringify(pinned)}\n`);
-        
         return res.json(pinned);
     } catch (error) {
         return res.json(error,)
@@ -304,16 +302,13 @@ index.post('/drawimage', multer({ limits: { fieldSize : 10 * 1024 * 1024 }}).non
     const imgIndex =  req.body.imgindex;
     const collname =  req.body.collname;
     const account =  req.body.account;
-
     const collectionName  = req.body.coll_name;
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
-    console.log(`traita: ${JSON.stringify(traits)}`);
+    
     for(let p = 0; p < traits.length; p++) {
-        console.log(`merging layers:: ${p}`)
         let  val = traits[p];
         let  image = await loadImage(gateway+val.value);
-        console.log(`img height:: ${image.height}`);
         ctx.drawImage(image, 0, 0, width, height);
     }
 
@@ -332,7 +327,6 @@ index.post('/savenftcollection', multer().none(), async (req, res, next)=>{
     const samples = datat.samples
     const ipfs_uri  = req.body.ipfs_uri
     const account = req.body.account;
-        
     
     (async function(){
         const uri = process.env.MONGO_DB_URI;
@@ -367,13 +361,11 @@ index.post('/savenftcollection', multer().none(), async (req, res, next)=>{
             console.log(err.stack);
             return res.json({error:err})
         }
-        
     })()
 })
 
 index.post('/upldSingle',(req,res, next)=>{
     try {
-
         checkDirectory(upldDir);
         const storage = multer.diskStorage({
             destination: function (req, file, cb) {
@@ -400,30 +392,22 @@ index.post('/upldSingle',(req,res, next)=>{
         }).single('single_asset');
 
         upload(req, res, (err)=>{
-            // console.log(`req.body: ${JSON.stringify(req.file)}`)
-
             let myFile = req.file;
             const myfilePath = myFile.path;
             const pathArray = myFile.path.split(sep);
             const lastPart = pathArray.length-1;
-            const fileStaticPath = pathArray[lastPart-1]+sep+pathArray[lastPart]
-            
-            console.log(`resolve which paaaat: ${fileStaticPath}`);
-
+            const fileStaticPath = pathArray[lastPart-1]+sep+pathArray[lastPart];
+            // console.log(`resolve which paaaat: ${fileStaticPath}`);
             const readableStreamForFile = dirname(myFile.path);
-            const folder = basename(dirname(myFile.path))
+            const folder = basename(dirname(myFile.path));
             const filename = myFile.originalname;
 
             if(req.body.name && req.body.name != filename && existsSync(normalize(upldDir+'/'+req.body.name))){
-                
                 console.log(`go getter!! ${req.body.name}|| ${filename}`);
                 unlinkSync(normalize(upldDir+'/'+req.body.name));
-            
             }
-            console.log(`the path:::: ${basename(dirname(myFile.path))}`);
-            
-            console.log(`::::::::${JSON.stringify(folder)}`);
-
+            // console.log(`the path:::: ${basename(dirname(myFile.path))}`);
+            // console.log(`::::::::${JSON.stringify(folder)}`);
             return res.json({ folder, filename, path: fileStaticPath });
         })    
     } catch (error) {
@@ -563,7 +547,7 @@ index.post('/addGenlayer',(req,res, next)=>{
     }
 });
 
-index.post('/readcontracts',(req, res, next)=>{
+index.get('/readcontracts',(req, res, next)=>{
     try {
         
         checkDirectory(upldDir);
