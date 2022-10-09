@@ -1,15 +1,17 @@
 import './body.css'; import './App.css'; import './header.css';
 import { useState, memo, useEffect } from 'react';
 import { providers, Contract, utils, BigNumber, ContractFactory } from "ethers";
-import { createCanvas, loadImage } from 'canvas';
 import yaadtokenAbi from './contracts/ABIs/Yaad.json';
 import yaadcontract from './contracts/yaad.json';
+import { loadImage } from 'canvas';
 const pumpum = window.location.host;
 
 let baseServerUri = (pumpum  === "localhost:3000")?'./':'https://yaadlabs.herokuapp.com/';
 let provider = null, signer = null;
 let intervalId;
 let currentNetwork;
+
+
 
 if (typeof window.ethereum !== 'undefined') {
     provider = new providers.Web3Provider(window.ethereum, "any");
@@ -143,6 +145,39 @@ const isAplhaNumeric = (str)=>{
     return true;
 };
 
+// This function takes an image and converts it to a base 64 encoding and removes the image data before the base64 string
+const imgToBase64String = async ( img, dataURL )=>{
+    if( img !== null ){
+        let canvas =  document.createElement("canvas");
+        canvas.height = img.height;
+        canvas.width = img.width;
+        let ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        const dataURL = canvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+        // console.log(`data url = ${dataURL}`);
+        return dataURL;
+    }
+    const ddataURL = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    return ddataURL;
+};
+
+const imgURLFromBase64String = (dataURL)=>{
+    // let prestring = ('/' === dataURL[0])?"data:image/png;base64,":"data:image/png;base64,";
+    let prestring;
+    switch (dataURL[0]) {
+        case '/':
+            prestring = "data:image/jpg;base64,";
+            break;
+        case 'i':
+            prestring = "data:image/png;base64,";
+            break;
+        default:
+            prestring = "data:image/png;base64,";
+            break;
+    }
+    return prestring+dataURL;
+};
+
 const nullFunc = (e)=>{ return; };
 
 function LoadingBox(props){
@@ -252,14 +287,59 @@ function Body(props){
     }
 
     useEffect(()=>{
-        console.log(`state obj: ${JSON.stringify(localStorage.getItem('state'))}`);
-        if( JSON.parse(window.sessionStorage.getItem('state')) )
-            setState(JSON.parse(window.sessionStorage.getItem('state')) );
+        showLoading(); let db; const req_localDB = indexedDB.open("yaad", 1);
+
+        req_localDB.addEventListener('upgradeneeded', ()=>{
+            db = req_localDB.result;
+            console.log(`store names:::::`);
+            if(!db.objectStoreNames.contains("state")){
+                const project = db.createObjectStore("state", { keyPath:"state" });
+                project.createIndex("state", "state", { unique:true });
+                window.sessionStorage.setItem("state", state.state);
+                project.put({...state,});
+                
+            }
+        });
+
+        req_localDB.onsuccess = ()=>{
+            db = req_localDB.result;
+            const tx = db?.transaction("state", "readonly");
+            const yaadState = tx.objectStore("state").index("state");
+            const state_request = yaadState.get( window.sessionStorage.getItem("state") );
+            state_request.onsuccess = ()=>{
+                const cursorState = state_request.result;
+                // console.log(`cursorState: ${JSON.stringify(cursorState)}`);
+                hideLoading();
+                setState( cursorState );
+            }
+        };
+
     }, []);
 
     useEffect(()=>{
-        window.sessionStorage.setItem("state", JSON.stringify(state));
-    }, [state]);
+        showLoading(); let db; const req_localDB = indexedDB.open("yaad", 1);
+        req_localDB.addEventListener('upgradeneeded', ()=>{
+            db = req_localDB.result;
+            // console.log(`store names:::::`);
+            if(!db.objectStoreNames.contains("state")){
+                const project = db.createObjectStore("state", { keyPath:"state" });
+                project.createIndex("state", "state", { unique:true });
+                window.sessionStorage.setItem("state", state.state);
+                project.put({...state});
+            }
+        });
+
+        req_localDB.onsuccess = ()=>{
+            db = req_localDB.result;
+            const tx = db?.transaction("state", "readwrite");
+            const yaadState = tx.objectStore("state");
+            window.sessionStorage.setItem("state", state.state);
+            const updateYaad = yaadState.put({...state});
+            updateYaad.onsuccess = ()=>{
+                hideLoading();
+            }
+        };
+    }, [ state ]);
 
     useEffect(() => {
         return ()=>{
@@ -596,10 +676,21 @@ function Body(props){
     }
 
     function RandomGenerator (props){
-
         let imgbody = new FormData(), da_files;
         var wrongFiles = [];
         state.data.activeContract = 0;
+
+        const closeLayerOptionsBox = (e)=>{
+            switch (state.currsubState) {
+                case "RandomGenerator":
+                    localStorage.clear();
+                    setState((prev)=>({...prev, state:"", data:""}));
+                    break;
+                default:
+                    setState((prev)=>({...prev, currsubState: "RandomGenerator" } ));
+                    break;
+            }
+        }
 
         const validateIMGtype = async ( demFiles, childClassName, parentEle ) => {
             parentEle.innerHTML = "";
@@ -608,11 +699,15 @@ function Body(props){
             for (let n = 0; n < demlen ; n++ ) {
                 let dafile = demFiles[n];
                 let readr = new FileReader();
+                // eslint-disable-next-line no-loop-func
                 readr.onloadend = ()=>{
-                    let buffArray = ( new Uint8Array( readr.result )).subarray(0, 4);
-                    let fileSignature = "";
+                    // convert file buffer array to  bit array and splice the first 4 elements of this array
+                    let buffArray = ( new Uint8Array( readr.result )).subarray(0, 4),
+                    fileSignature = "";
+                    // convert first 4 elements to hexadecimal string and contact them together to create file signature
                     for(let m = 0; m < buffArray.length; m++){ fileSignature +=buffArray[m].toString(16); }
                     
+                    // check if signature matches the signatures of jpgs and png file
                     switch (fileSignature) {
                         case '89504e47'.toLowerCase():
                         case 'FFD8FFE0'.toLowerCase():
@@ -620,19 +715,18 @@ function Body(props){
                         case 'FFD8FFE2'.toLowerCase():
                         case 'FFD8FFE8'.toLowerCase():
                             let img = document.createElement("img");
-                            img.onload = ()=>{
-                                console.log(`width iss::: ${img.width}`);
-                                if( img.width <= 2000  && img.height <= 2000 ){
+                            img.addEventListener("load", ()=>{
+                                if( img.width <= 1500  && img.height <= 1500 ){
                                     const para = document.createElement("div");
                                     para.appendChild(img);
-                                    // para.innerHTML = "<img src="+URL.createObjectURL(dafile)+" />";
                                     para.classList.add((childClassName)?childClassName:'LayerUpldContentBox')
                                     parentEle.appendChild(para);
                                 }else{
                                     img.remove();
                                     wrongFiles.push(n);
                                 }
-                            }
+                            });
+                            
                             img.src = URL.createObjectURL(dafile);
                             break;
                         default:
@@ -646,6 +740,7 @@ function Body(props){
                     }
                     if ( last_indx === n ){ hideLoading(); }
                 }
+                // Read file as array buffer 
                 readr.readAsArrayBuffer(dafile);
             }
         }
@@ -673,7 +768,9 @@ function Body(props){
         }
         
         const handleAddLayerUpld = async (e)=>{
-            showLoading(); e.target.classList.add('inactive'); e.preventDefault();
+            showLoading();
+            e.target.classList.add('inactive'); e.preventDefault();
+            let layerName, bgElement = false;
 
             if (e.target.getAttribute('name') === 'bg_asset' && e.target.getAttribute('type') === 'file') {
                 document.getElementById('bg_upld').textContent = (e.target.files.length > 0)?'NEXT':'No Background';
@@ -689,9 +786,7 @@ function Body(props){
                 da_files = (e.target.files.length === 0 )?[]:e.target.files;
                 return;
             }
-
-            let layerName;
-
+            
             if(e.target.getAttribute("id") !== "bg_upld"){
                 layerName = ( state.temp_index === null )? state.formVals:document.getElementById("LayerName").value.trim();
                 if( layerName === null || document.getElementById("multi_asset").files.length < 1){
@@ -708,78 +803,60 @@ function Body(props){
                     return false;
                 }
             }
+            
+            bgElement=(e.target.getAttribute("id") === "bg_upld")&& true;
 
-            let conntd = await iswalletConnected();
-            showLoading();
-            if ( conntd !== false ) { imgbody.append('account', conntd) } else { return false; }
-            
-            if(e.target.getAttribute("id") === "bg_upld"){
-                if(!state.data.background){ state.data.background = []; }
-                imgbody.append('background', 'background');
-            }else{
-                imgbody.append('layerName', layerName);
-            }
-            
-            imgbody.append('coll_name', state.data.coll_name);
-            
             if((da_files === undefined || da_files.length === 0 || da_files.length === "") && e.target.getAttribute("id") === "bg_upld"){
                 return closeLayerOptionsBox();
             }
             
-            logit(`wrong files array = ${ wrongFiles.length }`);
+            let exists = false, indxx = null;
+            state.data.layers.forEach((val,indx, arr)=>{
+                if( val.name === layerName ){
+                    exists = true;
+                    indxx = indx;
+                }
+            })
 
+            let file_len = da_files.length, last_index = file_len-1, loadedindx = 0;
+            const filesToLoadLen = da_files.length - wrongFiles.length;
+            showLoading();
             loop1:
-            for (let n = 0; n < da_files.length; n++){
+            for ( let n = 0; n < file_len; n++ ){
                 loop2:
                 for( const p of wrongFiles ){
                     if( p  === n ) { continue loop1; }
                 }
-
-                let assetName = conntd+"_"+n+"_"+Date.now()+"."+da_files[n].name.split('.')[da_files[n].name.split('.').length-1];
-                imgbody.append("files", da_files[n], assetName);
-            }
-            
-            const addedLayer = await fetch(baseServerUri+'api/addGenlayer', {method:"post", body:imgbody}).then((res)=> res.json()).then((piss)=> piss);
-            
-            if (addedLayer.error) { setState((prev)=>( {...prev, currsubState: "RandomGenerator-LayerOptions-AddLayer" } )) };
-
-            if(addedLayer.response.backgrounds){
-                if(state.data.background.length > 0){
-                    let p = 0; 
-                    while( p < addedLayer.response.data.length ){
-                        state.data.background.push(addedLayer.response.data[p]);
-                        p++;
-                    }
-                    e.target.classList.remove('inactive');
-                    return closeLayerOptionsBox();
-                }
-
-                state.data.background = addedLayer.response.data;
-                return closeLayerOptionsBox();
-            }else{
-                let dataArray = addedLayer.response.data;
-                if(state.data.layers.length > 0){
-                    let v = 0;
-                    while( v < state.data.layers.length ){
-                        if(state.data.layers[v].name === addedLayer.response.layer_name){
-                            let p = 0; 
-                            while( p < addedLayer.response.data.length ){
-                                state.data.layers[v].traits.push(addedLayer.response.data[p]);
-                                p++;
-                            }
-                            return closeLayerOptionsBox();
+                
+                let img = new Image();
+                // eslint-disable-next-line no-loop-func
+                img.addEventListener("load", async ()=>{
+                    loadedindx++;
+                    const imgURL = await imgToBase64String(img);
+                    console.log(`first character of base 64 string:: ${imgURL[0]}`)
+                    let imgEXT = (imgURL[0] === '/' )?"jpg":"png";
+                    if(bgElement){
+                        console.log(`background:::::`);
+                        if( Array.isArray(state.data.background) ){
+                            state.data.background.push({trait_name: n, path: imgURL, ext: imgEXT });
+                        }else{
+                            state.data.background = [{trait_name: n, path: imgURL, ext: imgEXT }]
                         }
-                        v++;
+                    }else{
+                        if(exists === true){
+                            await state.data.layers[indxx].traits.push({ trait_name: n, path: imgURL, ext: imgEXT });
+                        }else{
+                            state.data.layers.push({ name: layerName, traits: [{ trait_name: n, path: imgURL, ext: imgEXT }] });
+                            exists = true;
+                            indxx = state.data.layers.length-1;
+                        }
                     }
+                    console.log(`loaded img::: ${loadedindx}, filesToLoadLen::: ${filesToLoadLen}`)
+                    if ( loadedindx === filesToLoadLen ){ return closeLayerOptionsBox(); }
+                })
 
-                    state.data.layers.push({ name: addedLayer.response.layer_name, traits:dataArray });
-                    return closeLayerOptionsBox();
-
-                }
-
-                state.data.layers.push({ name: addedLayer.response.layer_name, traits:dataArray });
-                return closeLayerOptionsBox();
-            }      
+                img.src = URL.createObjectURL(da_files[n]);
+            }
         }
 
         const delLayer = async (e)=>{
@@ -788,17 +865,6 @@ function Body(props){
             }else{
                 showLoading();
                 if( state.temp_index !== null ){
-                    let delVal = state.data.layers[ state.temp_index ];
-                    let boddy = new FormData();
-                    const conntd = await iswalletConnected();
-                    ( conntd !== false ) ? boddy.append('account', conntd) : closeLayerOptionsBox();
-
-                    boddy.append('index', state.temp_index ); boddy.append('values', JSON.stringify(delVal) );
-
-                    const deletedLayer = await fetch(baseServerUri+'api/delLayer', {method:"post", body: boddy,}).then((res)=> res.json()).then((piss)=>piss);
-                    
-                    if(deletedLayer.error){ state.data.msg = deletedLayer.error; closeLayerOptionsBox(); }
-                    
                     state.data.layers.splice( state.temp_index, 1);
                     hideLoading();
                     return closeLayerOptionsBox();
@@ -819,17 +885,6 @@ function Body(props){
                 }
             }
         };
-
-        const closeLayerOptionsBox = (e)=>{
-            switch (state.currsubState) {
-                case "RandomGenerator":
-                    setState((prev)=>({...prev, state:"", data:""}));
-                    break;
-                default:
-                    setState((prev)=>({...prev, currsubState: "RandomGenerator" } ));
-                    break;
-            }
-        }
         
         const expandbox = (e)=>{
             showLoading();
@@ -895,13 +950,10 @@ function Body(props){
             };
 
             const loop_and_pin_layers = async (collName, layers)=>{
-                let emptyComboArray = [];
-                
+                let emptyComboArray = []; state.data.newlayers = [];
                 layers.reverse();
-            
                 for(let indx = 0; indx < layers.length; indx++){
                     emptyComboArray.push( { name: layers[indx].name, traits:[] } );
-                    
                     for( let pin = 0; pin < layers[indx].traits.length; pin++ ){
                         const options = {
                             pinataMetadata:{
@@ -915,12 +967,17 @@ function Body(props){
                                 cidVersion: 0
                             }
                         };
-                        
+                        let assetName = conntd+"__"+Date.now()+"."+layers[indx].traits[pin].ext;
                         let pin_body = new FormData();
-                        pin_body.append( 'path',layers[indx].traits[pin].path );
+                        const fetchBlob = await fetch(imgURLFromBase64String(layers[indx].traits[pin].path));
+                        const newimgBlob = await fetchBlob.blob();
+                        pin_body.append( 'img', newimgBlob, assetName );
                         pin_body.append( 'the_options', JSON.stringify(options) );
+                        console.log(`pinning layer: ${layers[indx].name}, trait: ${layers[indx].traits[pin].trait_name}`);
                         const pinnedItem = await fetch( `${baseServerUri}api/pinnit`, {method:'POST', body: pin_body} ).then((resp)=>resp.json()).then((pinned)=> pinned );
-                        emptyComboArray[indx].traits.push({ trait_name: layers[indx].traits[pin].trait_name, path: pinnedItem.IpfsHash });
+                        layers[indx].traits[pin].ipfsHash = pinnedItem.IpfsHash;
+                        state.data.newlayers.push({ trait_name: layers[indx].traits[pin].trait_name, layer_index:indx, trait_index:pin, ipfsHash:pinnedItem.IpfsHash })
+                        emptyComboArray[indx].traits.push({ trait_name: layers[indx].traits[pin].trait_name, layer_index:indx, trait_index:pin, ipfsHash:pinnedItem.IpfsHash });
                     }
                 }
                 
@@ -928,6 +985,7 @@ function Body(props){
             };
 
             const loop_and_pin_background = async (backgrounds)=>{
+                let newBGArray = [];
                 for(let f = 0; f < backgrounds.length; f++){
                     const options = {
                         pinataMetadata:{
@@ -941,20 +999,27 @@ function Body(props){
                         }
                         
                     };
-                    
+
+                    let assetName = conntd+"__"+Date.now()+"."+backgrounds[f].ext;
                     let pin_body = new FormData();
-                    pin_body.append( 'path',backgrounds[f].path ); pin_body.append( 'the_options', JSON.stringify(options) );
+                    const fetchBlob = await fetch( imgURLFromBase64String( backgrounds[f].path ) );
+                    const newimgBlob = await fetchBlob.blob();
+                    pin_body.append( 'img', newimgBlob, assetName );
+                    // pin_body.append( 'path',backgrounds[f].path );
+                    pin_body.append( 'the_options', JSON.stringify(options) );
+                    console.log(`pinning layers!`);
                     const pinnedBG = await fetch( `${baseServerUri}api/pinnit`, {method:'POST', body: pin_body}).then((resp)=>resp.json()).then((pinned)=>pinned);
-                    backgrounds[f].path = pinnedBG.IpfsHash;
+                    backgrounds[f].ipfsHash = pinnedBG.IpfsHash;
+                    newBGArray.push({ trait_name: backgrounds[f].trait_name, trait_index: f, ipfsHash: pinnedBG.IpfsHash});
                 }
-                return backgrounds;
+                return newBGArray;
             };
 
             const mapTraitTypes = async (comboz) => {
                 let len = 0; let traitTypes = []; let ego;
                 while( len < comboz.length ){
                     ego = comboz[len].traits.map(( x, v ) => {
-                        return { trait_type: comboz[len].name, trait_name: comboz[len].traits[v].trait_name, value: x.path};
+                        return { trait_type: comboz[len].name, trait_name: comboz[len].traits[v].trait_name, value: x.ipfsHash};
                     });
 
                     traitTypes.push(ego);            
@@ -975,10 +1040,9 @@ function Body(props){
 
             const insertBackground = async (comboz) =>{
                 let d = 0; const backgrounds = await loop_and_pin_background( state.data.background );
-
                 while( d < comboz.length ){
                     let newBG = backgrounds[ Math.floor(Math.random() * backgrounds.length) ];
-                    comboz[d].splice(0, 0, { trait_type: "background", trait_name: newBG.trait_name, value: newBG.path });
+                    comboz[d].splice(0, 0, { trait_type: "background", trait_name: newBG.trait_name, value: newBG.ipfsHash });
                     d++;
                 }
             };
@@ -986,17 +1050,20 @@ function Body(props){
             const allPossibleCombos = async ()=> {
                 let comboz = [];
                 let layerz = JSON.parse( JSON.stringify(state.data.layers) );
-                const loop_and_pin = await loop_and_pin_layers( state.data.coll_name, layerz );
+                const loop_and_pin = await loop_and_pin_layers( state.data.coll_name, state.data.layers );
+                // console.log(`new layers:::::>>> ${JSON.stringify(state.data.newlayers)}`)
                 const map_traits = await mapTraitTypes(loop_and_pin);
                 const traittypes_fin = await traitTypesPushNA(map_traits);
                 
                 await get_all_possible_combos(traittypes_fin, comboz);
                 await shuffle(comboz);
                 await insertBackground(comboz);
+                console.log(` at the combo completion! `)
                 return comboz;
             };
 
-            let combo =  await allPossibleCombos(); const possibleCombos = combo.length;
+            let combo =  await allPossibleCombos();
+            const possibleCombos = combo.length;
             const byteSize = async (obj)=>{
                 let str = null;
                 if( typeof(obj) === 'string' ){
@@ -1016,7 +1083,7 @@ function Body(props){
                 let pin_body = new FormData();
                 pin_body.append('path', JSON.stringify(combo)); 
                 pin_body.append('the_options', JSON.stringify(optns));
-                const pinnedCombo = await fetch(pinUrl,{method:'POST', body: pin_body}).then((rezz)=>rezz.json()).then((pinned)=>pinned);
+                const pinnedCombo = await fetch( pinUrl, {method:'POST', body: pin_body}).then((rezz)=>rezz.json()).then((pinned)=>pinned);
                 pin_body = null;
                 return pinnedCombo;
             }
@@ -1025,50 +1092,81 @@ function Body(props){
             
             let pinnedCombo;
             if(getBytes < 20000000){
-
-                pinnedCombo = await pinCombo( combo, optns, `${baseServerUri}api/pinnit` );
+                pinnedCombo = await pinCombo( combo, optns, `${baseServerUri}api/pinnitcombo` );
             }else{
-
                 pinnedCombo = await pinCombo( combo, optns, `${baseServerUri}api/pinBig` );
             }
 
             const drawimage = async (traitTypes, width, height) => {
                 let sampleArray = []; const cap_it = traitTypes.length;
-
                 for( let v = 0; v < cap_it; v++ ){
-                    const options = {
-                        pinataMetadata:{
-                            name: `${v}`,
-                            keyvalues: {
-                            description: 'no',
-                            name: `${v}`
+                    const  drawableTraits = traitTypes[v].filter( x=> x.value !== 'N/A');
+                    const drawableTraits_length = drawableTraits.length;
+                    const canvas = document.createElement("canvas");
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    let loadedimgs = 1;
+                    for(let p = 0; p < drawableTraits_length; p++) {
+                        let  drawableTrait = drawableTraits[p];
+                        // try {
+                            // newlayers =  { trait_name: layers[indx].traits[pin].trait_name, layer_index:indx, trait_index:pin, ipfsHash:pinnedItem.IpfsHash }
+                            let iterlength = (p === 0)?state.data.background.length:state.data.newlayers.length;
+                            loop1:
+                            for( let i = 0; i < iterlength; i++ ) {
+                                const traitinfo = (p === 0)?state.data.background[i]:state.data.newlayers[i];
+                                if( traitinfo.ipfsHash === drawableTrait.value ){
+                                    // console.log(`trait ipfsHash: ${traitinfo.ipfsHash}, drawableTrait value: ${ drawableTrait.value }, name:: ${JSON.stringify(state.data.layers[traitinfo.layer_index].traits[traitinfo.trait_index].trait_name)}`);
+                                    let img = new Image();
+                                    let base4path = (p === 0)?traitinfo.path:state.data.layers[traitinfo.layer_index].traits[traitinfo.trait_index].path;
+                                    img.src = imgURLFromBase64String(base4path);
+                                    // eslint-disable-next-line no-loop-func
+                                    img.addEventListener( "load", async ()=>{
+                                        console.log(`loaded img: ${loadedimgs}, drawableTraits length: ${drawableTraits_length}, sample index: ${v}`);
+                                        ctx.drawImage(img, 0, 0, width, height);
+                                        if( loadedimgs === drawableTraits_length ){
+                                            const sampleimage = await imgToBase64String(null, canvas.toDataURL("image/png"));
+                                            console.log(`data url:: ${sampleimage}`);
+                                            sampleArray.push( { name: `sample turd #${v}`, attributes: drawableTraits, path: sampleimage } );
+                                            const updateDB = async ( data, collname, account, thesamples, combo_ipfs_hash )=>{
+                                                let payload = new FormData();
+                                                payload.append('data', JSON.stringify(state.data));
+                                                payload.append('collname', state.data.coll_name);
+                                                payload.append('collSym', state.data.coll_symbol);
+                                                payload.append('account', conntd);
+                                                payload.append('ipfs_uri', combo_ipfs_hash);
+                                                // payload.append('samples', JSON.stringify(thesamples));
+                                                let saveCollection = await fetch(`${baseServerUri}api/savenftcollection`, {method:'POST', body:payload}).then((response)=>response.json()).then((ress)=>ress);
+                                                payload = null;
+                                                let newcontract = JSON.parse(JSON.stringify(yaadcontract));
+                                                newcontract.name = state.data.coll_name.split(" ").join("_");
+                                                return setState((prev)=>({...prev, data: {...prev.data, coll_name: prev.data.coll_name, coll_symbol: prev.data.coll_symbol, samples: thesamples, possibleCombos, contracts: [newcontract] }, currsubState: "RandomGenerator-RandomGenerated" }));
+                                            };
+                                            if( v === (cap_it-1) ){
+                                                await updateDB(state.data, state.data.coll_name, conntd, sampleArray, pinnedCombo.IpfsHash);
+                                            }
+                                        }
+                                        loadedimgs++;
+                                    });
+                                    break loop1;
+                                }
                             }
-                        },
-                        pinataOptions: {
-                            cidVersion: 0
-                        }
-                    };
+                        // } catch (error) {
+                        //     // return res.json({error, current_state: `looping through attributes, failed to draw index ${p}. Details: ${JSON.stringify(traits[p])}`})
+                        // }
+                    }
 
-                    const  drawableTraits = traitTypes[v].filter( x=>  x.value !== 'N/A');
+
+                    // console.log(`draw response::: ${JSON.stringify(drewimg)}`);
+                    // bdy = null; 
+                    // bdy = new FormData(); 
+                    // bdy.append('path', drewimg.path); 
+                    // bdy.append('the_options', JSON.stringify(options));
+                    // const pinnedSample = await fetch(`${baseServerUri}api/pinnit`,{method:'POST', body: bdy}).then((rezz)=>rezz.json()).then((pinned)=>pinned);
+                    // sampleArray.push( { name: `sample turd #${v}`, attributes: drawableTraits, path: pinnedSample.IpfsHash } );
                     
-                    let bdy = new FormData();
-                    bdy.append('width', width);
-                    bdy.append('height', height);
-                    bdy.append('traits', JSON.stringify(drawableTraits));
-                    bdy.append('imgindex', v ); 
-                    bdy.append('account', conntd);
-                    bdy.append('collname', state.data.coll_name);
-                    const drewimg = await fetch(`${baseServerUri}api/drawimage`, { method:'POST', body: bdy } ).then((theresponse)=>theresponse.json()).then((drewimg)=>drewimg);
-                    bdy = null; 
-                    bdy = new FormData(); 
-                    bdy.append('path', drewimg.path); 
-                    bdy.append('the_options', JSON.stringify(options));
-                    const pinnedSample = await fetch(`${baseServerUri}api/pinnit`,{method:'POST', body: bdy}).then((rezz)=>rezz.json()).then((pinned)=>pinned);
-                    sampleArray.push( { name: `sample turd #${v}`, attributes: drawableTraits, path: pinnedSample.IpfsHash } );
-                    
-                    bdy = null;
+                    // bdy = null;
                 }
-                return sampleArray;
             };
 
             const getSamplesAndClearComboData = async (comboz, cap)=>{
@@ -1080,25 +1178,8 @@ function Body(props){
                 return drawimage(sampleImgs, 1000, 1000);
             };
 
-            const samples = await getSamplesAndClearComboData(combo, 4);
+            const samples = await getSamplesAndClearComboData(combo, 10);
             combo = null;
-
-            const updateDB = async (data, collname, account, thesamples, combo_ipfs_hash)=>{
-                let payload = new FormData();
-                payload.append('data', JSON.stringify(state.data));
-                payload.append('collname', state.data.coll_name);
-                payload.append('collSym', state.data.coll_symbol);
-                payload.append('account', conntd);
-                payload.append('ipfs_uri', combo_ipfs_hash);
-                payload.append('samples', JSON.stringify(thesamples));
-                let saveCollection = await fetch(`${baseServerUri}api/savenftcollection`, {method:'POST', body:payload}).then((response)=>response.json()).then((ress)=>ress);
-                payload = null;
-                let newcontract = JSON.parse(JSON.stringify(yaadcontract));
-                newcontract.name = state.data.coll_name.split(" ").join("_");
-                return setState((prev)=>({...prev, data: { coll_name: prev.data.coll_name, coll_symbol: prev.data.coll_symbol, samples: thesamples, possibleCombos, contracts: [newcontract] }, currsubState: "RandomGenerator-RandomGenerated" }));
-            };
-
-            updateDB(state.data, state.data.coll_name, conntd, samples, pinnedCombo.IpfsHash);
         }
         
         const handleSol = async (e)=>{
@@ -1171,13 +1252,9 @@ function Body(props){
                 let initDivIndx = null; let newindex = null;
 
                 useEffect(()=>{
-
                     [].forEach.call(document.getElementsByClassName('generatorRightPanelLayerBox'), (element) => {
-
                         initPositions.push(element.getBoundingClientRect().top);
-
                     });
-                    
                 },[elebox, initPositions])
 
                 function swapSibling(node1, node2) {
@@ -1386,13 +1463,13 @@ function Body(props){
                     
                     boddy.append('value', JSON.stringify(delVal));
 
-                    let deletedTrait = await fetch(baseServerUri+'api/delTrait', {method:"post", body: boddy,}).then((res)=> res.json()).then((piss)=>piss);
+                    // let deletedTrait = await fetch(baseServerUri+'api/delTrait', {method:"post", body: boddy,}).then((res)=> res.json()).then((piss)=>piss);
                     
-                    if(deletedTrait.error){
-                        state.data.msg = deletedTrait.error;
-                        hideLoading();
-                        return setState((prev)=>( prev ));
-                    }
+                    // if(deletedTrait.error){
+                    //     state.data.msg = deletedTrait.error;
+                    //     hideLoading();
+                    //     return setState((prev)=>( prev ));
+                    // }
 
                     if(state.data.layers[eleKey].traits.length === 0) state.data.layers.splice(eleKey, 1);
 
@@ -1406,22 +1483,22 @@ function Body(props){
                     let eleIndex = [].indexOf.call(document.getElementsByClassName(ele.getAttribute('class')), ele);
                     setState((prev)=>({...prev, temp_index: eleIndex, currsubState: "RandomGenerator-LayerOptions-Edit-Layer" } ));
                 }
-
-                const DetailEditTraitBox = (e)=>{
-                    
-                        let indxx = 0; let boxcont = [];
-
-                        while (indxx < state.data.layers[props.obj.key].traits.length){
-                            
-                            boxcont.push(<div key={indxx} className='LayerUpldContentBx'><div className='LayerUpldContent'><img style={{backgroundColor: '#222'}} src={baseServerUri+state.data.layers[props.obj.key].traits[indxx].path} alt=''/><div className='traitName'><input className='traitNameBox' id={"traitName_"+indxx} placeholder={state.data.layers[props.obj.key].traits[indxx].trait_name} type="text" name='name' onClick={(e)=>{ e.target.value = state.data.layers[props.obj.key].traits[parseInt(e.target.getAttribute("id").split("_")[1])].trait_name}} onChange={setTrait} /><Buttonz data={{class:"edit-trait-img-svg", id:'delele_'+indxx, value:'X', func: delTrait}} /></div></div></div>)
-
-                            indxx++;
-                        }
-
-                        console.log(`name::>> ${state.data.layers[props.obj.key].name}, index of box:: ${props.obj.key}`)
-
-                        return(boxcont)
-
+        
+                const DetailEditTraitBox = ()=>{
+                    let boxcont = [];
+                    for  (let indxx = 0; indxx < state.data.layers[props.obj.key].traits.length; indxx++){
+                        let imgsrc = imgURLFromBase64String(state.data.layers[props.obj.key].traits[indxx].path);
+                        boxcont.push(<div key={indxx} className='LayerUpldContentBx'>
+                            <div className='LayerUpldContent'>
+                                <img style={{backgroundColor: '#222'}} src={imgsrc} alt=''/>
+                                <div className='traitName'>
+                                    <input className='traitNameBox' id={"traitName_"+indxx} placeholder={state.data.layers[props.obj.key].traits[indxx].trait_name} type="text" name='name' onClick={(e)=>{ e.target.value = state.data.layers[props.obj.key].traits[parseInt(e.target.getAttribute("id").split("_")[1])].trait_name}} onChange={setTrait} />
+                                    <Buttonz data={{class:"edit-trait-img-svg", id:'delele_'+indxx, value:'X', func: delTrait}} />
+                                </div>
+                            </div>
+                        </div>)                             
+                    };
+                    return(boxcont);
                 }
                 
                 return(
@@ -1477,7 +1554,7 @@ function Body(props){
             }
         }
         
-        console.log(`char code for space: ${" ".charCodeAt(0)}`);
+        // console.log(`char code for space: ${" ".charCodeAt(0)}`);
         
         function Dabttn(){
             const setBGTrait = (e)=>{
@@ -1500,23 +1577,23 @@ function Body(props){
                 const delVal = state.data.background.splice(eleindex, 1);
                 let boddy = new FormData();
 
-                const conntd = await iswalletConnected();
-                if(conntd !== false){
-                    boddy.append('account', conntd);
-                }else{
-                    hideLoading();
-                    return false;
-                }
+                // const conntd = await iswalletConnected();
+                // if(conntd !== false){
+                //     boddy.append('account', conntd);
+                // }else{
+                //     hideLoading();
+                //     return false;
+                // }
                 
-                boddy.append('value', JSON.stringify(delVal))
+                // boddy.append('value', JSON.stringify(delVal))
     
-                let deletedTrait = await fetch(baseServerUri+'api/delTrait', {method:"post", body: boddy,}).then((res)=>res.json()).then((piss)=>piss);
+                // let deletedTrait = await fetch(baseServerUri+'api/delTrait', {method:"post", body: boddy,}).then((res)=>res.json()).then((piss)=>piss);
                 
-                if(deletedTrait.error){
-                    state.data.msg = deletedTrait.error;
-                    hideLoading();
-                    return setState((prev)=>( prev ));
-                }
+                // if(deletedTrait.error){
+                //     state.data.msg = deletedTrait.error;
+                //     hideLoading();
+                //     return setState((prev)=>( prev ));
+                // }
 
                 if( state.data.background?.length === 0 ) delete state.data.background;
 
@@ -1530,10 +1607,10 @@ function Body(props){
                 function TheBGs(){
                     if(state.data.background){
                         let indxx = 0; let bgstack = [];
-
-                        while (indxx < state.data.background.length){
-                            bgstack.push(<div key={indxx} className='BG_UpldContentBx'><div className='BG_UpldContent'><img style={{backgroundColor: '#222'}} src={baseServerUri+state.data.background[indxx].path} alt=''/><DaInput data={{class:'traitName', typeClass:'BG_traitNameBox', typeId:"BGName_"+indxx, placeholder:state.data.background[indxx].trait_name, type:'text', name:'name', onClick:(e)=>{ e.target.value = state.data.background[parseInt(e.target.getAttribute("id").split("_")[1])].trait_name}, onChange:setBGTrait }}/></div><Buttonz data={{class:"delBG", id:'deleteBGUpldContentBx_'+indxx, value:'X', func: delBG}} /></div>)
-
+                        
+                        while ( indxx < state.data.background.length ){
+                            const imgURL = imgURLFromBase64String( state.data.background[indxx].path );
+                            bgstack.push(<div key={indxx} className='BG_UpldContentBx'><div className='BG_UpldContent'><img style={{backgroundColor: '#222'}} src={imgURL} alt=''/><DaInput data={{class:'traitName', typeClass:'BG_traitNameBox', typeId:"BGName_"+indxx, placeholder:state.data.background[indxx].trait_name, type:'text', name:'name', onClick:(e)=>{ e.target.value = state.data.background[parseInt(e.target.getAttribute("id").split("_")[1])].trait_name}, onChange:setBGTrait }}/></div><Buttonz data={{class:"delBG", id:'deleteBGUpldContentBx_'+indxx, value:'X', func: delBG}} /></div>)
                             indxx++;
                         }
 
@@ -1570,10 +1647,13 @@ function Body(props){
 
         function ThaSamples (){
             if(state.data.samples?.length > 0){
+                
                 let sampleLen = 0; let boxcont = [];
 
-                while (sampleLen < 4){
-                    boxcont.push(<div key={sampleLen} className='LayerUpldContentBx'><div className={(state.currsubState === "RandomGenerator-ContractDeployed")?"LayerUpldContent":"LayerUpldContent"}><img className='sampleImage' src={ipfs_gateway+state.data.samples[sampleLen].path} alt=''/></div></div>);
+                while (sampleLen < state.data.samples?.length){
+                    console.log(`samples length:: ${state.data.samples.length}, samples index:: ${state.data.samples} ${JSON.stringify(state.data.samples)}`);
+                    const imgurl = imgURLFromBase64String(state.data.samples[sampleLen].path);
+                    boxcont.push(<div key={sampleLen} className='LayerUpldContentBx'><div className={(state.currsubState === "RandomGenerator-ContractDeployed")?"LayerUpldContent":"LayerUpldContent"}><img className='sampleImage' src={imgurl} alt=''/></div></div>);
                     sampleLen++;
                 }
                 

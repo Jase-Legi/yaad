@@ -65,9 +65,11 @@ if (process.env.NODE_ENV === 'dev') {
 
 let upldDir = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')?'client/build/uploads':'client/public/uploads';
 
-app.listen(PORT,(err)=>{
+let server = app.listen(PORT, (err)=>{
     // if error then log it to the console
     err&&console.log(`error: ${err}.`);
     console.log(`app is listening  on PORT ${PORT}.`);
 });
+server.timeout = 60000;
+console.log(`address:: ${JSON.stringify(server.address())},\n server connections: ${server.connections}`);
 module.exports = app;

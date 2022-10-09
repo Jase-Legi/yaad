@@ -261,9 +261,72 @@ index.get('/', (req, res, next)=>{
     // });
 });
 
-index.post('/pinnit', multer({ limits: { fieldSize : 25 * 1024 * 1024 }}).none(), async (req, res, next)=>{
-    const [err, json_to_pin] = checkJsonParse(req.body.path);
+index.post('/pinnit', async (req, res, next)=>{
+    checkDirectory(upldDir);
+    const storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            // console.log(`req.body:`);
+            // console.log(req.body.layerName);
+            // console.log(`req.coll_name:`);
+            // console.log(req.body.coll_name);
+            // console.log(`req.account:`);
+            // console.log(req.body.account);
+            // let folderz = file.originalname.split("_");
+            let dafolder = upldDir+sep+req.body.account+sep+req.body.coll_name+sep+"layers"+sep+req.body.layerName;
 
+            // checkDirectory(dafolder);
+            cb(null, upldDir);
+        },
+
+        filename: function (req, file, cb) {
+            cb(null, (file.originalname))
+        }
+
+    });
+
+    const upload = multer({
+
+        storage: storage,
+
+        limits: { fileSize: 10**9},
+        
+        fileFilter(req, file, cb) {
+            
+            if (!file.originalname.toLowerCase().match(/\.(png|jpg|jpeg|ico|gif|mp3|mp4|svg|mov|webp|webm|mpg|avi|ogg|wmv|bmp|tiff)$/)){
+            
+                cb(new Error('Please upload an image.'));
+            
+            }
+            
+            cb(undefined, true)
+        
+        }
+    
+    }).single("img")
+
+    upload(req, res, async (err)=>{
+        let myFile = req.file;
+        let datat = req.body;
+        const address =(req.body.account)?req.body.account:null;
+        const coll_name = (req.body.coll_name)?req.body.coll_name:null;
+        const layer_name = (req.body.layerName)?req.body.layerName:null;
+        // const [err, json_to_pin] = checkJsonParse(req.body.path);
+        let img_path = normalize(theDir+sep+"uploads/"+myFile.originalname);
+        console.log(`pinnit path::: ${img_path}`); 
+
+        let tha_options = JSON.parse(req.body.the_options);
+        
+        try {
+            const pinned = await pinItem(img_path, tha_options);
+            return res.json(pinned);
+        } catch (error) {
+            return res.json(error,)
+        }
+    });
+});
+
+index.post('/pinnitcombo', multer({ limits: { fieldSize : 25 * 1024 * 1024 }}).none(), async (req, res, next)=>{
+    const [err, json_to_pin] = checkJsonParse(req.body.path);
     let img_path = (!err)?json_to_pin:normalize(theDir+sep+req.body.path);
     // if(err){ console.log(`an error occurred :${err}`); }
 
@@ -291,37 +354,7 @@ index.post('/pinBig', multer({ limits: { fieldSize : 55 * 1024 * 1024 }}).none()
     }
 });
 
-index.post('/drawimage', multer({ limits: { fieldSize : 10 * 1024 * 1024 }}).none(), async (req, res, next)=>{
-    // checkDirectory(upldDir);
-    const [err, traits] = checkJsonParse(req.body.traits);
-    // const gateway = 'https://gateway.pinata.cloud/ipfs/';
-    const gateway = 'https://ipfs.io/ipfs/'
-    const width = parseInt(req.body.width);
-    const height = parseInt(req.body.height);
-    // const the_img =  req.body.the_img;
-    const imgIndex =  req.body.imgindex;
-    const collname =  req.body.collname;
-    const account =  req.body.account;
-    const collectionName  = req.body.coll_name;
-    const canvas = createCanvas(width, height);
-    const ctx = canvas.getContext('2d');
-    
-    for(let p = 0; p < traits.length; p++) {
-        let  val = traits[p];
-        let  image = await loadImage(gateway+val.value);
-        ctx.drawImage(image, 0, 0, width, height);
-    }
-
-    try {
-        writeFileSync(`${upldDir}/sample_${imgIndex}_${account}_${collname}.png`, canvas.toBuffer() );
-        return res.json({path:`/uploads/sample_${imgIndex}_${account}_${collname}.png`});
-    } catch (error) {
-        return res.json({error,})
-    }
-    
-})
-
-index.post('/savenftcollection', multer().none(), async (req, res, next)=>{
+index.post('/savenftcollection', multer({ limits: { fieldSize : 25 * 1024 * 1024 }}).none(), async (req, res, next)=>{
     const datat = JSON.parse(req.body.data);
     const collectionName = datat.coll_name;
     const samples = datat.samples
@@ -345,7 +378,7 @@ index.post('/savenftcollection', multer().none(), async (req, res, next)=>{
                 { $set: 
                     {
                         "uri": ipfs_uri,
-                        "data.samples": samples,
+                        // "data.samples": samples,
                         "data.samplesGenerated" : 4,
                         "data.workState": "samples",
                         "data.pending": false 
@@ -512,9 +545,6 @@ index.post('/addGenlayer',(req,res, next)=>{
         }).array("files")
 
         upload(req, res, (err)=>{
-            // console.log(`req.files: ${JSON.stringify(req.files)}`);
-            // console.log(`req.body: ${JSON.stringify(req.body)}`);
-
             let myFiles = req.files;
             let datat = req.body;
             const address =(req.body.account)?req.body.account:null;
@@ -524,19 +554,13 @@ index.post('/addGenlayer',(req,res, next)=>{
             let dataArray = []; let r = 0;
             
             while(r < myFiles.length){
-                
                 let clientPath = "uploads/"+myFiles[r].originalname;
-                
                 dataArray.push({trait_name: r, path: clientPath});
-                
                 r++;
-            
             }
             // console.log(`dataArray: ${JSON.stringify(dataArray)}`);
             if(req.body.background){
-
-                return res.json({message:"Uloaded backgrounds", response:{address,coll_name, layer_name, backgrounds:myFiles.length, data:dataArray}});
-
+                return res.json({message:"Uploaded backgrounds", response:{address,coll_name, layer_name, backgrounds:myFiles.length, data:dataArray}});
             }
 
             return res.json({message:"Uloaded an NFT", response:{address,coll_name, layer_name, data:dataArray}});
