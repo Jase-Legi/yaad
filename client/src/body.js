@@ -840,7 +840,6 @@ function Body(props){
                     console.log(`first character of base 64 string:: ${imgURL[0]}`)
                     let imgEXT = (imgURL[0] === '/' )?"jpg":"png";
                     if(bgElement){
-                        console.log(`background:::::`);
                         if( Array.isArray(state.data.background) ){
                             state.data.background.push({trait_name: n, path: imgURL, ext: imgEXT });
                         }else{
@@ -855,7 +854,7 @@ function Body(props){
                             indxx = state.data.layers.length-1;
                         }
                     }
-                    console.log(`loaded img::: ${loadedindx}, filesToLoadLen::: ${filesToLoadLen}`)
+                    
                     if ( loadedindx === filesToLoadLen ){ return closeLayerOptionsBox(); }
                 })
 
@@ -937,10 +936,8 @@ function Body(props){
             const get_all_possible_combos =  async ( input, output, n, da_path )=>{
                 da_path = (da_path === null || da_path === undefined)? []: da_path;
                 n = (n === null || n === undefined)? 0:n;
-            
                 if(n < input.length){
                     const current_item = input[n]; let gogo = 0;
-                    
                     while(gogo < current_item.length){
                         let val = current_item[gogo];
                         da_path.push(val);
@@ -977,7 +974,6 @@ function Body(props){
                         const newimgBlob = await fetchBlob.blob();
                         pin_body.append( 'img', newimgBlob, assetName );
                         pin_body.append( 'the_options', JSON.stringify(options) );
-                        console.log(`pinning layer: ${layers[indx].name}, trait: ${layers[indx].traits[pin].trait_name}`);
                         const pinnedItem = await fetch( `${baseServerUri}api/pinnit`, {method:'POST', body: pin_body} ).then((resp)=>resp.json()).then((pinned)=> pinned );
                         layers[indx].traits[pin].ipfsHash = pinnedItem.IpfsHash;
                         state.data.newlayers.push({ trait_name: layers[indx].traits[pin].trait_name, layer_index:indx, trait_index:pin, ipfsHash:pinnedItem.IpfsHash })
@@ -1053,16 +1049,14 @@ function Body(props){
 
             const allPossibleCombos = async ()=> {
                 let comboz = [];
-                let layerz = JSON.parse( JSON.stringify(state.data.layers) );
+                // let layerz = JSON.parse( JSON.stringify(state.data.layers) );
                 const loop_and_pin = await loop_and_pin_layers( state.data.coll_name, state.data.layers );
-                // console.log(`new layers:::::>>> ${JSON.stringify(state.data.newlayers)}`)
                 const map_traits = await mapTraitTypes(loop_and_pin);
                 const traittypes_fin = await traitTypesPushNA(map_traits);
                 
                 await get_all_possible_combos(traittypes_fin, comboz);
                 await shuffle(comboz);
                 await insertBackground(comboz);
-                console.log(` at the combo completion! `)
                 return comboz;
             };
 
@@ -1126,11 +1120,10 @@ function Body(props){
                                     img.src = imgURLFromBase64String(base4path);
                                     // eslint-disable-next-line no-loop-func
                                     img.addEventListener( "load", async ()=>{
-                                        console.log(`loaded img: ${loadedimgs}, drawableTraits length: ${drawableTraits_length}, sample index: ${v}`);
+                                        // console.log(`loaded img: ${loadedimgs}, drawableTraits length: ${drawableTraits_length}, sample index: ${v}`);
                                         ctx.drawImage(img, 0, 0, width, height);
                                         if( loadedimgs === drawableTraits_length ){
                                             const sampleimage = await imgToBase64String(null, canvas.toDataURL("image/png"));
-                                            console.log(`data url:: ${sampleimage}`);
                                             sampleArray.push( { name: `sample turd #${v}`, attributes: drawableTraits, path: sampleimage } );
                                             const updateDB = async ( data, collname, account, thesamples, combo_ipfs_hash )=>{
                                                 let payload = new FormData();
@@ -1762,7 +1755,7 @@ function Body(props){
                 coll_Name_Box = <CollNameBox/>;
                 daButtn = <Buttonz data={{class:"LayerUpldBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />;
                 mainBox = <div><div className='contract-deployed-container'><ContractBox/><div id='LayerGenBoxx'><div className='contract-deployed-container' style={{marginTop:"20px"}}><BoxTitle data={{class:'generatorRightPanelTitle', type:'h4', text:'Generated Samples.'}}/><ThaSamples/></div></div></div></div>;
-                LayerUpldBoxTitle = <div> <BoxTitle data={{class:'generatorRightPanelTitle', type:'h1', text:'Contract.'}}/><BoxTitle data={{class:'generatorRightPanelTitle', type:'span', text:`Click the "${(activeContract)?state.data["contracts"][activeContract]?.name:state.data["contracts"][0]?.name}" button to view the NFT contract. \nIf you already have a contract, click "Already have a contract" to link your contract.` }}/></div>
+                // LayerUpldBoxTitle = <div> <BoxTitle data={{class:'generatorRightPanelTitle', type:'h1', text:'Contract.'}}/><BoxTitle data={{class:'generatorRightPanelTitle', type:'span', text:`Click the "${(activeContract)?state.data["contracts"][activeContract]?.name:state.data["contracts"][0]?.name}" button to view the NFT contract. \nIf you already have a contract, click "Already have a contract" to link your contract.` }}/></div>
                 break;
             case "RandomGenerator-LayerOptions-AddLayer":
                 currentSubState = <div className='LayerUpldBox'>
@@ -1887,22 +1880,14 @@ function Body(props){
                         </div>
                     </button>
                 </div>
-                <div className="welcomeBoxElement">
-                    <button className='containerbox' style={{backgroundColor: "#999"}} onClick={()=>''} >
-                        <div className='title'>
-                            <h1> De-fi </h1>
-                            <span style={{display:"block", textAlign:"center"}}> coming soon </span>
-                        </div>
-                    </button>
-                </div>
-                <div className="welcomeBoxElement">
-                    <button className='containerbox' style={{backgroundColor: "#999"}} onClick={()=>''} >
-                        <div className='title'>
-                            <h1> trade </h1>
-                            <span style={{display:"block", textAlign:"center"}}> coming soon </span>
-                        </div>
-                    </button>
-                </div>
+            </div>
+        );
+    }
+
+    function DeployedNfts(){
+        return (
+            <div className='welcomeBox'>
+                
             </div>
         );
     }

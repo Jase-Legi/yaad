@@ -256,7 +256,8 @@ let checkJsonParse = (str)=>{
 };
 
 index.get('/', (req, res, next)=>{
-    res.json({ message: 'De-Bet'}); 
+    // res.json({ message: 'De-Bet'});
+    res.json({ message: 'De-fi'});
     // res.once('finish', ()=>{
     // });
 });
