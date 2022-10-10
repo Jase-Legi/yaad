@@ -571,73 +571,28 @@ index.post('/addGenlayer',(req,res, next)=>{
     }
 });
 
-index.get('/readcontracts',(req, res, next)=>{
-    try {
+index.get('/readcontracts', multer().none(), (req, res, next)=>{
+    try{
+        // let myFiles = req.files;
+        let datat = req.body;
+        const address =(req.body.account)?req.body.account:null;
+        const coll_name = (req.body.coll_name)?req.body.coll_name:null;
+
+        let dataArray = []; let r = 0;
         
-        checkDirectory(upldDir);
-        const storage = multer.diskStorage({
+        while(r < myFiles.length){
+            let clientPath = "uploads/"+myFiles[r].originalname;
+            dataArray.push({trait_name: r, path: clientPath});
+            r++;
+        }
+        // console.log(`dataArray: ${JSON.stringify(dataArray)}`);
+        if(req.body.background){
 
-            destination: function (req, file, cb) {
-                
-                // checkDirectory(dafolder);
-                cb(null, upldDir);
-            },
+            return res.json({message:"Uloaded backgrounds", response:{address,coll_name, layer_name, backgrounds:myFiles.length, data:dataArray}});
 
-            filename: function (req, file, cb) {
-                cb(null, (file.originalname))
-            }
+        }
 
-        });
-
-        const upload = multer({
-
-            storage: storage,
-
-            limits: { fileSize: 10**9},
-            
-            fileFilter(req, file, cb) {
-                
-                if (!file.originalname.toLowerCase().match(/\.(sol)$/)){
-                
-                cb(new Error('Please upload a solidity file.'));
-                
-                }
-                
-                cb(undefined, true)
-            
-            }
-        
-        }).array("files")
-
-        upload(req, res, (err)=>{
-            // console.log(`req.files: ${JSON.stringify(req.files)}`);
-            // console.log(`req.body: ${JSON.stringify(req.body)}`);
-
-            let myFiles = req.files;
-            let datat = req.body;
-            const address =(req.body.account)?req.body.account:null;
-            const coll_name = (req.body.coll_name)?req.body.coll_name:null;
-
-            let dataArray = []; let r = 0;
-            
-            while(r < myFiles.length){
-                
-                let clientPath = "uploads/"+myFiles[r].originalname;
-
-                dataArray.push({trait_name: r, path: clientPath});
-                
-                r++;
-            
-            }
-            // console.log(`dataArray: ${JSON.stringify(dataArray)}`);
-            if(req.body.background){
-
-                return res.json({message:"Uloaded backgrounds", response:{address,coll_name, layer_name, backgrounds:myFiles.length, data:dataArray}});
-
-            }
-
-            return res.json({message:"Uloaded an NFT", response:{address,coll_name, layer_name, data:dataArray}});
-        })    
+        return res.json({message:"Uloaded an NFT", response:{address,coll_name, layer_name, data:dataArray}});
     } catch (error) {
         console.log(`thisssssssssssssssssss: ${error}`);
         return res.json({error,});

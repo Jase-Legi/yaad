@@ -3,10 +3,11 @@ import { useState, memo, useEffect } from 'react';
 import { providers, Contract, utils, BigNumber, ContractFactory } from "ethers";
 import yaadtokenAbi from './contracts/ABIs/Yaad.json';
 import yaadcontract from './contracts/yaad.json';
-import { loadImage } from 'canvas';
+import nftcontract from './contracts/the_yaad.sol';
+
 const pumpum = window.location.host;
 
-let baseServerUri = (pumpum  === "localhost:3000")?'./':'https://yaadlabs.herokuapp.com/';
+let baseServerUri = ( pumpum  === "localhost:3000" )?'./':'https://yaadlabs.herokuapp.com/';
 let provider = null, signer = null;
 let intervalId;
 let currentNetwork;
@@ -425,44 +426,47 @@ function Body(props){
         }
 
         try {
-            let contractOptions = {
-                language: "Solidity", 
-                sources: {
-                'yaad.sol': {
-                    content: yaadcontract.contract
-                }
-                },
-                settings:{
-                outputSelection:{
-                    '*': {
-                    '*':['*']
+            fetch(nftcontract).then(r=>r.text()).then( async (contract)=>{
+                // console.log(`contract: ${text}`)
+                let contractOptions = {
+                    language: "Solidity", 
+                    sources: {
+                    'yaad.sol': {
+                        content: contract
                     }
-                }
-                }
-            };
+                    },
+                    settings:{
+                    outputSelection:{
+                        '*': {
+                        '*':['*']
+                        }
+                    }
+                    }
+                };
 
-            const connected = await iswalletConnected();
-            let contractData = new FormData();
-            if(connected === false) { hideLoading(); return false; }
-            contractData.append('contractJSON', JSON.stringify(contractOptions));
-            const compiledContract = await fetch(baseServerUri+"api/compileContract", {method:'POST',body: contractData} ).then((theresponse)=>theresponse.json()).then((compiled)=>compiled);
-            const abi = compiledContract.abi;
-            const bytecode = compiledContract.bytecode;
-            const factory = new ContractFactory(abi, bytecode, signer);
-            const nftToken = await factory.deploy(state.data.coll_name, state.data.coll_symbol).then((tx)=>tx).catch((e)=>e);
-            contractData = null;
-            if(nftToken.code === "ACTION_REJECTED"){
-                ele.classList.remove("inactive");
-                hideLoading();
-                return;
-            }
+                const connected = await iswalletConnected();
+                let contractData = new FormData();
+                if(connected === false) { hideLoading(); return false; }
+                contractData.append('contractJSON', JSON.stringify(contractOptions));
+                const compiledContract = await fetch(baseServerUri+"api/compileContract", {method:'POST',body: contractData} ).then((theresponse)=>theresponse.json()).then((compiled)=>compiled);
+                const abi = compiledContract.abi;
+                const bytecode = compiledContract.bytecode;
+                const factory = new ContractFactory(abi, bytecode, signer);
+                const nftToken = await factory.deploy(state.data.coll_name, state.data.coll_symbol).then((tx)=>tx).catch((e)=>e);
+                contractData = null;
+                if(nftToken.code === "ACTION_REJECTED"){
+                    ele.classList.remove("inactive");
+                    hideLoading();
+                    return;
+                }
 
-            // {"name":"ropsten","chainId":3,"ensAddress":"0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"}
-            if(nftToken.address){
-                hideLoading();
-                logit(`deployed token details: ${nftToken}`);
-                setState( (prev)=>( { ...prev, currsubState: "RandomGenerator-ContractDeployed", data:{...prev.data, contract_address: nftToken.address, contract_link: `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`} } ));
-            }
+                // {"name":"ropsten","chainId":3,"ensAddress":"0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"}
+                if(nftToken.address){
+                    hideLoading();
+                    logit(`deployed token details: ${nftToken}`);
+                    setState( (prev)=>( { ...prev, currsubState: "RandomGenerator-ContractDeployed", data:{...prev.data, contract_address: nftToken.address, contract_link: `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`} } ));
+                }
+            });
         } catch (error) {
             console.log(`error: ${error}`)
             return error;
@@ -716,7 +720,7 @@ function Body(props){
                         case 'FFD8FFE8'.toLowerCase():
                             let img = document.createElement("img");
                             img.addEventListener("load", ()=>{
-                                if( img.width <= 1500  && img.height <= 1500 ){
+                                if( img.width <= 2000  && img.height <= 2000 ){
                                     const para = document.createElement("div");
                                     para.appendChild(img);
                                     para.classList.add((childClassName)?childClassName:'LayerUpldContentBox')
@@ -1155,17 +1159,6 @@ function Body(props){
                         //     // return res.json({error, current_state: `looping through attributes, failed to draw index ${p}. Details: ${JSON.stringify(traits[p])}`})
                         // }
                     }
-
-
-                    // console.log(`draw response::: ${JSON.stringify(drewimg)}`);
-                    // bdy = null; 
-                    // bdy = new FormData(); 
-                    // bdy.append('path', drewimg.path); 
-                    // bdy.append('the_options', JSON.stringify(options));
-                    // const pinnedSample = await fetch(`${baseServerUri}api/pinnit`,{method:'POST', body: bdy}).then((rezz)=>rezz.json()).then((pinned)=>pinned);
-                    // sampleArray.push( { name: `sample turd #${v}`, attributes: drawableTraits, path: pinnedSample.IpfsHash } );
-                    
-                    // bdy = null;
                 }
             };
 
@@ -1175,11 +1168,11 @@ function Body(props){
                 for(let v = 0; v < cap_it; v++){
                     sampleImgs.push(comboz[v]);
                 }
+                combo = null;
                 return drawimage(sampleImgs, 1000, 1000);
             };
 
             const samples = await getSamplesAndClearComboData(combo, 10);
-            combo = null;
         }
         
         const handleSol = async (e)=>{
@@ -1651,7 +1644,7 @@ function Body(props){
                 let sampleLen = 0; let boxcont = [];
 
                 while (sampleLen < state.data.samples?.length){
-                    console.log(`samples length:: ${state.data.samples.length}, samples index:: ${state.data.samples} ${JSON.stringify(state.data.samples)}`);
+                    // console.log(`samples length:: ${state.data.samples.length}, samples index:: ${state.data.samples} ${JSON.stringify(state.data.samples)}`);
                     const imgurl = imgURLFromBase64String(state.data.samples[sampleLen].path);
                     boxcont.push(<div key={sampleLen} className='LayerUpldContentBx'><div className={(state.currsubState === "RandomGenerator-ContractDeployed")?"LayerUpldContent":"LayerUpldContent"}><img className='sampleImage' src={imgurl} alt=''/></div></div>);
                     sampleLen++;
