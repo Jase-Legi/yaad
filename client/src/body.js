@@ -1880,17 +1880,26 @@ function Body(props){
                         </div>
                     </button>
                 </div>
+                <div className="welcomeBoxElement">
+                    <button className='containerbox' style={{backgroundColor: "#999"}} onClick={()=>''} >
+                        <div className='title'>
+                            <h1> De-fi </h1>
+                            <span style={{display:"block", textAlign:"center"}}> coming soon </span>
+                        </div>
+                    </button>
+                </div>
+                <div className="welcomeBoxElement">
+                    <button className='containerbox' style={{backgroundColor: "#999"}} onClick={()=>''} >
+                        <div className='title'>
+                            <h1> trade </h1>
+                            <span style={{display:"block", textAlign:"center"}}> coming soon </span>
+                        </div>
+                    </button>
+                </div>
             </div>
         );
     }
-
-    function DeployedNfts(){
-        return (
-            <div className='welcomeBox'>
-                
-            </div>
-        );
-    }
+    
 
     let currentState;
     switch (state.state) {
@@ -1901,17 +1910,17 @@ function Body(props){
             currentState =<div className='popupBox'> <SingleNft/> </div>;
             break;
         case 'RandomGenerator':
-            currentState = <div className='popupBox'> <RandomGenerator/> </div>;
+            currentState = <div className='popupBox' style={{backgroundImage:'url("./yaadfavicon_bg.svg")', backgroundSize: "100% auto"}}> <RandomGenerator/> </div>;
             break;
         case 'SelectCreateOption':
-            currentState = <div className='popup'> <div className='createOptions'> <SelectCreateOption state={state}/> </div> </div>;
+            currentState = <div  className='popup' style={{ backdropFilter: "blur(5px)" }}> <div className='createOptions'> <SelectCreateOption state={state}/> </div> </div>;
             break;
         default:
-            currentState = <div><Header data={state}/>{/* <div style={{padding:"20px", backgroundColor:"yellow", height: "fit-content", margin: "20px 0px"}}> <h1 style={{color:"#000"}}> Create & deploy assets to the blockchain! </h1> <span style={{display: "block", textAlign: "center", fontSize:"15px", fontWeight: "500"}}>-Generate and Store NFT projects(no code needed)<br></br><br></br>-Create NFTs -Create Tokens<br></br></span></div> <button className="enableEthereumButton" onClick={mintNEW}>mint</button> <button className="enableEthereumButton" onClick={iswalletConnected}>Enable Ethereum</button> */}<WelcomeBox/></div>
+            currentState = <div style={{ backgroundColor: "rgba(0, 0, 0, 0.7)", backdropFilter: "blur(5px)", minHeight:"100vh", width:"100%"}}><Header data={state}/>{/* <div style={{padding:"20px", backgroundColor:"yellow", height: "fit-content", margin: "20px 0px"}}> <h1 style={{color:"#000"}}> Create & deploy assets to the blockchain! </h1> <span style={{display: "block", textAlign: "center", fontSize:"15px", fontWeight: "500"}}>-Generate and Store NFT projects(no code needed)<br></br><br></br>-Create NFTs -Create Tokens<br></br></span></div> <button className="enableEthereumButton" onClick={mintNEW}>mint</button> <button className="enableEthereumButton" onClick={iswalletConnected}>Enable Ethereum</button> */}<WelcomeBox/></div>;
             break;
     }
 
-    return( <div> <LoadingBox/> <MsgBox/> {currentState} </div> );
+    return( <div style={{backgroundImage:'url("./yaadfavicon_bg.svg")', backgroundSize: "cover", minHeight:"100vh", width:"100%"}}> <LoadingBox/> <MsgBox/> {currentState} </div> );
 }
 
 export default memo(Body);

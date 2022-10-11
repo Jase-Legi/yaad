@@ -276,7 +276,8 @@ text {
     box-sizing: border-box;
 
     /* height: !important; */
-    background-color:rgba(255, 255, 255, 1);
+    background-color:rgba(255, 255, 255, .75) !important;
+    backdrop-filter: blur(5px);
     inset: 0px !important;
     display: flex !important;
     scrollbar-color: #333;
@@ -299,16 +300,14 @@ text {
     min-height: (100vw - 80px);
     /* box-sizing: border-box !important; */
     height: 100%  !important;
-    background-color:rgb(17, 17, 17);
+    background-color:rgb(0, 0, 0, .7) !important;
+    backdrop-filter: blur(5px);
     inset: 0px !important;
     display: flex !important;
     scrollbar-color: #333;
     scrollbar-width: thin;
 }
 
-.welcomeBox{
-    background-color: rgb(11, 11, 12);
-}
 .containerbox{
     /* button */
     height: 100% !important;
@@ -628,10 +627,9 @@ text {
 .coll_name_box{
     width: 93vw;
     max-width: 1000px;
-    background-color: rgb(11, 11, 12);
+    /* background-color: rgb(11, 11, 12); */
     padding: 10px 30px;
     margin: 10px auto 0px auto;
-    color: #222;
     box-sizing: border-box;
     border-radius: 20px;
 }
@@ -1277,7 +1275,9 @@ text {
     padding: 1vw;
     user-select: none;
     text-align: center;
-    background-color: rgb(14, 14, 14);
+    background-color: rgb(0, 0, 0, .5);
+    box-sizing: border-box;
+    border: 1px solid#222;
     border-radius: 25px;
 }
 
@@ -1285,7 +1285,7 @@ text {
     /* position: absolute; */
     width: 93vw;
     max-width: 1000px;
-    background-color: rgb(11, 11, 12);
+    background-color: rgb(0, 0, 0, .9);
     border-radius: 20px;
     box-sizing: border-box;
     padding: 30px;
