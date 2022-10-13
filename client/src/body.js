@@ -242,7 +242,7 @@ function DaInput(props){
                 daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''} name={(props.data.name)?props.data.name:''} type='file' multiple={(props.data.multiple)?props.data.multiple:''} accept={(props.data.accept)?props.data.accept:'*'} onChange={(props.data.onChange)?props.data.onChange:nullFunc} onClick={(props.data.onClick)?(e)=>props.data.onClick:nullFunc}/>;
                 break;
             case 'textarea':
-                daInput = <textarea className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} onChange={(props.data.onChange)?props.data.onChange:nullFunc} onClick={(props.data.onClick)?(e)=>props.data.onClick(e):nullFunc} ></textarea>;
+                daInput = <textarea className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} placeholder={(props.data.placeholder)?props.data.placeholder:''} onChange={(props.data.onChange)?props.data.onChange:nullFunc} onClick={(props.data.onClick)?(e)=>props.data.onClick(e):nullFunc} ></textarea>;
                 break;
             case 'text':
                 daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} type='text' placeholder={(props.data.placeholder)?props.data.placeholder:''} onChange={(props.data.onChange)?props.data.onChange:nullFunc} onClick={(props.data.onClick)?(e)=>props.data.onClick(e):nullFunc}/>;
