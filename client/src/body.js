@@ -886,10 +886,10 @@ function Body(props){
         const expandbox = (e)=>{
             showLoading();
             const ele = e.target; const indx = [].indexOf.call(document.getElementsByClassName(ele.getAttribute('class')), ele); let me = 0;
-            while(me < document.getElementsByClassName('deatail-edit-trait-box').length){
+            while( me < document.getElementsByClassName('detail-edit-trait-box' ).length){
                 if(me !== indx){
-                    if(!document.getElementsByClassName('deatail-edit-trait-box')[me].classList.contains('inactive')){
-                        document.getElementsByClassName('deatail-edit-trait-box')[me].classList.add('inactive');
+                    if(!document.getElementsByClassName('detail-edit-trait-box')[me].classList.contains('inactive')){
+                        document.getElementsByClassName('detail-edit-trait-box')[me].classList.add('inactive');
                     }
                     if(document.getElementsByClassName('generatorRightPanelLayerBox-title-img')[me].classList.contains('rotateExpander')){
                         document.getElementsByClassName('generatorRightPanelLayerBox-title-img')[me].classList.remove('rotateExpander');
@@ -898,12 +898,14 @@ function Body(props){
                 me++;
             }
 
-            if(document.getElementsByClassName('deatail-edit-trait-box')[indx].classList.contains('inactive')){
+            if(document.getElementsByClassName('detail-edit-trait-box')[indx].classList.contains('inactive')){
                 document.getElementsByClassName('generatorRightPanelLayerBox-title-img')[indx].classList.add('rotateExpander');
-                document.getElementsByClassName('deatail-edit-trait-box')[indx].classList.remove('inactive');
+                document.getElementsByClassName('detail-edit-trait-box')[indx].classList.remove('inactive');
+                ele.style.backgroundColor = "rgb(129, 129, 129)";
             }else{
                 document.getElementsByClassName('generatorRightPanelLayerBox-title-img')[indx].classList.remove('rotateExpander');
-                document.getElementsByClassName('deatail-edit-trait-box')[indx].classList.add('inactive');
+                document.getElementsByClassName('detail-edit-trait-box')[indx].classList.add('inactive');
+                ele.style.backgroundColor = "rgb(190, 190, 190)";
             }
 
             hideLoading();
@@ -1092,6 +1094,7 @@ function Body(props){
             const drawimage = async (traitTypes, width, height) => {
                 let sampleArray = []; const cap_it = traitTypes.length;
                 for( let v = 0; v < cap_it; v++ ){
+                    // console.log(`traits: ${JSON.stringify(traitTypes[v])}`)
                     const  drawableTraits = traitTypes[v].filter( x=> x.value !== 'N/A');
                     const drawableTraits_length = drawableTraits.length;
                     const canvas = document.createElement("canvas");
@@ -1155,7 +1158,9 @@ function Body(props){
                 for(let v = 0; v < cap_it; v++){
                     sampleImgs.push(comboz[v]);
                 }
+
                 combo = null;
+                // console.log(`sample images: ${JSON.stringify(sampleImgs)}`)
                 return drawimage(sampleImgs, 1000, 1000);
             };
 
@@ -1498,7 +1503,7 @@ function Body(props){
                                 </div>
                             </div>
                         </div>
-                        <div className='deatail-edit-trait-box inactive'>
+                        <div className='detail-edit-trait-box inactive'>
                             <button className='LayerUpldContentBxAdd' onClick={handleAddLayer} >+</button>
                             <DetailEditTraitBox/>
                         </div>
@@ -1901,7 +1906,7 @@ function Body(props){
             currentState =<div className='popupBox'> <SingleNft/> </div>;
             break;
         case 'RandomGenerator':
-            currentState = <div className='popupBox' style={{backgroundImage:'url("./yaadfavicon_bg.svg")', backgroundSize: "100% auto"}}> <RandomGenerator/> </div>;
+            currentState = <div className='popupBox'> <RandomGenerator/> </div>;
             break;
         case 'SelectCreateOption':
             currentState = <div  className='popup' style={{ backdropFilter: "blur(5px)" }}> <div className='createOptions'> <SelectCreateOption state={state}/> </div> </div>;
@@ -1911,7 +1916,7 @@ function Body(props){
             break;
     }
 
-    return( <div style={{backgroundImage:'url("./yaadfavicon_bg.svg")', backgroundSize: "cover", minHeight:"100vh", width:"100%"}}> <LoadingBox/> <MsgBox/> {currentState} </div> );
+    return( <div style={{backgroundImage:'url("./yaadfavicon_bg.svg")', backgroundSize: "cover", minHeight:"100vh", minWidth:"100%"}}> <LoadingBox/> <MsgBox/> {currentState} </div> );
 }
 
 export default memo(Body);
