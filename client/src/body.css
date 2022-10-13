@@ -22,13 +22,40 @@
     min-height: 150px;
     margin: auto;
     position: relative;
-    background-color: #999;
+    /* background-color: rgb(142, 142, 142, 0.5); */
     overflow: hidden;
     border-radius: 20px;
 }
 
 .title{
     font-size:.75em;
+}
+
+.containerbox{
+    /* button */
+    height: 100% !important;
+    width: 100% !important;
+    /*margin: 50px;*/
+    outline: none;
+    border:none;
+    background:rgba(255, 255, 255, 0.5);
+    padding: 0px !important;
+    line-height: normal;
+    cursor: pointer;
+    align-items: center;
+    align-content: center;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.containerbox > h1 {
+    color: #000 !important;
+}
+
+.containerbox > h2 {
+    color: #000 !important;
 }
 
 @media (max-width: 450px){

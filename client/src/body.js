@@ -6,13 +6,8 @@ import yaadcontract from './contracts/yaad.json';
 import nftcontract from './contracts/the_yaad.sol';
 
 const pumpum = window.location.host;
-
 let baseServerUri = ( pumpum  === "localhost:3000" )?'./':'https://yaadlabs.herokuapp.com/';
-let provider = null, signer = null;
-let intervalId;
-let currentNetwork;
-
-
+let provider = null, signer = null, intervalId, currentNetwork;
 
 if (typeof window.ethereum !== 'undefined') {
     provider = new providers.Web3Provider(window.ethereum, "any");
@@ -119,7 +114,6 @@ const logit = async ( itemToLog )=>{
 
 const shuffle = (arra1)=> {
   var ctr = arra1.length, temp, index;
-
   // While there are elements in the array
   while (ctr > 0) {
       // Pick a random index
@@ -542,7 +536,7 @@ function Body(props){
                     <img src='./yaad.svg' alt='home'/>
                 </div>
                 {/* <SearchBar style={logoBox}/> */}
-                <Dropdown/>
+                {/* <Dropdown/> */}
             </header>
         );
     }
@@ -1476,7 +1470,7 @@ function Body(props){
                         let imgsrc = imgURLFromBase64String(state.data.layers[props.obj.key].traits[indxx].path);
                         boxcont.push(<div key={indxx} className='LayerUpldContentBx'>
                             <div className='LayerUpldContent'>
-                                <img style={{backgroundColor: '#222'}} src={imgsrc} alt=''/>
+                                <img src={imgsrc} alt=''/>
                                 <div className='traitName'>
                                     <input className='traitNameBox' id={"traitName_"+indxx} placeholder={state.data.layers[props.obj.key].traits[indxx].trait_name} type="text" name='name' onClick={(e)=>{ e.target.value = state.data.layers[props.obj.key].traits[parseInt(e.target.getAttribute("id").split("_")[1])].trait_name}} onChange={setTrait} />
                                     <Buttonz data={{class:"edit-trait-img-svg", id:'delele_'+indxx, value:'X', func: delTrait}} />
@@ -1507,12 +1501,10 @@ function Body(props){
                         <div className='deatail-edit-trait-box inactive'>
                             <DetailEditTraitBox/>
                             <div className='LayerUpldContentBxAdd' onClick={handleAddLayer} >
-                                <div className='LayerUpldContentContainerAdd'>
-                                    <div className='LayerUpldContentadd'>
-                                        <img className='LayerUpldContentaddimg' src="./plus.svg" alt=""/>
-                                    </div>
-                                    <h4 className='addHeaderText'>Add image.</h4>
+                                <div className='LayerUpldContentadd'>
+                                    <img className='LayerUpldContentaddimg' src="./plus.svg" alt=""/>
                                 </div>
+                                {/* <h4 className='addHeaderText'>Add image.</h4> */}
                             </div>
                         </div>
                     </div>
@@ -1596,7 +1588,7 @@ function Body(props){
                         
                         while ( indxx < state.data.background.length ){
                             const imgURL = imgURLFromBase64String( state.data.background[indxx].path );
-                            bgstack.push(<div key={indxx} className='BG_UpldContentBx'><div className='BG_UpldContent'><img style={{backgroundColor: '#222'}} src={imgURL} alt=''/><DaInput data={{class:'traitName', typeClass:'BG_traitNameBox', typeId:"BGName_"+indxx, placeholder:state.data.background[indxx].trait_name, type:'text', name:'name', onClick:(e)=>{ e.target.value = state.data.background[parseInt(e.target.getAttribute("id").split("_")[1])].trait_name}, onChange:setBGTrait }}/></div><Buttonz data={{class:"delBG", id:'deleteBGUpldContentBx_'+indxx, value:'X', func: delBG}} /></div>)
+                            bgstack.push(<div key={indxx} className='BG_UpldContentBx'><div className='BG_UpldContent'><img src={imgURL} alt=''/><DaInput data={{class:'traitName', typeClass:'BG_traitNameBox', typeId:"BGName_"+indxx, placeholder:state.data.background[indxx].trait_name, type:'text', name:'name', onClick:(e)=>{ e.target.value = state.data.background[parseInt(e.target.getAttribute("id").split("_")[1])].trait_name}, onChange:setBGTrait }}/></div><Buttonz data={{class:"delBG", id:'deleteBGUpldContentBx_'+indxx, value:'X', func: delBG}} /></div>)
                             indxx++;
                         }
 
@@ -1606,7 +1598,7 @@ function Body(props){
                                 {bgstack}
                                 <div className='LayerbgAdd' id='selectBG' style={{zIndex:"1"}} onClick={handleAddBGLayer}>
                                     <div className='LayerbgContentadd'> <img src="./plus.svg" alt=""/> </div>
-                                    <span style={{color:"#666", float: "left", fontSize: "8px", fontWeight:"500", width:'100%', margin:'0px auto'}}> Add image. </span>
+                                    <span> Add image. </span>
                                 </div>
                             </div>
                         )
@@ -1633,7 +1625,6 @@ function Body(props){
 
         function ThaSamples (){
             if(state.data.samples?.length > 0){
-                
                 let sampleLen = 0; let boxcont = [];
 
                 while (sampleLen < state.data.samples?.length){
@@ -1869,11 +1860,14 @@ function Body(props){
             <div className='welcomeBox'>
                 <div className="welcomeBoxElement">
                     <button className='containerbox' onClick={ async()=>{ showLoading(); const conndt = await iswalletConnected(); if(conndt === false){ hideLoading(); }else{ hideLoading(); setState((prev)=>({...prev, state: "SelectCreateOption"})) } }} >
-                        <div className='title'> <h1>Create</h1> </div>
+                        <div className='title'>
+                            <h1>Create</h1>
+                            <span style={{display:"block", textAlign:"center", }}> NFTs, Tokens(ERC20, 721, 1155) </span> 
+                        </div>
                     </button>
                 </div>
                 <div className="welcomeBoxElement">
-                    <button className='containerbox' style={{backgroundColor: "#999"}} onClick={()=>nullFunc} >
+                    <button className='containerbox' onClick={()=>nullFunc} >
                         <div className='title'>
                             <h1> {props.data.message} </h1>
                             <span style={{display:"block", textAlign:"center", }}> coming soon </span>
@@ -1881,7 +1875,7 @@ function Body(props){
                     </button>
                 </div>
                 <div className="welcomeBoxElement">
-                    <button className='containerbox' style={{backgroundColor: "#999"}} onClick={()=>''} >
+                    <button className='containerbox' onClick={()=>''} >
                         <div className='title'>
                             <h1> De-fi </h1>
                             <span style={{display:"block", textAlign:"center"}}> coming soon </span>
@@ -1889,7 +1883,7 @@ function Body(props){
                     </button>
                 </div>
                 <div className="welcomeBoxElement">
-                    <button className='containerbox' style={{backgroundColor: "#999"}} onClick={()=>''} >
+                    <button className='containerbox' onClick={()=>''} >
                         <div className='title'>
                             <h1> trade </h1>
                             <span style={{display:"block", textAlign:"center"}}> coming soon </span>
@@ -1916,7 +1910,7 @@ function Body(props){
             currentState = <div  className='popup' style={{ backdropFilter: "blur(5px)" }}> <div className='createOptions'> <SelectCreateOption state={state}/> </div> </div>;
             break;
         default:
-            currentState = <div style={{ backgroundColor: "rgba(0, 0, 0, 0.7)", backdropFilter: "blur(5px)", minHeight:"100vh", width:"100%"}}><Header data={state}/>{/* <div style={{padding:"20px", backgroundColor:"yellow", height: "fit-content", margin: "20px 0px"}}> <h1 style={{color:"#000"}}> Create & deploy assets to the blockchain! </h1> <span style={{display: "block", textAlign: "center", fontSize:"15px", fontWeight: "500"}}>-Generate and Store NFT projects(no code needed)<br></br><br></br>-Create NFTs -Create Tokens<br></br></span></div> <button className="enableEthereumButton" onClick={mintNEW}>mint</button> <button className="enableEthereumButton" onClick={iswalletConnected}>Enable Ethereum</button> */}<WelcomeBox/></div>;
+            currentState = <div style={{ backgroundColor: "rgba(0, 3, 40, 0.7)", backdropFilter: "blur(5px)", minHeight:"100vh", width:"100%"}}><Header data={state}/>{/* <div style={{padding:"20px", backgroundColor:"yellow", height: "fit-content", margin: "20px 0px"}}> <h1 style={{color:"#000"}}> Create & deploy assets to the blockchain! </h1> <span style={{display: "block", textAlign: "center", fontSize:"15px", fontWeight: "500"}}>-Generate and Store NFT projects(no code needed)<br></br><br></br>-Create NFTs -Create Tokens<br></br></span></div> <button className="enableEthereumButton" onClick={mintNEW}>mint</button> <button className="enableEthereumButton" onClick={iswalletConnected}>Enable Ethereum</button> */}<WelcomeBox/></div>;
             break;
     }
 
