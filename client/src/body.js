@@ -1499,13 +1499,8 @@ function Body(props){
                             </div>
                         </div>
                         <div className='deatail-edit-trait-box inactive'>
+                            <button className='LayerUpldContentBxAdd' onClick={handleAddLayer} >+</button>
                             <DetailEditTraitBox/>
-                            <div className='LayerUpldContentBxAdd' onClick={handleAddLayer} >
-                                <div className='LayerUpldContentadd'>
-                                    <img className='LayerUpldContentaddimg' src="./plus.svg" alt=""/>
-                                </div>
-                                {/* <h4 className='addHeaderText'>Add image.</h4> */}
-                            </div>
                         </div>
                     </div>
                 )
@@ -1752,7 +1747,8 @@ function Body(props){
                 currentSubState = <div className='LayerUpldBox'>
                     <DaInput data={( state.temp_index  !== null )? { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.layers[ state.temp_index ]?.name } : { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:(state.formVals !== null)?state.formVals:'Enter layer name.', onChange:collNameBox, onClick:(e)=>{ e.target.value = state.formVals;} } }/>
                     <BoxTitle data={{class:"generatorRightPanelTitle", type:'span', text:`Click the "+" to upload layer files${( state.temp_index !== null)?" for: "+state.data.layers[ state.temp_index ]?.name:""}.`}}/>
-                    <label className='LayerUpldBttn' id='LayerUpldLabel' htmlFor='multi_asset' onClick={(e)=>{ let ele_val = state.formVals; if( !ele_val && state.temp_index === null ) { e.preventDefault(); setErrStacks((prev)=>( {...prev, formdata:[{id:"LayerName", value: document.getElementById("LayerName").value, msg: "Enter a layer name!"}], substate:state.currsubState } )) } }}> <img src='./plus.svg' alt='' />
+                    <label className='LayerUpldBttn' id='LayerUpldLabel' htmlFor='multi_asset' onClick={(e)=>{ let ele_val = state.formVals; if( !ele_val && state.temp_index === null ) { e.preventDefault(); setErrStacks((prev)=>( {...prev, formdata:[{id:"LayerName", value: document.getElementById("LayerName").value, msg: "Enter a layer name!"}], substate:state.currsubState } )) } }}>
+                        <h1>+</h1>
                         <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:'multi_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/>
                     </label>
                     <div className='layerContentBox'></div>
@@ -1762,7 +1758,8 @@ function Body(props){
             case "RandomGenerator-LayerOptions-BG-Upld":
                 currentSubState = <div className='LayerUpldBox'>
                     <BoxTitle data={{class:"generatorRightPanelTitle", type:'span', text:'Click the "+" to upload background files.'}}/>
-                    <label className='LayerUpldBttn' htmlFor='multi_asset'> <img src='./plus.svg' alt='' />
+                    <label className='LayerUpldBttn' htmlFor='multi_asset'>
+                        <h1>+</h1>
                         <DaInput data={{typeClass:'LayerName', typeId:'multi_asset', name:'bg_asset', type:'file', multiple:'multiple', hidden:true, accept:'image/*', onChange:handleAddLayerUpld}}/>
                     </label>
                     <div className='layerContentBox'></div>
