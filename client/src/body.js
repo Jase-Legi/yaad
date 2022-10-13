@@ -885,7 +885,9 @@ function Body(props){
         
         const expandbox = (e)=>{
             showLoading();
-            const ele = e.target; const indx = [].indexOf.call(document.getElementsByClassName(ele.getAttribute('class')), ele); let me = 0;
+            const ele = e.target;
+            const indx = [].indexOf.call(document.getElementsByClassName(ele.getAttribute('class')), ele);
+            let me = 0;
             while( me < document.getElementsByClassName('detail-edit-trait-box' ).length){
                 if(me !== indx){
                     if(!document.getElementsByClassName('detail-edit-trait-box')[me].classList.contains('inactive')){
@@ -901,11 +903,11 @@ function Body(props){
             if(document.getElementsByClassName('detail-edit-trait-box')[indx].classList.contains('inactive')){
                 document.getElementsByClassName('generatorRightPanelLayerBox-title-img')[indx].classList.add('rotateExpander');
                 document.getElementsByClassName('detail-edit-trait-box')[indx].classList.remove('inactive');
-                ele.style.backgroundColor = "rgb(129, 129, 129)";
+                document.getElementsByClassName("expander-box")[indx].style.backgroundColor = "rgb(129, 129, 129)";
             }else{
                 document.getElementsByClassName('generatorRightPanelLayerBox-title-img')[indx].classList.remove('rotateExpander');
                 document.getElementsByClassName('detail-edit-trait-box')[indx].classList.add('inactive');
-                ele.style.backgroundColor = "rgb(190, 190, 190)";
+                document.getElementsByClassName("expander-box")[indx].style.backgroundColor = "rgb(190, 190, 190)";
             }
 
             hideLoading();
@@ -1606,7 +1608,7 @@ function Body(props){
                 }
 
                 return(
-                    <div style={{marginTop:"40px"}}>
+                    <div>
                         <TheBGs/>
                         <Buttonz data={{class:"LayerUpldBttn", id:(state.data.background)?'Generate-pfp':'selectBG', value: Bgwords, func: (state.data.background)?generate_it:handleAddLayer}} />
                     </div>

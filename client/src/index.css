@@ -38,13 +38,13 @@ body{
     -ms-touch-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
-    scrollbar-color: rgb(0, 3, 40);
+    scrollbar-color: rgb(10, 11, 21);
     scrollbar-width: thin;
 }
 
 select {
     /*margin: 50px;*/
-    border: 3px solid rgb(11, 11, 12);
+    border: 3px solid rgb(10, 11, 11);
     background: transparent;
     width: 100%;
     padding: 0px 0px 0px 3px;
@@ -70,7 +70,7 @@ option {
 }
 
 .scroller{
-    scrollbar-color: rgb(0, 3, 40);
+    scrollbar-color: rgb(10, 11, 21);
     scrollbar-width: thin;
 }
 
@@ -79,7 +79,7 @@ option {
 }
 
 ::-webkit-scrollbar-track{
-    background-color: rgb(0, 3, 40);
+    background-color: rgb(10, 11, 21);
 }
 
 ::-webkit-scrollbar-thumb{
@@ -209,14 +209,14 @@ text {
     color: #fff;
     font-weight: bold;
     border:none;
-    background-color: rgb(11, 11, 12);
+    background-color: rgb(10, 11, 11);
     border-radius: 10px;
     font-size: 10px;
     cursor: pointer;
 }
 .error-box-closer:hover{
     background-color: #fff;
-    color: rgb(0, 3, 40);
+    color: rgb(10, 11, 21);
 }
 
 #loadingbttn{
@@ -226,7 +226,7 @@ text {
     width: 120px;
     top: calc(50vh - 60px);
     left: calc(50vw - 60px);
-    background-color: rgb(0, 3, 40);
+    background-color: rgb(10, 11, 21);
     border-radius: 10px;
 }
 
@@ -247,7 +247,7 @@ text {
     background-color:rgba(255, 255, 255, .3);
     inset: 0px !important;
     display: flex !important;
-    scrollbar-color: rgb(0, 3, 40);
+    scrollbar-color: rgb(10, 11, 21);
     scrollbar-width: thin;
     backdrop-filter: blur(5px);
 
@@ -281,7 +281,7 @@ text {
     backdrop-filter: blur(5px);
     inset: 0px !important;
     display: flex !important;
-    scrollbar-color: rgb(0, 3, 40);
+    scrollbar-color: rgb(10, 11, 21);
     scrollbar-width: thin;
     
 }
@@ -301,11 +301,11 @@ text {
     min-height: (100vw - 80px);
     /* box-sizing: border-box !important; */
     height: 100%  !important;
-    background-color:rgb(0, 3, 40, .75) !important;
+    background-color:rgb(10, 11, 21, .75) !important;
     backdrop-filter: blur(5px);
     inset: 0px !important;
     display: flex !important;
-    scrollbar-color: rgb(0, 3, 40);
+    scrollbar-color: rgb(10, 11, 21);
     scrollbar-width: thin;
 }
 
@@ -323,7 +323,7 @@ text {
     align-content: center;
     vertical-align: middle;
     line-height:normal;
-    background-color: rgba(0, 3, 40, 1);
+    background-color: rgba(10, 11, 21, 1);
     color: white;
     border-radius: 50px;
     /*margin: 50px;*/
@@ -415,7 +415,7 @@ text {
     min-width: 150px;
     height: 200px;
     text-align: center;
-    background-color: rgb(0, 3, 40, 0.9);
+    background-color: rgb(10, 11, 21, 0.9);
     color: white;
     font-size:1.5em;
     font-weight: 700;
@@ -452,7 +452,7 @@ text {
     text-align:left;
     background-color: rgb(243, 242, 242);
     border:none;
-    color: rgb(0, 3, 40);
+    color: rgb(10, 11, 21);
     font-size:1.5em;
     font-weight: 700;
     border-radius: 15px;
@@ -565,7 +565,7 @@ text {
     float: right;
     color: #444;
     font-weight: bold;
-    border: rgb(0, 3, 40) solid 1px;
+    border: rgb(10, 11, 21) solid 1px;
     background-color: rgb(190, 190, 190);
     border-radius: 10px;
     font-size: 10px;
@@ -592,7 +592,7 @@ text {
     margin-top: 10px;
     color: #fff;
     font-weight: bold;
-    border: rgb(11, 11, 12) solid 0.5px;
+    border: rgb(10, 11, 11) solid 0.5px;
     background-color: rgb(48, 48, 48);
     border-radius: 20px;
     font-size: 10px;
@@ -601,7 +601,7 @@ text {
 .coll_name_box{
     width: 93vw;
     max-width: 1000px;
-    /* background-color: rgb(11, 11, 12); */
+    /* background-color: rgb(10, 11, 11); */
     padding: 10px 30px;
     margin: 10px auto 0px auto;
     box-sizing: border-box;
@@ -780,6 +780,10 @@ text {
     overflow: hidden;
 }
 
+.generatorRightPanelLayerBox-title-img{
+    background: none !important;
+}
+
 .generatorRightPanelLayerBox-title-img-div{
     width: fit-content;
     height:fit-content;
@@ -871,7 +875,7 @@ text {
     max-width: 460px;
     width: 92vw;
     /* left: calc(50vw - 230px); */
-    background-color: rgb(0, 3, 40);
+    background-color: rgb(10, 11, 21);
     border-radius: 20px;
     box-sizing: border-box;
     padding: 30px;
@@ -1027,7 +1031,7 @@ text {
 
 .LayerUpldBttn > h1 {
     font-size: 60px;
-    color: rgb(0, 3, 40);
+    color: rgb(10, 11, 21);
     padding: 0px 0px 5px 0px;
     display: table-cell;
 }
@@ -1082,9 +1086,9 @@ text {
 }
 .delLayerBttn:hover { background: red; border:none; color: #fff;}
 
-.nodelLayerBttn:hover { background: yellow; border:none; color: rgb(0, 3, 40);}
+.nodelLayerBttn:hover { background: yellow; border:none; color: rgb(10, 11, 21);}
 
-.LayerUpldBttn:hover{ background-color: yellow; cursor: pointer; color: rgb(0, 3, 40);}
+.LayerUpldBttn:hover{ background-color: yellow; cursor: pointer; color: rgb(10, 11, 21);}
 
 .detail-edit-trait-box{
     height: fit-content;
@@ -1096,7 +1100,7 @@ text {
     position:relative;
     border-radius: 8px;
     z-index: 9999999;
-    background-color: rgb(129, 129, 129, 0.95);
+    background-color: rgb(129, 129, 129, 0.98);
 }
 
 .LayerUpldContentBx{
@@ -1121,7 +1125,7 @@ text {
     color: rgb(129, 129, 129);
     padding: 0px;
     /* border: solid 2px rgb(90, 90, 90); */
-    background:rgb(0, 3, 30);;
+    background:rgb(10, 11, 11);;
     clear: both;
     margin: 0px auto 10px auto;
     cursor: pointer;
@@ -1236,7 +1240,7 @@ text {
     padding: 1vw;
     user-select: none;
     text-align: center;
-    background-color: rgb(0, 3, 30, .7);
+    background-color: rgb(10, 11, 11, .7);
     box-sizing: border-box;
     /* border: 0.5px solidrgb(52, 52, 52); */
     border-radius: 25px;
@@ -1246,7 +1250,7 @@ text {
     /* position: absolute; */
     width: 93vw;
     max-width: 1000px;
-    background-color: rgb(0, 3, 40, .6);
+    background-color: rgb(10, 11, 21, .6);
     border-radius: 20px;
     border: 0.5px solid rgb(52, 52, 52);
     box-sizing: border-box;
@@ -1263,7 +1267,7 @@ text {
     /* position: absolute; */
     width: 93vw;
     max-width: 1000px;
-    background-color: rgb(11, 11, 12);
+    background-color: rgb(10, 11, 11);
     border-radius: 20px;
     box-sizing: border-box;
     padding: 30px;
@@ -1306,8 +1310,8 @@ text {
     height: fit-content;
     width: 100%;
     padding: 5px;
-    background-color: rgb(0, 4, 90);
-    color:rgb(190, 190, 190);
+    background-color: rgb(129, 129, 129);
+    color:rgb(52, 52, 52);
     border-radius: 15px;
     display: table;
     font-weight:600;
@@ -1376,14 +1380,14 @@ text {
     flex-direction: row;
     overflow-x:auto;
     overflow-y:hidden;
-    scrollbar-color: rgb(0, 3, 40) !important;
+    scrollbar-color: rgb(10, 11, 21) !important;
     scrollbar-width: thin !important;
 }
 
 .contract-box{
     border: solid 0.5px rgb(52, 52, 52);
     border-radius: 10px;
-    background-color: rgb(11, 11, 12);
+    background-color: rgb(10, 11, 21);
     width: 100%;
     height: fit-content;
     padding: 15px;
@@ -1396,7 +1400,7 @@ text {
 
 .expand-contract{
     width: 100%;
-    background-color:rgb(11, 11, 12);
+    background-color:rgb(10, 11, 21);
     height: 30px;
     border-bottom-left-radius: 7.5px;
     border-bottom-right-radius: 7.5px;
@@ -1411,8 +1415,8 @@ text {
 }
 
 .expand-contract:hover{
-    background-color: #111 !important;
-    color: #fff;
+    background-color: rgb(10, 11, 11) !important;
+    color: rgb(190, 190, 190);
 }
 
 .contract-deployed-container{
@@ -1464,7 +1468,7 @@ text {
     height: 40px;
     user-select: none;
     text-align:left;
-    background-color: rgb(0, 3, 40);
+    background-color: rgb(10, 11, 21);
     border:solid 0.5px rgb(52, 52, 52) !important;
     box-sizing: border-box !important;
     color: #555;
@@ -1504,7 +1508,7 @@ text {
     height: 40px;
     user-select: none;
     text-align:left;
-    background-color: rgb(0, 3, 40);
+    background-color: rgb(10, 11, 21);
     border:solid 0.5px rgb(52, 52, 52) !important;
     box-sizing: border-box !important;
     color: rgb(83, 83, 83);
