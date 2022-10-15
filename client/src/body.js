@@ -1402,23 +1402,16 @@ function Body(props){
                     
                     mouseUpFired = true;
                     
-                    if(event.type === 'mouseup' || event.type === 'touchend'){
-        
+                    if(event.type === 'mouseup' || event.type === 'touchend' ){
                         let popup = document.getElementById('popup');
-        
                         popup.style.overflowY = 'auto';
-        
                         let div = event.target;
-                        
                         div.classList.remove("sortable-handler");
-                        
                         let arrayOfEles = document.getElementsByClassName('generatorRightPanelLayerBox');
                         let p = 0;
         
                         while ( p < arrayOfEles.length ) {
-        
                             arrayOfEles[p].classList.remove('betweenItem_two');
-                            
                             arrayOfEles[p].classList.remove('betweenItem');
         
                             p++;
@@ -1430,10 +1423,11 @@ function Body(props){
                             let tempArray = state.data.layers.splice(initDivIndx,1)[0];
 
                             state.data.layers.splice(newindex, 0, tempArray);
-                            
-                            hideLoading();
+                            // let scrollEle = (document.getElementById('popup'))?document.getElementById('popup'):document.getElementById('popupdark');
+                            return setState((prev)=>({...prev}));
+                            // hideLoading();
 
-                            changeState(state, document.getElementById('popup').scrollTop());
+                            // changeState(state, document.getElementById('popup').scrollTop());
                         }
                         
                     }
