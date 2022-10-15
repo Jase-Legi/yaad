@@ -532,7 +532,7 @@ text {
     cursor: pointer;
     height: 60px;
     box-sizing: border-box;
-    margin: 0px;
+    margin: 10px 0px 0px 0;
     padding: 5px ;
     transition: border .15s linear;
     width: 100%;
@@ -663,15 +663,36 @@ text {
     vertical-align: middle;
 }
 
-.generatorRightPanelTitle{
-    font-size: 15px;
+.editBoxTitle{
     height:fit-content;
     line-height:normal;
     vertical-align: middle;
     text-align: center;
-    border-bottom:solid rgb(52, 52, 52) 0.5px;
     position: relative;
-    margin: 10px 0px;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+}
+
+.editBoxTitle > h2{
+    color: whitesmoke;
+    font-size: 22px;
+    font-weight: 600;
+    height:fit-content;
+    margin: 0px;
+    vertical-align: middle;
+}
+
+.generatorRightPanelTitle{
+    font-size: 16px;
+    height:fit-content;
+    line-height:normal;
+    vertical-align: middle;
+    text-align: center;
+    border-top:solid rgb(52, 52, 52) 1px;
+    position: relative;
+    padding: 10px 0px 0px 0px;
     width: 100%;
     display: flex;
     color: whitesmoke;
@@ -712,6 +733,7 @@ text {
 .generatorRightPanelTitle > h4 {
     color: whitesmoke;
     font-size: 12px;
+    font-weight:600;
     height:fit-content;
     margin: 0px;
     vertical-align: middle;
@@ -765,6 +787,7 @@ text {
     width: fit-content;
     max-width: 100%;
     background: none !important;
+    clear: both;
     overflow: hidden;
     margin: 0px auto;
     padding: 2.5px 0px; 
@@ -1042,15 +1065,15 @@ text {
 
 .delLayerBttn{
     box-sizing: border-box;
-    height: 70px;
+    height: 40px;
     width: 100% !important;
     display:inline-block !important;
     background-color: rgb(255, 255, 255);
     border-radius: 7.5px;
     border: none;
-    padding: 20px;
+    padding: 10px;
     margin: 5px 0px;
-    font-size: 1.4em;
+    font-size: 14px;
     font-weight: bold;
     cursor: pointer;
 }
@@ -1070,20 +1093,92 @@ text {
     cursor: pointer;
 }
 
+.makepriorityLayerBttn{
+    box-sizing: border-box;
+    height: 40px;
+    width: 100% !important;
+    display:inline-block !important;
+    background-color: rgb(129, 129, 129);
+    border-radius: 7.5px;
+    border: none;
+    padding: 5px;
+    margin: 5px 0px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.makepriorityLayerBttn{ background-color: rgb(129, 129, 129) !important; }
+.disablepriorityLayerBttn{
+    box-sizing: border-box;
+    height: 40px;
+    width: 100% !important;
+    display:inline-block !important;
+    background-color: rgb(0, 172, 37);
+    border-radius: 7.5px;
+    border: none;
+    padding: 5px;
+    margin: 5px 0px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.disablepriorityLayerBttn:hover{ background-color: rgb(0, 172, 37) !important; }
+
+.ispriorityLayerOption{
+    height:100%;
+    width:50%;
+    float:right;
+    border-radius: 6px;
+    background-color: rgb(255, 255 ,255);
+    font-weight: bold;
+    border: none;
+    display: table;
+    color: rgb(0, 172, 37);
+    cursor:pointer;
+}
+
+.ispriorityLayerOption > span{
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.ispriorityLayerOption:hover{ background-color: rgb(255, 255 ,255) !important; color: rgb(0, 172, 37) !important;}
+
+.notpriorityLayerOption{
+    height:100%;
+    width:50%;
+    float: left;
+    color:rgb(129, 129, 129);
+    border-radius: 6px;
+    display: table;
+    background-color: rgb(255, 255 ,255);
+    font-weight: bold;
+    border: none;
+    cursor:pointer;
+}
+
+.notpriorityLayerOption > span{
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.notpriorityLayerOption:hover{ background-color: rgb(255, 255 ,255) !important; color: rgb(129, 129, 129) !important; }
+
 .renameLayerBttn{
     box-sizing: border-box;
-    height: 70px;
+    height: 40px;
     width: 100% !important;
     display:inline-block !important;
     background-color: rgb(255, 255, 255);
     border-radius: 7.5px;
     border: none;
-    padding: 20px;
+    padding: 10px;
     margin: 5px 0px;
-    font-size: 1.4em;
+    font-size: 14px;
     font-weight: bold;
     cursor: pointer;
 }
+
 .delLayerBttn:hover { background: red; border:none; color: #fff;}
 
 .nodelLayerBttn:hover { background: yellow; border:none; color: rgb(10, 11, 21);}
@@ -1195,20 +1290,26 @@ text {
     padding: 0px;
     margin: 10px 5px 5px 5px;
     cursor:pointer;
+    color: rgb(190, 190, 190);
     border-radius: 5px;
+    font-size: 8px;
+    font-weight: 500;
     display: inline-block;
     border: solid 1px rgb(190, 190, 190);
     /* background-color: #2269cf; */
 }
-.LayerbgAdd:hover{
+
+.LayerbgAdd:hover {
     /* background-color: rgb(0, 3, 10); */
+    color: rgb(255, 255, 0);
     border:solid 1px rgb(255, 255, 0);
 }
+
+.LayerbgAdd:hover, .LayerbgContentadd {
+    border-bottom: 2px solid rgb(255, 255, 0);
+}
 .LayerbgAdd>span{
-    color: rgb(190, 190, 190);
     float: left;
-    font-size: 8px;
-    font-weight: 500;
     width: 100%;
     margin: 0px auto;
 }
@@ -1216,16 +1317,19 @@ text {
 .LayerbgContentadd{
     box-sizing: border-box;
     width: 40px;
-    height:fit-content;
-    padding: 2.5px;
+    height:40px;
+    padding: 0px;
     margin: 5px auto 2.5px 4.25px;
     border-radius: 5px;
     border-bottom: 2px solid rgb(190, 190, 190);
-    /* display: inline-block; */
+    display: table;
+    font-size: 28px;
+    font-weight: 800;
     float: left;
 }
 
-.LayerbgContentadd > img{
+.LayerbgContentadd > span{
+    display: table-cell;
     width: 30px;
     height: 30px;
 }
@@ -1311,7 +1415,7 @@ text {
     width: 100%;
     padding: 5px;
     background-color: rgb(129, 129, 129);
-    color:rgb(52, 52, 52);
+    color:rgb(10, 11, 11);
     border-radius: 15px;
     display: table;
     font-weight:600;

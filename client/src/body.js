@@ -883,6 +883,31 @@ function Body(props){
             }
         };
         
+        const prioritizeLayer = async (e)=>{
+            const ele = e.target;
+            if(state.temp_index){
+                
+                console.log(`prioritizezd! \n temp index ${state.temp_index}, isPriority: ${JSON.stringify(state.data.layers[ state.temp_index ])}`);
+                let isPriority = state.data.layers[ state.temp_index ].priority;
+                console.log(`prioritizezd! \n temp index ${state.temp_index}, isPriority: ${isPriority}`);
+                let priorityLayerBttn = document.getElementById("priorityLayerBttn");
+                let priorityLayerOption = document.getElementById("makepriorityLayerOption");
+                
+                state.data.layers[ state.temp_index ].priority = ( isPriority === true )?false:true;
+                priorityLayerBttn.classList.toggle("disablepriorityLayerBttn");
+                priorityLayerBttn.classList.toggle("makepriorityLayerBttn");
+                priorityLayerOption.classList.toggle('ispriorityLayerOption');
+                priorityLayerOption.classList.toggle('notpriorityLayerOption');
+                priorityLayerOption.children[0].innerText = ( isPriority === true )?"NO":"YES";
+
+                // <button id="priorityLayerBttn" className={( state.data.layers[ state.temp_index ].priority === true )?'disablepriorityLayerBttn':'makepriorityLayerBttn'} onClick={(e)=>prioritizeLayer} >
+                //     <div id='makepriorityLayerOption' className={( state.data.layers[ state.temp_index ].priority === true )?'ispriorityLayerOption':'notpriorityLayerOption'}>
+                //         <span>{( state.data.layers[ state.temp_index ].priority === true )?"YES":"NO"}</span>
+                //     </div>
+                // </button>
+            }
+        };
+
         const expandbox = (e)=>{
             showLoading();
             const ele = e.target;
@@ -952,7 +977,7 @@ function Body(props){
                 let emptyComboArray = []; state.data.newlayers = [];
                 layers.reverse();
                 for(let indx = 0; indx < layers.length; indx++){
-                    emptyComboArray.push( { name: layers[indx].name, traits:[] } );
+                    emptyComboArray.push( { name: layers[indx].name, priority: layers[indx].priority, traits:[] } );
                     for( let pin = 0; pin < layers[indx].traits.length; pin++ ){
                         const options = {
                             pinataMetadata:{
@@ -1014,8 +1039,12 @@ function Body(props){
             };
 
             const mapTraitTypes = async (comboz) => {
-                let len = 0; let traitTypes = []; let ego;
+                let len = 0; let traitTypes = []; let ego, isPriority = [];
                 while( len < comboz.length ){
+                    console.log(`combos: ${JSON.stringify(comboz)}`);
+                    if(comboz[len].priority){
+                        isPriority.push(comboz[len].name);
+                    }
                     ego = comboz[len].traits.map(( x, v ) => {
                         return { trait_type: comboz[len].name, trait_name: comboz[len].traits[v].trait_name, value: x.ipfsHash};
                     });
@@ -1024,13 +1053,16 @@ function Body(props){
                     len++;
                 }
                 ego = null;
-                return traitTypes;
+                console.log(`isPriority array: ${JSON.stringify(isPriority)}`);
+                return [traitTypes, isPriority];
             };
             
-            const traitTypesPushNA = async (traitTypes) => {
+            const traitTypesPushNA = async (traitTypes, priorities) => {
                 let endo = 0;
                 while ( endo < traitTypes.length ) {
-                    traitTypes[endo].push({trait_type: traitTypes[endo][0].trait_type, value: 'N/A'});
+                    if(!priorities.includes(traitTypes[endo][0].trait_type)){
+                        traitTypes[endo].push({trait_type: traitTypes[endo][0].trait_type, value: 'N/A'});
+                    }
                     endo++;
                 }
                 return traitTypes
@@ -1050,7 +1082,7 @@ function Body(props){
                 // let layerz = JSON.parse( JSON.stringify(state.data.layers) );
                 const loop_and_pin = await loop_and_pin_layers( state.data.coll_name, state.data.layers );
                 const map_traits = await mapTraitTypes(loop_and_pin);
-                const traittypes_fin = await traitTypesPushNA(map_traits);
+                const traittypes_fin = await traitTypesPushNA(map_traits[0], map_traits[1]);
                 
                 await get_all_possible_combos(traittypes_fin, comboz);
                 await shuffle(comboz);
@@ -1492,6 +1524,12 @@ function Body(props){
                     <div className='layer-box-content' onMouseDown={layer_move_initializer} onMouseUp={layer_move_ender} onTouchStart={layer_move_initializer} onTouchCancel={layer_move_ender} onTouchEnd={layer_move_ender}>
                         <div className='generatorRightPanelLayerBox'>
                             <button className='expander-box' onClick={expandbox} >
+                                <div className="prioBox" style={{width:"10px", float: "left", height:"10px", borderRadius:"5px", left:"-10px", top:"-10px", boxSizing:"border-box", backgroundColor:"rgb(140, 140, 140)"}} onClick={nullFunc}>
+                                    <div className="prioBoxx" style={{width:"70%", height:"70%", margin:"15%", borderRadius:"35%", backgroundColor:(state.data.layers[props.obj.key].priority)?"rgb(0, 172, 7)":"#F0000", boxSizing:"border-box", borderLeft:(state.data.layers[props.obj.key].priority)?"1px solid rgb(159, 255, 162)":"1px solid rgb(190, 190, 190)", borderTop:(state.data.layers[props.obj.key].priority)?"1px solid rgb(159, 255, 162)":"1px solid rgb(190, 190, 190)"}}>
+                                        <div className="prioBoxxx" style={{width:"30%", height:"30%", top:"1px", right:"1px", borderRadius:"35%", backgroundColor:(state.data.layers[props.obj.key].priority)?"rgb(159, 255, 162)":"rgb(190, 190, 190)", boxSizing:"border-box",}}>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div className='generatorRightPanelLayerBox-title' >
                                     <span className='generatorRightPanelLayerBox-title-Span'> {props.obj.name} </span>
                                 </div>
@@ -1599,7 +1637,7 @@ function Body(props){
                                 <div className='bg_title_box'> <span> Backgrounds </span> </div>
                                 {bgstack}
                                 <div className='LayerbgAdd' id='selectBG' style={{zIndex:"1"}} onClick={handleAddBGLayer}>
-                                    <div className='LayerbgContentadd'> <img src="./plus.svg" alt=""/> </div>
+                                    <div className='LayerbgContentadd'> <span>+</span> </div>
                                     <span> Add image. </span>
                                 </div>
                             </div>
@@ -1775,12 +1813,23 @@ function Body(props){
                 break;
             case "RandomGenerator-LayerOptions-Edit-Layer":
                 currentSubState = <div className='LayerUpldBox'>
-                    <BoxTitle data={{class:"generatorRightPanelTitle", type:'h4', text:'Rename layer.'}}/>
-                    <input type="text" id='multi_asset' name='bg_asset' multiple="multiple" accept="image/*" style={{opacity:100, zIndex:1}} onChange={handleAddLayerUpld} hidden/>
-                    <Buttonz data={{class:'renameLayerBttn', id:'bg_upld', value:'Rename', func: renameLayer}} />
-                    <div className='layerContentBox'></div>
-                    <BoxTitle data={{class:"generatorRightPanelTitle", type:'h4', text:`Delete ${state.data.layers[ state.temp_index ]?.name} layer.`}}/>
-                    <Buttonz data={{class:"delLayerBttn", id:'bg_upld', value: 'DELETE', func: delLayer}} />
+                    <BoxTitle data={{class:"editBoxTitle", type:'h2', text:`Edit '${state.data.layers[ state.temp_index ]?.name}' layer.`}}/>
+                    <div style={{ padding:"0px 10px 10px 10px"}}>
+                        <BoxTitle data={{class:"generatorRightPanelTitle", type:'h4', text:`Rename layer.`}}/>
+                        <Buttonz data={{class:'renameLayerBttn', id:'bg_upld', value:'Rename', func: renameLayer}} />
+                    </div>
+                    <div style={{ padding: "0px 10px 10px 10px", width: "30%", boxSizing: "border-box", display: "inline-block"}}>
+                        <BoxTitle data={{class:"generatorRightPanelTitle", type:'h4', text:`Prioritized.`}}/>
+                        <button id="priorityLayerBttn" className={( state.data.layers[ state.temp_index ].priority === true )?'disablepriorityLayerBttn':'makepriorityLayerBttn'} onClick={(e)=>{ let isPriority = state.data.layers[ state.temp_index ].priority; state.data.layers[ state.temp_index ].priority = ( isPriority === true )?false:true; document.getElementById("priorityLayerBttn").classList.toggle("disablepriorityLayerBttn"); document.getElementById("priorityLayerBttn").classList.toggle("makepriorityLayerBttn"); document.getElementById("makepriorityLayerOption").classList.toggle('ispriorityLayerOption'); document.getElementById("makepriorityLayerOption").classList.toggle('notpriorityLayerOption'); document.getElementById("makepriorityLayerOptionSpan").innerText =( isPriority === true )?"NO":"YES"; }}>
+                            <div id='makepriorityLayerOption' className={( state.data.layers[ state.temp_index ].priority === true )?'ispriorityLayerOption':'notpriorityLayerOption'}>
+                                <span id='makepriorityLayerOptionSpan'>{( state.data.layers[ state.temp_index ].priority === true )?"YES":"NO"}</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div style={{ padding: "0px 10px 10px 10px", width: "70%", boxSizing: "border-box", display: "inline-block", float:"right"}}>
+                        <BoxTitle data={{class:"generatorRightPanelTitle", type:'h4', text:`Delete layer.`}}/>
+                        <Buttonz data={{class:"delLayerBttn", id:'bg_upld', value: 'DELETE', func: delLayer}} />
+                    </div>
                 </div>
                 break;
             case "RandomGenerator-LayerOptions-Rename_Layer":
