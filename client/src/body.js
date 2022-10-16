@@ -659,17 +659,12 @@ function Body(props){
                 
         };
 
-        function SingleNFTForm (props){
-            if(state.currsubState === "SingleNFTDetailsForm"){
-                return(<SingleNFTDetailsForm/>)
-            }
-        };
-
+        let singleNFTDetailsForm = (state.currsubState === "SingleNFTDetailsForm")?<SingleNFTDetailsForm/>:"";
         return (
-            <div className='popup' id='popup'>
+            <>
                 <button className='closeBox' onClick={()=> setState((prev)=>homeSate) } >X</button>
-                <div className='popupBox'> <SingleNFTForm state={state}/> </div>
-            </div>
+                <div className='popupBox'> {singleNFTDetailsForm} </div>
+            </>
         )
     }
 
@@ -1272,7 +1267,7 @@ function Body(props){
 
                 useEffect(()=>{
                     [].forEach.call(document.getElementsByClassName('generatorRightPanelLayerBox'), (element) => {
-                        initPositions.push(element.getBoundingClientRect().top);
+                        initPositions.push(element.getBoundingClientRect().top );
                     });
                 },[elebox, initPositions])
 
@@ -1282,115 +1277,70 @@ function Body(props){
                 }
 
                 const layer_move_initializer = (event)=>{
-                    
                     if(event.target.getAttribute('class') === 'generatorRightPanelLayerBox'){
-
                         mouseUpFired = false;
-                        let div = event.target;
-                        
-                        let divWitdh = div.clientWidth;
 
                         if(event.type === 'mousedown' || event.type === 'touchstart'){
-                            let popup = document.getElementById('popup');
-
-                            popup.style.overflowY = 'hidden';
-                            
-                            if(mouseUpFired === true){
-                                
-                                return false;
-                            }
-
+                            if(mouseUpFired === true){ return false; }
+                            let div = event.target, divWitdh = div.clientWidth,
+                            popup = document.getElementById('popup');
+                            // popup.style.overflowY = 'hidden';
                             div.classList.add("sortable-handler");
 
-                            let indexOfSelectedItem = [].indexOf.call(document.getElementsByClassName('generatorRightPanelLayerBox'), div);
-                            // setLayerIndex(indexOfSelectedItem)
-                            let arrayOfEles = document.getElementsByClassName('generatorRightPanelLayerBox');
-                            
-                            let centerofdiv = div.clientHeight/2;
-
-                            // console.log(`scroll height: ${document.getElementById('popup').scrollTop}, parent div location: ${div.parentNode.parentNode.getBoundingClientRect().top}`)
-
+                            let indexOfSelectedItem = [].indexOf.call(document.getElementsByClassName('generatorRightPanelLayerBox'), div),
+                            arrayOfEles = document.getElementsByClassName('generatorRightPanelLayerBox'),
+                            centerofdiv = div.clientHeight/2;
+                            newindex = indexOfSelectedItem;
                             div.style.width = divWitdh+'px';
-                            
-                            div.style.top = (event.type === 'touchstart')?((event.touches[0].clientY + document.getElementById('popup').scrollTop) - centerofdiv)+'px':((event.clientY + document.getElementById('popup').scrollTop) - centerofdiv)+'px';
-                            
+                            div.style.top = (event.type === 'touchstart')?((event.touches[0].clientY + popup.getBoundingClientRect().top) - centerofdiv)+'px':((event.clientY - popup.getBoundingClientRect().top) - centerofdiv)+'px';
                             initDivIndx = indexOfSelectedItem;
 
                             window.onmousemove = (e)=>{
-                                
                                 if(mouseUpFired === false){
-
-                                    div.style.top = ((e.clientY + document.getElementById('popup').scrollTop)- centerofdiv)+'px';
-                                    
+                                    div.style.top = ((e.clientY - popup.getBoundingClientRect().top) - centerofdiv)+'px';
                                     initPositions.forEach((element, i) => {
-
-                                        if(indexOfSelectedItem > i){
-                                            
-                                            if((div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) < (element) && (div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) > (element-70)){
-                                                
-                                                // console.log(`${arrayOfEles[i].parentNode.getAttribute('class')}, class name 1${div.parentNode.getAttribute('class')}`);
+                                        if ( indexOfSelectedItem > i ) {
+                                            if ( ( e.clientY - 35 ) < ( element ) && ( e.clientY - 35 ) > ( element - 70 ) ) {
                                                 swapSibling(arrayOfEles[i].parentNode, div.parentNode);
-
-                                                newindex = i; //[].indexOf.call(document.getElementsByClassName('generatorRightPanelLayerBox'), div);
+                                                newindex = i;
                                                 indexOfSelectedItem = i;
-                                                
                                             }
                                         }
-                                        if(indexOfSelectedItem < i){
-                                        
-                                            if((div.getBoundingClientRect().bottom+document.getElementById('popup').scrollTop) > (element+70) && (div.getBoundingClientRect().bottom+document.getElementById('popup').scrollTop) < (element+140)){
 
+                                        if( indexOfSelectedItem < i ) {
+                                            if ( ( e.clientY + 35 ) > ( element + 70 ) && ( e.clientY + 35 ) < ( element + 140 ) ) {
                                                 swapSibling(div.parentNode,arrayOfEles[i].parentNode);
-
-                                                newindex =i;// [].indexOf.call(document.getElementsByClassName('generatorRightPanelLayerBox'), div);
-                                                
+                                                newindex = i;
                                                 indexOfSelectedItem = i;
-
                                             }
                                         }
-
                                     });
-                                    
                                 }
-                            }
+                            };
                             
                             window.ontouchmove = (e)=>{
-
                                 if(mouseUpFired === false){
-
-                                    div.style.top = ((e.touches[0].clientY + document.getElementById('popup').scrollTop)-centerofdiv)+'px';
-                                    
+                                    div.style.top = ( ( e.touches[0].clientY - popup.getBoundingClientRect().top) - centerofdiv )+'px';
                                     initPositions.forEach((element, i) => {
-
-                                        if(indexOfSelectedItem > i){
-                                            
-                                            if((div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) < (element) && (div.getBoundingClientRect().top+document.getElementById('popup').scrollTop) > (element-70)){
-                                                
-                                                // console.log(`${arrayOfEles[i].parentNode.getAttribute('class')}, class name 1${div.parentNode.getAttribute('class')}`);
+                                        if ( indexOfSelectedItem > i ) {
+                                            if( ( e.touches[0].clientY - 35 ) < (element) && ( e.touches[0].clientY - 35 ) > ( element - 70 ) ){
                                                 swapSibling(arrayOfEles[i].parentNode, div.parentNode);
-
-                                                newindex = i; //[].indexOf.call(document.getElementsByClassName('generatorRightPanelLayerBox'), div);
+                                                newindex = i;
                                                 indexOfSelectedItem = i;
-                                                
-                                            }
-                                        }
-                                        if(indexOfSelectedItem < i){
-                                        
-                                            if((div.getBoundingClientRect().bottom+document.getElementById('popup').scrollTop) > (element+70) && (div.getBoundingClientRect().bottom+document.getElementById('popup').scrollTop) < (element+140)){
-
-                                                swapSibling(div.parentNode,arrayOfEles[i].parentNode);
-
-                                                newindex =i;// [].indexOf.call(document.getElementsByClassName('generatorRightPanelLayerBox'), div);
-                                                
-                                                indexOfSelectedItem = i;
-
                                             }
                                         }
 
+                                        if ( indexOfSelectedItem < i ) {
+                                            if( ( e.touches[0].clientY + 35 ) > ( element + 70 ) && ( e.touches[0].clientY + 35 ) < ( element + 140 )){
+                                                swapSibling( div.parentNode, arrayOfEles[i].parentNode );
+                                                newindex = i;
+                                                indexOfSelectedItem = i;
+                                            }
+                                        }
                                     });
                                     
                                 }
-                            }
+                            };
                         }
                     }
                 };
@@ -1404,7 +1354,8 @@ function Body(props){
                     
                     if(event.type === 'mouseup' || event.type === 'touchend' ){
                         let popup = document.getElementById('popup');
-                        popup.style.overflowY = 'auto';
+                        // popup.style.height = 'auto';
+                        // popup.style.overflowY = 'auto';
                         let div = event.target;
                         div.classList.remove("sortable-handler");
                         let arrayOfEles = document.getElementsByClassName('generatorRightPanelLayerBox');
@@ -1420,9 +1371,10 @@ function Body(props){
                         mouseUpFired = true;
         
                         if(event.target.getAttribute('class') === 'generatorRightPanelLayerBox'){
-                            let tempArray = state.data.layers.splice(initDivIndx,1)[0];
-
-                            state.data.layers.splice(newindex, 0, tempArray);
+                            if(initDivIndx !== newindex){
+                                let tempArray = state.data.layers.splice(initDivIndx,1)[0];
+                                state.data.layers.splice(newindex, 0, tempArray);
+                            }
                             // let scrollEle = (document.getElementById('popup'))?document.getElementById('popup'):document.getElementById('popupdark');
                             return setState((prev)=>({...prev}));
                             // hideLoading();
@@ -1785,7 +1737,7 @@ function Body(props){
             case "RandomGenerator-LayerOptions-AddLayer":
                 currentSubState = <div className='LayerUpldBox'>
                     <DaInput data={( state.temp_index  !== null )? { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.layers[ state.temp_index ]?.name } : { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:(state.formVals !== null)?state.formVals:'Enter layer name.', onChange:collNameBox, onClick:(e)=>{ e.target.value = state.formVals;} } }/>
-                    <BoxTitle data={{class:"generatorRightPanelTitle", type:'span', text:`Click the "+" to upload layer files${( state.temp_index !== null)?" for: "+state.data.layers[ state.temp_index ]?.name:""}.`}}/>
+                    <BoxTitle data={{class:"generatorRightPanelTitle", type:'span', text:`Click the "+" to upload layer images${( state.temp_index !== null)?" for: "+state.data.layers[ state.temp_index ]?.name:""}.`}}/>
                     <label className='LayerUpldBttn' id='LayerUpldLabel' htmlFor='multi_asset' onClick={(e)=>{ let ele_val = state.formVals; if( !ele_val && state.temp_index === null ) { e.preventDefault(); setErrStacks((prev)=>( {...prev, formdata:[{id:"LayerName", value: document.getElementById("LayerName").value, msg: "Enter a layer name!"}], substate:state.currsubState } )) } }}>
                         <h1>+</h1>
                         <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:'multi_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/>
@@ -1796,7 +1748,7 @@ function Body(props){
                 break;
             case "RandomGenerator-LayerOptions-BG-Upld":
                 currentSubState = <div className='LayerUpldBox'>
-                    <BoxTitle data={{class:"generatorRightPanelTitle", type:'span', text:'Click the "+" to upload background files.'}}/>
+                    <BoxTitle data={{class:"generatorRightPanelTitle", type:'span', text:'Click the "+" to upload background images.'}}/>
                     <label className='LayerUpldBttn' htmlFor='multi_asset'>
                         <h1>+</h1>
                         <DaInput data={{typeClass:'LayerName', typeId:'multi_asset', name:'bg_asset', type:'file', multiple:'multiple', hidden:true, accept:'image/*', onChange:handleAddLayerUpld}}/>
@@ -1850,7 +1802,8 @@ function Body(props){
                 break;
             default:
                 daButtn = <Dabttn/>
-                currentSubState = ""; state.formVals = null; state.temp_index = null;
+                currentSubState = "";
+                state.formVals = null; state.temp_index = null;
                 coll_Name_Box = <CollNameBox/>; addLayer = <AddLayer/>;
                 mainBox = <div id='LayerGenBoxx'><GenLayers/></div>;
                 LayerUpldBoxTitle = <div> <BoxTitle data={{class:'generatorRightPanelTitle', type:'h2', text:'LAYERS'}}/> <BoxTitle data={{class:'generatorRightPanelTitle', type:'span', text:`Click the "+" icon to create new layer`}}/></div>;
@@ -1861,7 +1814,7 @@ function Body(props){
             hideLoading();
             if(!currentSubState){
                 return(
-                    <div className='popupdark' id='popup'>
+                    <>
                         <button className='closeBox' onClick={()=> setState((prev)=>homeSate) }>X</button>
                         <div className='RandomGenerator'>
                             {coll_Name_Box}
@@ -1872,14 +1825,14 @@ function Body(props){
                                 {daButtn}
                             </div>
                         </div>
-                    </div>
+                    </>
                 )
             }else{
                 return(
-                    <div className='popup'>
+                    <>
                         <Buttonz data={{class:"closeBox", id:'', value:'X', func: closeLayerOptionsBox}} />
                         <div className='LayerOptionsBox'>{currentSubState}</div>
-                    </div>
+                    </>
                 )
             }
         }
@@ -1948,20 +1901,21 @@ function Body(props){
             currentState = <div className='popup'><Bet/></div>;
             break;
         case 'createbox':
-            currentState =<div className='popupBox'> <SingleNft/> </div>;
+            currentState = <div className='popup'> <SingleNft/> </div>;
             break;
         case 'RandomGenerator':
-            currentState = <div className='popupBox'> <RandomGenerator/> </div>;
+            currentState = <div id='popup' className='popupdark'> <RandomGenerator/> </div>;
             break;
         case 'SelectCreateOption':
-            currentState = <div  className='popup' style={{ backdropFilter: "blur(5px)" }}> <div className='createOptions'> <SelectCreateOption state={state}/> </div> </div>;
+            currentState = <> <div className='createOptions'> <SelectCreateOption state={state}/> </div> </>;
             break;
         default:
-            currentState = <div style={{ backgroundColor: "rgba(0, 3, 40, 0.7)", backdropFilter: "blur(5px)", minHeight:"100vh", width:"100%"}}><Header data={state}/>{/* <div style={{padding:"20px", backgroundColor:"yellow", height: "fit-content", margin: "20px 0px"}}> <h1 style={{color:"#000"}}> Create & deploy assets to the blockchain! </h1> <span style={{display: "block", textAlign: "center", fontSize:"15px", fontWeight: "500"}}>-Generate and Store NFT projects(no code needed)<br></br><br></br>-Create NFTs -Create Tokens<br></br></span></div> <button className="enableEthereumButton" onClick={mintNEW}>mint</button> <button className="enableEthereumButton" onClick={iswalletConnected}>Enable Ethereum</button> */}<WelcomeBox/></div>;
+            currentState = <div className='popup'> <Header data={state}/> <WelcomeBox/> </div>;
+            // currentState = <div style={{ backgroundColor: "rgba(0, 3, 40, 0.7)", backdropFilter: "blur(5px)", minHeight:"100vh", width:"100%"}}><Header data={state}/>{/* <div style={{padding:"20px", backgroundColor:"yellow", height: "fit-content", margin: "20px 0px"}}> <h1 style={{color:"#000"}}> Create & deploy assets to the blockchain! </h1> <span style={{display: "block", textAlign: "center", fontSize:"15px", fontWeight: "500"}}>-Generate and Store NFT projects(no code needed)<br></br><br></br>-Create NFTs -Create Tokens<br></br></span></div> <button className="enableEthereumButton" onClick={mintNEW}>mint</button> <button className="enableEthereumButton" onClick={iswalletConnected}>Enable Ethereum</button> */}<WelcomeBox/></div>;
             break;
     }
 
-    return( <div style={{backgroundImage:'url("./yaadfavicon_bg.svg")', backgroundSize: "cover", minHeight:"100vh", minWidth:"100%"}}> <LoadingBox/> <MsgBox/> {currentState} </div> );
+    return( <> <LoadingBox/> <MsgBox/> {currentState} </> );
 }
 
 export default memo(Body);

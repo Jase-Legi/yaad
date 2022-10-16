@@ -26,7 +26,8 @@ body{
 	height: 100%;
 	font-size:13px;
     background-color: rgb(109, 109, 109);
-	/*background: url(../images/background/likeaholics.png) no-repeat center center fixed;*/ 
+	background: url("../public/yaadfavicon_bg.svg") no-repeat center center fixed;
+    background-size: cover;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
@@ -263,48 +264,28 @@ text {
 
 .popup{
     -webkit-box-align: center !important;
-    /* padding: 40px !important; */
-    z-index: 1500 !important;
-    padding: 40px 0px;
-    overflow-y: auto;
+    padding:0px;
+    margin: 0px auto;
     position:absolute;
-    left: 0px;
-    top: 0px;
     width: 100% !important;
     min-height: 100vh !important;
-    height: 100% !important;
-    /* box-sizing: border-box !important; */
-    box-sizing: border-box;
-
-    /* height: !important; */
+    box-sizing: border-box !important;
     background-color:rgba(255, 255, 255, .6) !important;
     backdrop-filter: blur(5px);
-    inset: 0px !important;
-    display: flex !important;
     scrollbar-color: rgb(10, 11, 21);
     scrollbar-width: thin;
-    
 }
 
 .popupdark{
     -webkit-box-align: center !important;
-    /* padding: 40px !important; */
-    z-index: 1500 !important;
-    padding: 40px 0px;
-    overflow-y: auto;
+    padding:0px;
+    margin: 0px auto;
     position:absolute;
-    left: 0px;
-    top: 0px;
-    min-width: 100vw;
-    width: 100%;
-    box-sizing: border-box;
-    min-height: (100vw - 80px);
-    /* box-sizing: border-box !important; */
-    height: 100%  !important;
-    background-color:rgb(10, 11, 21, .75) !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    box-sizing: border-box !important;
+    background-color:rgba(10, 11, 21, .6) !important;
     backdrop-filter: blur(5px);
-    inset: 0px !important;
-    display: flex !important;
     scrollbar-color: rgb(10, 11, 21);
     scrollbar-width: thin;
 }
@@ -1220,7 +1201,7 @@ text {
     color: rgb(129, 129, 129);
     padding: 0px;
     /* border: solid 2px rgb(90, 90, 90); */
-    background:rgb(10, 11, 11);;
+    background:rgb(48, 48, 48);;
     clear: both;
     margin: 0px auto 10px auto;
     cursor: pointer;

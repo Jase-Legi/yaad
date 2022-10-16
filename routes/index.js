@@ -205,7 +205,7 @@ const ethersCreatePair = async ()=>{
         // ContractFactory.deploy
         // const gas
     }catch(error){
-    console.log(`An error occurred: ${error}}.`);
+        console.log(`An error occurred: ${error}}.`);
     }
     // const pairAddy = await factory.methods.createPair(contractAddress, token_two).send({from:testAddy}).catch((error)=>{console.log(`Create pair error: ${error}`)});
     
