@@ -1145,14 +1145,14 @@ function Body(props){
                                                 payload.append('account', conntd);
                                                 payload.append('ipfs_uri', combo_ipfs_hash);
                                                 // payload.append('samples', JSON.stringify(thesamples));
-                                                let saveCollection = await fetch(`${baseServerUri}api/savenftcollection`, {method:'POST', body:payload}).then((response)=>response.json()).then((ress)=>ress);
+                                                // let saveCollection = await fetch(`${baseServerUri}api/savenftcollection`, {method:'POST', body:payload}).then((response)=>response.json()).then((ress)=>ress);
                                                 payload = null;
                                                 let newcontract = JSON.parse(JSON.stringify(yaadcontract));
                                                 newcontract.name = state.data.coll_name.split(" ").join("_");
                                                 return setState((prev)=>({...prev, data: {...prev.data, coll_name: prev.data.coll_name, coll_symbol: prev.data.coll_symbol, samples: thesamples, possibleCombos, contracts: [newcontract] }, currsubState: "RandomGenerator-RandomGenerated" }));
                                             };
                                             if( v === (cap_it-1) ){
-                                                await updateDB(state.data, state.data.coll_name, conntd, sampleArray, pinnedCombo.IpfsHash);
+                                                await updateDB(state.data, state.data.coll_name, conntd, sampleArray, pinnedCombo);
                                             }
                                         }
                                         loadedimgs++;
