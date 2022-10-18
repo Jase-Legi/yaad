@@ -188,18 +188,15 @@ const ethersCreatePair = async ()=>{
         await token_Two.approve(pancakeRouter, ethers.utils.parseEther('15'));
         const theWETH = await router.WETH();
         // const factoryAddy = await factory;
-        // console.log(factoryAddy);
-        
+        // console.log(factoryAddy);        
         const feeToSetter = await factory.feeToSetter();
         const factory_address = factory.address;
         const getpair = await factory.getPair(contractAddress, token_two);
         const allPairsLength = await factory.allPairsLength();
         // const create_pair = await factory.createPair(contractAddress, wBNB);
         // const createReceipt = await create_pair.wait();
-        
         console.log(`feeToSetter: ${createReceipt.estimateGas()}, factory_address: ${factory_address}, getpair: ${getpair}, allPairsLength: ${allPairsLength}, createReceipt: ${createReceipt}`);
         // const deployed = await new ContractFactory(abi).deploy({data:bytecode}).send({from: testAddy, gas}).catch((error)=>{console.log});
-    
         // const createPair = await factory.requesAccess(contractAddress, token_two);
         // console.log(`data: ${ethers.utils.parseTransaction(tx)}`);
         // ContractFactory.deploy

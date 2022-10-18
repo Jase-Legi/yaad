@@ -508,23 +508,7 @@ function Body(props){
             return(
                 <div className='headerElementMenu'>
                     <div className="cd-header">
-                        <div className="nav-but-wrap">
-                            <div className="menu-icon hover-target" onClick={menuClick}>
-                                <span className="menu-icon__line menu-icon__line-left"></span>
-                                <span className="menu-icon__line"></span>
-                                <span className="menu-icon__line menu-icon__line-right"></span>
-                            </div>					
-                        </div>		
-                    </div>
-        
-                    <div className="nav">
-                        <div className="nav__content">
-                            <ul className="nav__list" style={{cursor:"pointer"}}>
-                                <li className="nav__list-item_a" onClick={()=>setState((prev)=>homeSate) } > Home </li>
-                                <li className="nav__list-item_a" onClick={()=> setState((prev)=>({...prev, state: "RandomGenerator" })) }> Create </li>
-                                <li className="nav__list-item_a"> About </li>
-                            </ul>
-                        </div>
+                        <img src='./wallet.svg' alt="" />	
                     </div>
                 </div>
             )
@@ -536,7 +520,7 @@ function Body(props){
                     <img src='./yaad.svg' alt='home'/>
                 </div>
                 {/* <SearchBar style={logoBox}/> */}
-                {/* <Dropdown/> */}
+                <Dropdown/>
             </header>
         );
     }
@@ -800,6 +784,7 @@ function Body(props){
             bgElement=(e.target.getAttribute("id") === "bg_upld")&& true;
 
             if((da_files === undefined || da_files.length === 0 || da_files.length === "") && e.target.getAttribute("id") === "bg_upld"){
+                state.data.background = [];
                 return closeLayerOptionsBox();
             }
             
@@ -1193,7 +1178,7 @@ function Body(props){
                 return drawimage(sampleImgs, 1000, 1000);
             };
 
-            const samples = await getSamplesAndClearComboData(combo, 10);
+            const samples = await getSamplesAndClearComboData(combo, 50);
         }
         
         const handleSol = async (e)=>{
@@ -1267,10 +1252,11 @@ function Body(props){
 
                 useEffect(()=>{
                     [].forEach.call(document.getElementsByClassName('generatorRightPanelLayerBox'), (element) => {
-                        initPositions.push(element.getBoundingClientRect().top );
+                        initPositions.push( element.getBoundingClientRect().top + document.getElementById('popup').scrollTop );
+                        // console.log(`positions; ${JSON.stringify(initPositions)}, popup:: ${document.getElementById('popup').getBoundingClientRect().top}`)
                     });
                 },[elebox, initPositions])
-
+                
                 function swapSibling(node1, node2) {
                     node1.parentNode.replaceChild(node1, node2);
                     node1.parentNode.insertBefore(node2, node1); 
@@ -1292,15 +1278,16 @@ function Body(props){
                             centerofdiv = div.clientHeight/2;
                             newindex = indexOfSelectedItem;
                             div.style.width = divWitdh+'px';
-                            div.style.top = (event.type === 'touchstart')?((event.touches[0].clientY + popup.getBoundingClientRect().top) - centerofdiv)+'px':((event.clientY - popup.getBoundingClientRect().top) - centerofdiv)+'px';
+                            
+                            div.style.top = (event.type === 'touchstart')?((event.touches[0].clientY + popup.scrollTop) - centerofdiv)+'px':((event.clientY + popup.scrollTop) - centerofdiv)+'px';
                             initDivIndx = indexOfSelectedItem;
-
+                            // console.log(`mouse location: ${event.clientY}, div loaction ${popup.scrollTop}`);
                             window.onmousemove = (e)=>{
                                 if(mouseUpFired === false){
-                                    div.style.top = ((e.clientY - popup.getBoundingClientRect().top) - centerofdiv)+'px';
+                                    div.style.top = ((e.clientY + popup.scrollTop) - centerofdiv)+'px';
                                     initPositions.forEach((element, i) => {
                                         if ( indexOfSelectedItem > i ) {
-                                            if ( ( e.clientY - 35 ) < ( element ) && ( e.clientY - 35 ) > ( element - 70 ) ) {
+                                            if ( ( ( e.clientY + popup.scrollTop ) - 35 ) < ( element ) && ( ( e.clientY + popup.scrollTop ) - 35 ) > ( element - 70 ) ) {
                                                 swapSibling(arrayOfEles[i].parentNode, div.parentNode);
                                                 newindex = i;
                                                 indexOfSelectedItem = i;
@@ -1308,8 +1295,8 @@ function Body(props){
                                         }
 
                                         if( indexOfSelectedItem < i ) {
-                                            if ( ( e.clientY + 35 ) > ( element + 70 ) && ( e.clientY + 35 ) < ( element + 140 ) ) {
-                                                swapSibling(div.parentNode,arrayOfEles[i].parentNode);
+                                            if ( ( ( e.clientY + popup.scrollTop ) + 35 ) > ( element + 70 ) && ( ( e.clientY + popup.scrollTop ) + 35 ) < ( element + 140 ) ) {
+                                                swapSibling(div.parentNode, arrayOfEles[i].parentNode);
                                                 newindex = i;
                                                 indexOfSelectedItem = i;
                                             }
@@ -1320,10 +1307,10 @@ function Body(props){
                             
                             window.ontouchmove = (e)=>{
                                 if(mouseUpFired === false){
-                                    div.style.top = ( ( e.touches[0].clientY - popup.getBoundingClientRect().top) - centerofdiv )+'px';
+                                    div.style.top = ( ( e.touches[0].clientY + popup.scrollTop ) - centerofdiv )+'px';
                                     initPositions.forEach((element, i) => {
                                         if ( indexOfSelectedItem > i ) {
-                                            if( ( e.touches[0].clientY - 35 ) < (element) && ( e.touches[0].clientY - 35 ) > ( element - 70 ) ){
+                                            if( ( ( e.touches[0].clientY + popup.scrollTop ) - 35 ) < (element) && ( ( e.touches[0].clientY + popup.scrollTop ) - 35 ) > ( element - 70 ) ){
                                                 swapSibling(arrayOfEles[i].parentNode, div.parentNode);
                                                 newindex = i;
                                                 indexOfSelectedItem = i;
@@ -1331,7 +1318,7 @@ function Body(props){
                                         }
 
                                         if ( indexOfSelectedItem < i ) {
-                                            if( ( e.touches[0].clientY + 35 ) > ( element + 70 ) && ( e.touches[0].clientY + 35 ) < ( element + 140 )){
+                                            if( ( ( e.touches[0].clientY + popup.scrollTop ) + 35 ) > ( element + 70 ) && ( ( e.touches[0].clientY + popup.scrollTop ) + 35 ) < ( element + 140 )){
                                                 swapSibling( div.parentNode, arrayOfEles[i].parentNode );
                                                 newindex = i;
                                                 indexOfSelectedItem = i;
@@ -1910,7 +1897,7 @@ function Body(props){
             currentState = <> <div className='createOptions'> <SelectCreateOption state={state}/> </div> </>;
             break;
         default:
-            currentState = <div className='popup'> <Header data={state}/> <WelcomeBox/> </div>;
+            currentState = <div className='popupdark'> <Header data={state}/> <WelcomeBox/> </div>;
             // currentState = <div style={{ backgroundColor: "rgba(0, 3, 40, 0.7)", backdropFilter: "blur(5px)", minHeight:"100vh", width:"100%"}}><Header data={state}/>{/* <div style={{padding:"20px", backgroundColor:"yellow", height: "fit-content", margin: "20px 0px"}}> <h1 style={{color:"#000"}}> Create & deploy assets to the blockchain! </h1> <span style={{display: "block", textAlign: "center", fontSize:"15px", fontWeight: "500"}}>-Generate and Store NFT projects(no code needed)<br></br><br></br>-Create NFTs -Create Tokens<br></br></span></div> <button className="enableEthereumButton" onClick={mintNEW}>mint</button> <button className="enableEthereumButton" onClick={iswalletConnected}>Enable Ethereum</button> */}<WelcomeBox/></div>;
             break;
     }
