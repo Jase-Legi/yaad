@@ -1021,7 +1021,6 @@ function Body(props){
             const mapTraitTypes = async (comboz) => {
                 let len = 0; let traitTypes = []; let ego, isPriority = [];
                 while( len < comboz.length ){
-                    console.log(`combos: ${JSON.stringify(comboz)}`);
                     if(comboz[len].priority){
                         isPriority.push(comboz[len].name);
                     }
@@ -1033,7 +1032,6 @@ function Body(props){
                     len++;
                 }
                 ego = null;
-                console.log(`isPriority array: ${JSON.stringify(isPriority)}`);
                 return [traitTypes, isPriority];
             };
             
@@ -1179,7 +1177,7 @@ function Body(props){
                 return drawimage(sampleImgs, 1000, 1000);
             };
 
-            const samples = await getSamplesAndClearComboData(combo, 50);
+            const samples = await getSamplesAndClearComboData(combo, 200);
         }
         
         const handleSol = async (e)=>{
