@@ -1101,14 +1101,15 @@ function Body(props){
             let pinnedCombo;
             if(getBytes < 20000000){
                 pinnedCombo = await pinCombo( combo, optns, `${baseServerUri}api/pinnitcombo` );
-            }else{
-                pinnedCombo = await pinCombo( combo, optns, `${baseServerUri}api/pinBig` );
             }
+            // else{
+            //     pinnedCombo = await pinCombo( combo, optns, `${baseServerUri}api/pinBig` );
+            // }
 
             const drawimage = async (traitTypes, width, height) => {
                 let sampleArray = []; const cap_it = traitTypes.length;
                 for( let v = 0; v < cap_it; v++ ){
-                    // console.log(`traits: ${JSON.stringify(traitTypes[v])}`)
+                    console.log(`traits: ${v}`)
                     const  drawableTraits = traitTypes[v].filter( x=> x.value !== 'N/A');
                     const drawableTraits_length = drawableTraits.length;
                     const canvas = document.createElement("canvas");
