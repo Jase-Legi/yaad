@@ -1,9 +1,15 @@
-import './body.css'; import './App.css'; import './header.css';
-import { useState, memo, useEffect } from 'react';
+import { useState, memo, useEffect, useContext } from 'react';
 import { providers, Contract, utils, BigNumber, ContractFactory } from "ethers";
 import yaadtokenAbi from './contracts/ABIs/Yaad.json';
+import { Header } from './components/header/header';
+import { imgToBase64String, imgURLFromBase64String } from "./helpers/imgBLOBto64";
+import { validateIMGtype } from "./helpers/imgdatahelpers";
+import { BoxTitle, Buttonz, DaInput} from './components/form/formcomps';
+import { MsgBox } from './components/errorbox/errorbox';
 import yaadcontract from './contracts/yaad.json';
+import { LoadingBox, showLoading, hideLoading } from "./components/ui/loading";
 import nftcontract from './contracts/the_yaad.sol';
+import { StateContext } from './context/StateContext';
 
 const pumpum = window.location.host;
 let baseServerUri = ( pumpum  === "localhost:3000" )?'./':'https://yaadlabs.herokuapp.com/';
@@ -82,9 +88,9 @@ const etherToken = new Contract(etherTokenAddy, yaadtokenAbi.abi, signer);
 
 document.addEventListener('submit', (e)=>{ e.preventDefault(); });
 
-let showLoading = ()=>{ document.getElementById('loadingpopup').classList.remove('inactive'); }
+// let showLoading = ()=>{ document.getElementById('loadingpopup').classList.remove('inactive'); }
 
-let hideLoading = ()=>{ document.getElementById('loadingpopup').classList.add('inactive'); }
+// let hideLoading = ()=>{ document.getElementById('loadingpopup').classList.add('inactive'); }
 
 const getGas = async (trans)=>{ return (trans)?trans.estimateGas():false; };
 
@@ -140,127 +146,30 @@ const isAplhaNumeric = (str)=>{
     return true;
 };
 
-// This function takes an image and converts it to a base 64 encoding and removes the image data before the base64 string
-const imgToBase64String = async ( img, dataURL )=>{
-    if( img !== null ){
-        let canvas =  document.createElement("canvas");
-        canvas.height = img.height;
-        canvas.width = img.width;
-        let ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0);
-        const dataURL = canvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-        // console.log(`data url = ${dataURL}`);
-        return dataURL;
-    }
-    const ddataURL = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-    return ddataURL;
-};
-
-const imgURLFromBase64String = (dataURL)=>{
-    // let prestring = ('/' === dataURL[0])?"data:image/png;base64,":"data:image/png;base64,";
-    let prestring;
-    switch (dataURL[0]) {
-        case '/':
-            prestring = "data:image/jpg;base64,";
-            break;
-        case 'i':
-            prestring = "data:image/png;base64,";
-            break;
-        default:
-            prestring = "data:image/png;base64,";
-            break;
-    }
-    return prestring+dataURL;
-};
 
 const nullFunc = (e)=>{ return; };
 
-function LoadingBox(props){
-    return(
-        <div id='loadingpopup' className='inactive'>
-            <div id='loadingbttn' >
-                <img src="./loading.svg" alt=""/>
-                <div className='loadingbttn_text_box'>
-                    <span style={{color:"white"}}>Please Wait</span>
-                </div>
-            </div>
-        </div>
-    )
-}
-
-function BoxTitle(props){
-    let textType;
-    switch (props.data.type) {
-        case 'h2':
-            textType = <h2 className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</h2>;
-            break;
-        case 'span':
-            textType = <span className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</span>;
-            break;
-        case 'h1':
-            textType = <h1 className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</h1>;
-            break;
-        case 'h3':
-                textType = <h3 className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</h3>;
-                break;
-        case 'h4':
-            textType = <h4 className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</h4>;
-            break;
-        default:
-            break;
-    }
-    return ( <div className={(props.data.class)?props.data.class:''} id={(props.data.id)?props.data.id:''}> {textType} </div> )
-};
-
-function Buttonz(props){
-    return (
-        <button className={(props.data.class)?props.data.class:''} id={(props.data.id)?props.data.id:''} style={{zIndex: 11}} onClick={props.data.func}> {props.data.value} </button>
-    )
-};
-
-function DaInput(props){
-    let daInput;
-    
-    if(props.data.hidden){
-        switch (props.data.type) {
-            case 'file':
-                daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''} name={(props.data.name)?props.data.name:''} readOnly={(props.data.readOnly)?props.data.readOnly:false} type='file' multiple={(props.data.multiple)?props.data.multiple:''} accept={(props.data.accept)?props.data.accept:'*'} onChange={(props.data.onChange)?props.data.onChange:nullFunc} hidden/>;
-                break;
-            case 'textarea':
-                daInput = <textarea className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} value={props.data.value} readOnly={(props.data.readOnly)?props.data.readOnly:false} onChange={(props.data.onChange)?props.data.onChange:nullFunc} hidden></textarea>;
-                break;
-            case 'text':
-                daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} type='text' value={props.data.value} readOnly={(props.data.readOnly)?props.data.readOnly:false} onChange={(props.data.onChange)?(e)=>props.data.onChange(e):nullFunc} hidden/>;
-                break;
-            default:
-                break;
-        }
-        return(daInput);
-    }else{
-        switch (props.data.type) {
-            case 'file':
-                daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''} name={(props.data.name)?props.data.name:''} type='file' multiple={(props.data.multiple)?props.data.multiple:''} accept={(props.data.accept)?props.data.accept:'*'} onChange={(props.data.onChange)?props.data.onChange:nullFunc} onClick={(props.data.onClick)?(e)=>props.data.onClick:nullFunc}/>;
-                break;
-            case 'textarea':
-                daInput = <textarea className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} placeholder={(props.data.placeholder)?props.data.placeholder:''} onChange={(props.data.onChange)?props.data.onChange:nullFunc} onClick={(props.data.onClick)?(e)=>props.data.onClick(e):nullFunc} ></textarea>;
-                break;
-            case 'text':
-                daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} type='text' placeholder={(props.data.placeholder)?props.data.placeholder:''} onChange={(props.data.onChange)?props.data.onChange:nullFunc} onClick={(props.data.onClick)?(e)=>props.data.onClick(e):nullFunc}/>;
-                break;
-            case 'number':
-                daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} type='number' placeholder={(props.data.placeholder)?props.data.placeholder:''} onChange={(props.data.onChange)?props.data.onChange:nullFunc} onClick={(props.data.onClick)?(e)=>props.data.onClick(e):nullFunc} />;
-                break;
-            default:
-                break;
-        }
-        return( <div className={(props.data.class)?props.data.class:''} id={(props.data.id)?props.data.id:''}> {daInput} </div> );
-    }
-};
+// function LoadingBox(props){
+//     return(
+//         <div id='loadingpopup' className='inactive'>
+//             <div id='loadingbttn' >
+//                 <img src="./loading.svg" alt=""/>
+//                 <div className='loadingbttn_text_box'>
+//                     <span style={{color:"white"}}>Please Wait</span>
+//                 </div>
+//             </div>
+//         </div>
+//     )
+// }
 
 function Body(props){
     const homeSate = {state:"", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:"createbox", temp_index: null};
+    
+    const { state, setState } = useContext(StateContext);
 
-    let [state, setState] = useState(homeSate);
+    // console.log(`current context state: ${JSON.stringify(state)}`)
+    
+    // let [state, setState] = useState(homeSate);
 
     const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
 
@@ -348,21 +257,6 @@ function Body(props){
             errStacks.intervalId = setTimeout(()=>{
                 callback();
             }, interval)
-        }
-    }
-
-    function MsgBox(){
-        if(errStacks.formdata?.length > 0 && errStacks.substate === state.currsubState){
-            let bbx = [];
-            errStacks.formdata.forEach((element, i) => {
-                let eleID = errStacks.formdata[i]?.id;
-                let the_msg = errStacks.formdata[i]?.msg;
-                let the_ele = document.getElementById(eleID);
-                bbx.push(
-                    <div key={i} className='errorbox' id='errorbox' style={{top: parseInt(the_ele.getBoundingClientRect().bottom)-5+"px", left: parseInt(the_ele.getBoundingClientRect().left)+15+"px"}}><Buttonz data={{value:"X", class:"error-box-closer", func:(e)=>{ errStacks.intervalId=null; errStacks.formdata=[]; errStacks.substate=null; e.target.parentNode.remove() } }} /><BoxTitle data={{text:`${the_msg}`, type:"span", class:"errorboxEle" }}/></div>
-                )
-            });
-            return ( <div> {bbx} </div> )
         }
     }
     
@@ -485,46 +379,7 @@ function Body(props){
         this[a] = this.splice(b, 1, this[a])[0];
         return this;
     }
-
-    function Header(){
-        function SearchBar(){ return ( <div className='search-Header-Div'> <button className="headerElementSearch" type='button'> </button> </div> ) };
-        
-        function Dropdown(props) {
-            var body = undefined;
-            var init = function init() {
-                body = document.querySelector('body');
-            };
-            
-            let menuClick = function () {
-                return toggleClass(body, 'nav-active');
-            };
-                
-            var toggleClass = function toggleClass(element, stringClass) {
-                if (element.classList.contains(stringClass)) element.classList.remove(stringClass);else element.classList.add(stringClass);
-            };
-            init();
-            
-        
-            return(
-                <div className='headerElementMenu'>
-                    <div className="cd-header">
-                        <img src='./wallet.svg' alt="" />	
-                    </div>
-                </div>
-            )
-        }
-        
-        return (
-            <header className='header' >
-                <div className='headerElementlogo' onClick={()=>window.location = './'}>
-                    <img src='./yaad.svg' alt='home'/>
-                </div>
-                {/* <SearchBar style={logoBox}/> */}
-                <Dropdown/>
-            </header>
-        );
-    }
-
+    
     const handlesingleUload = async (e)=>{
         let body = new FormData();
         let newItemName = ( state.data.filename )? state.data.filename.split('.'):null;
@@ -669,58 +524,58 @@ function Body(props){
             }
         }
 
-        const validateIMGtype = async ( demFiles, childClassName, parentEle ) => {
-            parentEle.innerHTML = "";
-            const demlen = demFiles.length;
-            const last_indx = demFiles.length-1;
-            for (let n = 0; n < demlen ; n++ ) {
-                let dafile = demFiles[n];
-                let readr = new FileReader();
-                // eslint-disable-next-line no-loop-func
-                readr.onloadend = ()=>{
-                    // convert file buffer array to  bit array and splice the first 4 elements of this array
-                    let buffArray = ( new Uint8Array( readr.result )).subarray(0, 4),
-                    fileSignature = "";
-                    // convert first 4 elements to hexadecimal string and contact them together to create file signature
-                    for(let m = 0; m < buffArray.length; m++){ fileSignature +=buffArray[m].toString(16); }
+        // const validateIMGtype = async ( demFiles, childClassName, parentEle ) => {
+        //     parentEle.innerHTML = "";
+        //     const demlen = demFiles.length;
+        //     const last_indx = demFiles.length-1;
+        //     for (let n = 0; n < demlen ; n++ ) {
+        //         let dafile = demFiles[n];
+        //         let readr = new FileReader();
+        //         // eslint-disable-next-line no-loop-func
+        //         readr.onloadend = ()=>{
+        //             // convert file buffer array to  bit array and splice the first 4 elements of this array
+        //             let buffArray = ( new Uint8Array( readr.result )).subarray(0, 4),
+        //             fileSignature = "";
+        //             // convert first 4 elements to hexadecimal string and contact them together to create file signature
+        //             for(let m = 0; m < buffArray.length; m++){ fileSignature +=buffArray[m].toString(16); }
                     
-                    // check if signature matches the signatures of jpgs and png file
-                    switch (fileSignature) {
-                        case '89504e47'.toLowerCase():
-                        case 'FFD8FFE0'.toLowerCase():
-                        case 'FFD8FFE1'.toLowerCase():
-                        case 'FFD8FFE2'.toLowerCase():
-                        case 'FFD8FFE8'.toLowerCase():
-                            let img = document.createElement("img");
-                            img.addEventListener("load", ()=>{
-                                if( img.width <= 2000  && img.height <= 2000 ){
-                                    const para = document.createElement("div");
-                                    para.appendChild(img);
-                                    para.classList.add((childClassName)?childClassName:'LayerUpldContentBox')
-                                    parentEle.appendChild(para);
-                                }else{
-                                    img.remove();
-                                    wrongFiles.push(n);
-                                }
-                            });
+        //             // check if signature matches the signatures of jpgs and png file
+        //             switch (fileSignature) {
+        //                 case '89504e47'.toLowerCase():
+        //                 case 'FFD8FFE0'.toLowerCase():
+        //                 case 'FFD8FFE1'.toLowerCase():
+        //                 case 'FFD8FFE2'.toLowerCase():
+        //                 case 'FFD8FFE8'.toLowerCase():
+        //                     let img = document.createElement("img");
+        //                     img.addEventListener("load", ()=>{
+        //                         if( img.width <= 2000  && img.height <= 2000 ){
+        //                             const para = document.createElement("div");
+        //                             para.appendChild(img);
+        //                             para.classList.add((childClassName)?childClassName:'LayerUpldContentBox')
+        //                             parentEle.appendChild(para);
+        //                         }else{
+        //                             img.remove();
+        //                             wrongFiles.push(n);
+        //                         }
+        //                     });
                             
-                            img.src = URL.createObjectURL(dafile);
-                            break;
-                        default:
-                            wrongFiles.push(n);
-                            console.log(`wrong file value:: ${JSON.stringify(wrongFiles)}`);
-                            if(demFiles.length === wrongFiles.length){
-                                logit(`lengths are equal!`);
-                                return setErrStacks((prev)=>({...prev, substate: state.currsubState, formdata: [{id: "LayerUpldLabel", value: "", msg:"Unsupported file types! JPG, JPEG, PNG only."}] }));
-                            }
-                            break;
-                    }
-                    if ( last_indx === n ){ hideLoading(); }
-                }
-                // Read file as array buffer 
-                readr.readAsArrayBuffer(dafile);
-            }
-        }
+        //                     img.src = URL.createObjectURL(dafile);
+        //                     break;
+        //                 default:
+        //                     wrongFiles.push(n);
+        //                     console.log(`wrong file value:: ${JSON.stringify(wrongFiles)}`);
+        //                     if(demFiles.length === wrongFiles.length){
+        //                         logit(`lengths are equal!`);
+        //                         return setErrStacks((prev)=>({...prev, substate: state.currsubState, formdata: [{id: "LayerUpldLabel", value: "", msg:"Unsupported file types! JPG, JPEG, PNG only."}] }));
+        //                     }
+        //                     break;
+        //             }
+        //             if ( last_indx === n ){ hideLoading(); }
+        //         }
+        //         // Read file as array buffer 
+        //         readr.readAsArrayBuffer(dafile);
+        //     }
+        // }
 
         const handleAddBGLayer = (e)=>{
             return setState((prev)=>({...prev, currsubState:"RandomGenerator-LayerOptions-BG-Upld" }));
@@ -748,19 +603,21 @@ function Body(props){
             showLoading();
             e.target.classList.add('inactive'); e.preventDefault();
             let layerName, bgElement = false;
+            
+            if(e.target.getAttribute('type') === 'file' && ( e.target.getAttribute('name') === 'multi_asset' || e.target.getAttribute('name') === 'bg_asset' ) ){
+                await validateIMGtype( e.target.files, 'LayerUpldContentBox', 'layerContentBox', [], ([err, wrongfiles])=>{
+                    wrongFiles = wrongfiles;
 
-            if (e.target.getAttribute('name') === 'bg_asset' && e.target.getAttribute('type') === 'file') {
-                document.getElementById('bg_upld').textContent = (e.target.files.length > 0)?'NEXT':'No Background';
-                wrongFiles = ( wrongFiles.length > 0)?[]:[];
-                await validateIMGtype( e.target.files, 'LayerUpldContentBox', document.getElementsByClassName('layerContentBox')[0] );
-                da_files = (e.target.files.length === 0 )?[]:e.target.files;
-                return;
-            }
+                    if( err !== null || ( wrongfiles.length === e.target.files.length )) { 
+                        return setErrStacks((prev)=>({...prev, substate: state.currsubState, formdata:(err !== null)?[err]:[{id: "LayerUpldLabel", value: "", msg:"Images too large Max height: 2000px, max width: 2000px."}] }));
+                    }
 
-            if(e.target.getAttribute('type') === 'file' && e.target.getAttribute('name') === 'multi_asset'){
-                wrongFiles = ( wrongFiles.length > 0)?[]:[];
-                await validateIMGtype( e.target.files, 'LayerUpldContentBox', document.getElementsByClassName('layerContentBox')[0] );
-                da_files = (e.target.files.length === 0 )?[]:e.target.files;
+                    if( document.getElementById('bg_upld') ) document.getElementById('bg_upld').textContent = (e.target.files.length > 0)?'NEXT':'No Background';
+                    
+                    da_files = (e.target.files.length === 0 )?[]:e.target.files;
+                    
+                    hideLoading();
+                });
                 return;
             }
             
@@ -784,7 +641,7 @@ function Body(props){
             bgElement=(e.target.getAttribute("id") === "bg_upld")&& true;
 
             if((da_files === undefined || da_files.length === 0 || da_files.length === "") && e.target.getAttribute("id") === "bg_upld"){
-                state.data.background = [];
+                state.data.background = (  state.data.background.length === 0 )?[]:state.data.background;
                 return closeLayerOptionsBox();
             }
             
@@ -1364,8 +1221,6 @@ function Body(props){
                             // let scrollEle = (document.getElementById('popup'))?document.getElementById('popup'):document.getElementById('popupdark');
                             return setState((prev)=>({...prev}));
                             // hideLoading();
-
-                            // changeState(state, document.getElementById('popup').scrollTop());
                         }
                         
                     }
@@ -1728,7 +1583,7 @@ function Body(props){
                         <h1>+</h1>
                         <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:'multi_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/>
                     </label>
-                    <div className='layerContentBox'></div>
+                    <div id='layerContentBox'></div>
                     <Buttonz data={{class:"LayerUpldBttn", id:'', value: (typeof( state.temp_index ) === "number")?'Add':'Create', func: handleAddLayerUpld}} />
                 </div>;
                 break;
@@ -1739,7 +1594,7 @@ function Body(props){
                         <h1>+</h1>
                         <DaInput data={{typeClass:'LayerName', typeId:'multi_asset', name:'bg_asset', type:'file', multiple:'multiple', hidden:true, accept:'image/*', onChange:handleAddLayerUpld}}/>
                     </label>
-                    <div className='layerContentBox'></div>
+                    <div id='layerContentBox'></div>
                     <Buttonz data={{class:"LayerUpldBttn", id:'bg_upld', value: 'No Background', func: handleAddLayerUpld}} />
                 </div>;
                 break;
@@ -1855,7 +1710,7 @@ function Body(props){
                 <div className="welcomeBoxElement">
                     <button className='containerbox' onClick={()=>nullFunc} >
                         <div className='title'>
-                            <h1> {props.data.message} </h1>
+                            <h1> De-Fi </h1>
                             <span style={{display:"block", textAlign:"center", }}> coming soon </span>
                         </div>
                     </button>
@@ -1901,7 +1756,7 @@ function Body(props){
             break;
     }
 
-    return( <> <LoadingBox/> <MsgBox/> {currentState} </> );
+    return( <> <LoadingBox/> <MsgBox errStacks={errStacks} subState= { state.currsubState } /> {currentState} </> );
 }
 
 export default memo(Body);

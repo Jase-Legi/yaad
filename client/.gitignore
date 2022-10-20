@@ -12,6 +12,7 @@
 /public
 /package-lock.json
 .env
+/body.js
 # production
 # /build
 

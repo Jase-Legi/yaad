@@ -1396,6 +1396,7 @@ text {
     cursor: default;
     letter-spacing: 3;
     margin: 10px 0px 0px 0px;
+    box-sizing: border-box;
     height: fit-content;
     width: 100%;
     padding: 5px;
