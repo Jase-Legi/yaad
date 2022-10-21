@@ -4,30 +4,25 @@ import { imgToBase64String, imgURLFromBase64String } from "../helpers/imgBLOBto6
 import { ContractFactory } from "ethers";
 import { walletConnected, signer,  currentNetwork, oldNetwork } from "../helpers/web3Helpers";
 import { validateIMGtype } from "../helpers/imgdatahelpers";
-import { isAplhaNumeric } from "../helpers/stringValidator";
+import { isAplhaNumeric, stringLengthRange } from "../helpers/stringValidator";
 import { shuffle } from "../helpers/generatorhelpers";
 import yaadcontract from '../contracts/yaad.json';
 import nftcontract from '../contracts/the_yaad.sol';
 import { DaInput, BoxTitle, Buttonz } from '../components/form/formcomps';
 import { LoadingBox, showLoading, hideLoading } from "../components/ui/loading";
 import { MsgBox } from '../components/errorbox/errorbox';
+import { MsgContext } from "../context/msgcontext";
+import { Link } from 'react-router-dom';
 
 function RandomGenerator (props){
     let baseServerUri = ( window.location.host  === "localhost:3000" )?'./':'https://yaadlabs.herokuapp.com/';
     
     const homeSate = { state:"", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:"createbox", temp_index: null, baseServerUri,};
     const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
-
-    let [errStacks, setErrStacks] = useState(defaultErrorStack);
-
+    const { msgStacks, setMsgStacks } = useContext( MsgContext );
     const { state, setState } = useContext( StateContext );
     
-    useEffect(() => {
-        return ()=>{
-            // if(errStacks.substate !== state.currsubState && errStacks.substate != null){
-            setErrStacks((prev)=>({ intervalId:null, formdata:[], substate:null }));
-        }
-    }, [ state.currsubState, state.state ])
+    
 
     let da_files;
     var wrongFiles = [];
@@ -50,11 +45,11 @@ function RandomGenerator (props){
         const ele = e.target;
         ele.classList.add("inactive");
         if(!state.data.coll_name || state.data.coll_name.trim() === ""){
-            return setErrStacks( (prev)=>({...prev, formdata:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState }) );
+            return setMsgStacks( (prev)=>({...prev, formdata:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState }) );
         }
         
         if(!state.data.coll_symbol || state.data.coll_symbol.trim() === ""){
-            return setErrStacks( (prev)=>({...prev, formdata:[{id:"contractSymbol", value: document.getElementById("contractSymbol").value, msg: "Enter a symbol!"}], substate:state.currsubState }) );
+            return setMsgStacks( (prev)=>({...prev, formdata:[{id:"contractSymbol", value: document.getElementById("contractSymbol").value, msg: "Enter a symbol!"}], substate:state.currsubState }) );
         }
 
         try {
@@ -131,12 +126,12 @@ function RandomGenerator (props){
         e.target.classList.add('inactive'); e.preventDefault();
         let layerName, bgElement = false;
         
-        if(e.target.getAttribute('type') === 'file' && ( e.target.getAttribute('name') === 'multi_asset' || e.target.getAttribute('name') === 'bg_asset' ) ){
+        if( e.target.getAttribute('type') === 'file' && ( e.target.getAttribute('name') === 'multi_asset' || e.target.getAttribute('name') === 'bg_asset' ) ){
             await validateIMGtype( e.target.files, 'LayerUpldContentBox', 'layerContentBox', [], ([err, wrongfiles])=>{
                 wrongFiles = wrongfiles;
 
                 if( err !== null || ( wrongfiles.length === e.target.files.length )) { 
-                    return setErrStacks((prev)=>({...prev, substate: state.currsubState, formdata:(err !== null)?[err]:[{id: "LayerUpldLabel", value: "", msg:"Images too large Max height: 2000px, max width: 2000px."}] }));
+                    return setMsgStacks((prev)=>({...prev, substate: state.currsubState, formdata:(err !== null)?[err]:[{id: "LayerUpldLabel", value: "", msg:"Images too large Max height: 2000px, max width: 2000px."}] }));
                 }
 
                 if( document.getElementById('bg_upld') ) document.getElementById('bg_upld').textContent = (e.target.files.length > 0)?'NEXT':'No Background';
@@ -153,11 +148,11 @@ function RandomGenerator (props){
             if( layerName === null || document.getElementById("multi_asset").files.length < 1){
                 
                 if( ( layerName === null && document.getElementById("multi_asset").files.length < 1 )  || (  layerName === null)) {
-                    setErrStacks((prev)=>({...prev, substate: state.currsubState, formdata: [{id: "LayerName", value: "", msg:"This field cannot be empty!"}] }));
+                    setMsgStacks((prev)=>({...prev, substate: state.currsubState, formdata: [{id: "LayerName", value: "", msg:"Enter a layer name!"}, {id: null, value: null, msg:"Click the '+' to upload files!" }] }));
                 }
-                if( document.getElementById("multi_asset").files.length < 1 ) {
-                    setErrStacks((prev)=>({...prev, substate: state.currsubState, formdata: [{id: "LayerUpldLabel", value: "", msg:"Click the '+' to upload files!"}] }));
-                }
+                // if( document.getElementById("multi_asset").files.length < 1 ) {
+                //     setMsgStacks((prev)=>({...prev, substate: state.currsubState, formdata: [{id: "LayerUpldLabel", value: "", msg:"Click the '+' to upload files!"}] }));
+                // }
 
                 e.target.classList.remove('inactive');
                 hideLoading();
@@ -213,7 +208,15 @@ function RandomGenerator (props){
                     }
                 }
                 
-                if ( loadedindx === filesToLoadLen ){ return closeLayerOptionsBox(); }
+                if ( loadedindx === filesToLoadLen ){
+                    state.data.possibleCombos = 1;
+                    state.data.layers.forEach((val, indx, arr)=>{
+                        state.data.possibleCombos *= ( val.priority )?(val.traits.length):(val.traits.length+1) 
+                    });
+
+                    console.log(`possible combos: ${state.data.possibleCombos}`);
+                    return closeLayerOptionsBox(); 
+                }
             })
 
             img.src = URL.createObjectURL(da_files[n]);
@@ -304,6 +307,12 @@ function RandomGenerator (props){
     
     const generate_it = async (e)=>{
         showLoading();
+        console.log(`combo length: ${state.data.possibleCombos}`);
+        if ( parseInt(state.data.possibleCombos) < 200 ){ 
+            console.log(`less than 200;`);
+            hideLoading()
+            return setMsgStacks((prev)=>({...prev, formdata: {id: null, value: null, msg: "Add more images to generate project, "}, substate: state.currentSubState}));
+        }
         let conntd = await walletConnected();
         if( conntd === false ){ return false; }
         
@@ -546,7 +555,7 @@ function RandomGenerator (props){
             }
 
             combo = null;
-            // console.log(`sample images: ${JSON.stringify(sampleImgs)}`)
+            
             return drawimage(sampleImgs, 1000, 1000);
         };
 
@@ -582,37 +591,32 @@ function RandomGenerator (props){
         await readAndShowFiles(elemFiles);
     };
 
-    const collNameBox = (e)=>{
+    const formDataHandler = (e)=>{
         const ele = e.target;
+        const eleID = ele.getAttribute("id");
         const the_value = ele.value.trim();
         
-        if( the_value === "" ) return false;
+        if ( contractZone ) { ele.value = state.data.coll_name; return; }
+        if ( the_value === "" ) return false;
         
-        if(ele.getAttribute("id") === "contractSymbol"){
-            if(the_value.length > 4 || !isAplhaNumeric(the_value)){
-                ele.value = state.data.coll_symbol;
-                return;
-            }
-
-            state.data["coll_symbol"] = the_value;
-            ele.setAttribute("placeholder", the_value);
-            return;
+        switch ( eleID ) {
+            case "contractName":
+                if ( !isAplhaNumeric( the_value, [ "_", " " ] ) || !stringLengthRange( the_value, 1, 30 ) ) { ele.value = state.data.coll_name; return; }
+                state.data.coll_name = the_value;
+                ele.setAttribute("placeholder", the_value);
+                break;
+            case "contractSymbol":
+                if ( !isAplhaNumeric( the_value, [ "_", " " ] ) || !stringLengthRange( the_value, 1, 4 ) ) { ele.value = state.data.coll_symbol; return; }
+                state.data.coll_symbol = the_value;
+                ele.setAttribute("placeholder", the_value);
+                break;
+            default:
+                if ( !isAplhaNumeric( the_value, [ "_", " " ] ) || !stringLengthRange( the_value, 1, 50 ) ) { ele.value = state.formVals; return; }
+                state.formVals = the_value;
+                ele.setAttribute("placeholder", the_value);
+                break;
         }
-        
-        if(ele.getAttribute("id") === "contractName"){
-            if(contractZone){
-                ele.value = state.data.coll_name;
-                return;
-            }
-
-            state.data.coll_name = the_value;
-            ele.setAttribute("placeholder", the_value);
-        }
-
-        if(ele.getAttribute("id") === "LayerName"){
-            state.formVals = the_value;
-            ele.setAttribute("placeholder", the_value);
-        }
+        return;
     }
     
     function GenLayers (){
@@ -625,7 +629,6 @@ function RandomGenerator (props){
             useEffect(()=>{
                 [].forEach.call(document.getElementsByClassName('generatorRightPanelLayerBox'), (element) => {
                     initPositions.push( element.getBoundingClientRect().top + document.getElementById('popup').scrollTop );
-                    // console.log(`positions; ${JSON.stringify(initPositions)}, popup:: ${document.getElementById('popup').getBoundingClientRect().top}`)
                 });
             },[elebox, initPositions])
             
@@ -857,18 +860,12 @@ function RandomGenerator (props){
         if(state.currsubState === "RandomGenerator" && state.data.layers ){
 
             if(state.data.layers.length > 0){
-                
                 let layerlen = 0; let boxcont = [];
-
                 while (layerlen < state.data.layers.length){
-                    
                     boxcont.push(<Layerz obj={{name:state.data.layers[layerlen].name, key:layerlen}} key={layerlen}/>)
-
                     layerlen++;
                 }
-                
                 return(boxcont)
-
             }else{
                 return('')
             }
@@ -1037,7 +1034,6 @@ function RandomGenerator (props){
                 sampleLen++;
             }
             
-            // let contractDetailsBox = (typeof(activeContract) === "number")? <div className='contract-box'><div id='contract-container' className='contract-container'><h2>{state.data["contracts"][activeContract].name}.sol</h2><span>{state.data["contracts"][activeContract].contract}</span></div><Buttonz data={{class:"expand-contract", id: "expand_contract", value: "expand", func:expandContractBox}} /></div>:"";
             let contractDetailsBox = <div className='contract-box'><div id='contract-container' className='contract-container'><h2>{state.data.contracts[0]?.name}.sol</h2><span>{state.data.contracts[0]?.contract}</span></div><Buttonz data={{class:"expand-contract", id: "expand_contract", value: "expand", func:expandContractBox}} /></div>;
             return(
                 <div>
@@ -1052,7 +1048,7 @@ function RandomGenerator (props){
         return(
             <div style={{marginBottom:"20px"}}>
                 <input type="file" id={(contractZone)?'project_contract':'single_asset'} name={(contractZone)?'project_contract':'single_asset'} accept={(contractZone)?'*':"image/*"} multiple="multiple" style={{opacity:100, zIndex:1}} onChange={(contractZone)?handleSol:state.data.func} hidden/>
-                <button className='generatorRightPanelAddNewLayer' id='generatorRightPanelAddNewLayer' onClick={(e)=>{if(!contractZone){ if(state.data.coll_name?.length > 0){ state.temp_index = null; handleAddLayer(e); }else{ setErrStacks( (prev)=>({...prev, formdata:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState }) )} }else{ return ()=>{return false}}}} > + </button>
+                <button className='generatorRightPanelAddNewLayer' id='generatorRightPanelAddNewLayer' onClick={(e)=>{if(!contractZone){ if(state.data.coll_name?.length > 0){ state.temp_index = null; handleAddLayer(e); }else{ setMsgStacks( (prev)=>({...prev, formdata:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState }) )} }else{ return ()=>{return false}}}} > + </button>
             </div>
         )
     }
@@ -1061,11 +1057,11 @@ function RandomGenerator (props){
         return(<div className='coll_name_box'>
             <div className='contractNameContainer'>
                 <BoxTitle data={{class:'contractNameText', type:'span', text:'Name:'}}/>
-                <DaInput data={{ type:'text', typeId:'contractName', typeClass:'contractName', placeholder:(state.data.coll_name)?state.data.coll_name:"Enter your project name.", onChange:collNameBox, onClick:(e)=>{e.target.value = state.data.coll_name}}}/>
+                <DaInput data={{ type:'text', typeId:'contractName', typeClass:'contractName', placeholder:(state.data.coll_name)?state.data.coll_name:"Enter your project name.", onChange:formDataHandler, onClick:(e)=>{e.target.value = state.data.coll_name}}}/>
             </div>
             <div className='contractSymbolContainer'>
                 <BoxTitle data={{class:'contractSymbolText', type:'span', text:'Symbol:'}}/>
-                <DaInput data={{ type:'text', typeId:'contractSymbol', typeClass:'contractSymbol', placeholder:(state.data.coll_symbol)?state.data.coll_symbol:"Enter project symbol.", onChange:collNameBox}}/>
+                <DaInput data={{ type:'text', typeId:'contractSymbol', typeClass:'contractSymbol', placeholder:(state.data.coll_symbol)?state.data.coll_symbol:"Enter project symbol.", onChange:formDataHandler}}/>
             </div>
         </div>)
     }
@@ -1093,9 +1089,9 @@ function RandomGenerator (props){
             break;
         case "RandomGenerator-LayerOptions-AddLayer":
             currentSubState = <div className='LayerUpldBox'>
-                <DaInput data={( state.temp_index  !== null )? { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.layers[ state.temp_index ]?.name } : { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:(state.formVals !== null)?state.formVals:'Enter layer name.', onChange:collNameBox, onClick:(e)=>{ e.target.value = state.formVals;} } }/>
+                <DaInput data={( state.temp_index  !== null )? { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.layers[ state.temp_index ]?.name } : { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:(state.formVals !== null)?state.formVals:'Enter layer name.', onChange:formDataHandler, onClick:(e)=>{ e.target.value = state.formVals;} } }/>
                 <BoxTitle data={{class:"generatorRightPanelTitle", type:'span', text:`Click the "+" to upload layer images${( state.temp_index !== null)?" for: "+state.data.layers[ state.temp_index ]?.name:""}.`}}/>
-                <label className='LayerUpldBttn' id='LayerUpldLabel' htmlFor='multi_asset' onClick={(e)=>{ let ele_val = state.formVals; if( !ele_val && state.temp_index === null ) { e.preventDefault(); setErrStacks((prev)=>( {...prev, formdata:[{id:"LayerName", value: document.getElementById("LayerName").value, msg: "Enter a layer name!"}], substate:state.currsubState } )) } }}>
+                <label className='LayerUpldBttn' id='LayerUpldLabel' htmlFor='multi_asset' onClick={(e)=>{ let ele_val = state.formVals; if( !ele_val && state.temp_index === null ) { e.preventDefault(); setMsgStacks((prev)=>( {...prev, formdata:[{id:"LayerName", value: document.getElementById("LayerName").value, msg: "Enter a layer name!"}], substate:state.currsubState } )) } }}>
                     <h1>+</h1>
                     <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:'multi_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/>
                 </label>
@@ -1152,7 +1148,7 @@ function RandomGenerator (props){
         case "RandomGenerator-LayerOptions-ContractName":
             currentSubState = <div className='LayerUpldBox'>
                 <BoxTitle data={{class:"generatorRightPanelTitle", type:'h2', text:'enter contract name.'}}/>
-                <DaInput data={{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:"Enter main contract name.", onChange:collNameBox}}/>
+                <DaInput data={{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:"Enter main contract name.", onChange:formDataHandler}}/>
                 <ContractBox/>
                 <Buttonz data={{class:"nodelLayerBttn", id:'', value:'SUBMIT', func: ()=>{return false}}} />
             </div>
@@ -1171,7 +1167,7 @@ function RandomGenerator (props){
         if(!currentSubState){
             return(
                 <>
-                    <button className='closeBox' onClick={()=> setState((prev)=>homeSate) }>X</button>
+                    <Link to='/'> <button className='closeBox' onClick={()=> setState((prev)=>homeSate) }>X</button></Link>
                     <div className='RandomGenerator'>
                         {coll_Name_Box}
                         <div className='LayerGenBox'>
@@ -1193,7 +1189,7 @@ function RandomGenerator (props){
         }
     }
     
-    return( <> <LoadingBox/> <MsgBox errStacks={ errStacks } subState={ state.currsubState } /> <div className='popup' id='popup'> <MainContainer/> </div></> )
+    return( <> <LoadingBox/> <MsgBox subState={ state.currsubState } /> <div className='popup' id='popup'> <MainContainer/> </div> </> )
 };
 
 export { RandomGenerator };

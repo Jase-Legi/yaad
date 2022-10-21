@@ -9,9 +9,12 @@ function SelectCreateOption( { baseServerUri } ) {
     return(
         <div className='createOptions'>
             <Link to='/'> <button className='closeBox' onClick={ ()=>setState((prev)=>homeSate) } >X</button> </Link>
-            <DaInput data={{ typeId:'single_asset', name:'single_asset', type:'file', hidden:true, accept:'image/*,video/*,audio/*,webgl/*', onChange:()=>false}}/>
-            <button className='popupBoxEle' id='createBox' onClick={()=>{document.getElementById('single_asset').click();}}>Single NFT</button>
-            <form action={baseServerUri+'api/upldSingle'} method="post" id='createSingleAssetUpld' encType="multipart/form-data"> </form>
+            {/* <DaInput data={{ typeId:'single_asset', name:'single_asset', type:'file', hidden:true, accept:'image/*,video/*,audio/*,webgl/*', onChange:()=>false}}/> */}
+            {/* <button className='popupBoxEle' id='createBox' onClick={()=>{document.getElementById('single_asset').click();}}>Single NFT</button> */}
+            <Link to='/createnft'>
+                <button className='popupBoxEle' id='createBox' onClick={()=>{setState( (prev)=>( {...prev, state: "createbox", data: { folder:null, filename:null, path:null }, currsubState: "SingleNFTDetailsForm" } ));}}>Single NFT</button>
+            </Link>
+            {/* <form action={baseServerUri+'api/upldSingle'} method="post" id='createSingleAssetUpld' encType="multipart/form-data"> </form> */}
             <Link to='/pfpgenerator'>
                 <button className='popupBoxEle' id='generateNFT_Coll' onClick={()=>setState((prev)=>({...prev, state: "RandomGenerator"}))}>PFP Project</button>
             </Link>

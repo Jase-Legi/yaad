@@ -69,4 +69,36 @@ const walletConnected = async ()=>{
     }
 };
 
-export { walletConnected, signer, currentNetwork, oldNetwork }
+
+const getGas = async (trans)=>{ return (trans)?trans.estimateGas():false; };
+
+const mintNFT = async (uri, tokenAddress, tokenAbi, signer )=>{
+    let isconnected = await walletConnected();
+    if(isconnected !== false){
+        console.log(`uri: ${JSON.stringify(uri)}`);
+        const gasNow = await getGas(signer).finally((eee)=>eee).catch((err)=>err);
+        console.log(`gas:: ${gasNow}`);
+
+        let options = { gasLimit: BigNumber.from(gasNow).add(5000000), value:utils.parseEther('.015') };
+        
+        try {
+            const etherToken = new Contract( tokenAddress, tokenAbi, signer );
+
+            const minted = await etherToken.payToMint(isconnected, JSON.stringify(uri), options).finally((res)=>res);
+            // https://goerli.etherscan.io/tx/0x7b34252866bb39a045b04aa1ddd745f507a67f1fe2784a91a8db939e077aa9e2
+            console.log(`minted::: ${JSON.stringify(minted)}`);
+            return minted;
+        } catch (error) {
+            console.log(`mint error:: ${error}`);
+            return error;
+        }
+    }
+    // IpfsHash: 'QmZuPdu8HACXJo5LUB6MUYCs2HpWndsqaZmYBSUpUFYR4M',
+    // window.ethereum.on('accountsChanged', function (accounts) {
+        // Time to reload your interface with accounts[0]!
+    // });
+    console.log(isconnected);
+    return isconnected;
+}
+
+export { walletConnected, signer, currentNetwork, oldNetwork, mintNFT }

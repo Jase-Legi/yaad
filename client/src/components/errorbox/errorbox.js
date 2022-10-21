@@ -1,18 +1,21 @@
+import React, { useContext } from 'react';
 import { Buttonz, BoxTitle } from '../form/formcomps';
+import { MsgContext } from "../../context/msgcontext";
+const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
 
-function MsgBox({errStacks, subState}){
-    if(errStacks.formdata?.length > 0 && errStacks.substate === subState){
+function MsgBox({ substate }){
+    const { msgStacks, setMsgStacks } = useContext( MsgContext );
+
+    if( msgStacks.formdata?.length > 0 ){
         let bbx = [];
-        errStacks.formdata.forEach((element, i) => {
-            let eleID = errStacks.formdata[i]?.id;
-            let the_msg = errStacks.formdata[i]?.msg;
-            let the_ele = document.getElementById(eleID);
-            bbx.push(
-                <div key={i} className='errorbox' id='errorbox' style={{top: parseInt(the_ele.getBoundingClientRect().bottom)-5+"px", left: parseInt(the_ele.getBoundingClientRect().left)+15+"px"}}><Buttonz data={{value:"X", class:"error-box-closer", func:(e)=>{ errStacks.intervalId=null; errStacks.formdata=[]; errStacks.substate=null; e.target.parentNode.remove() } }} /><BoxTitle data={{text:`${the_msg}`, type:"span", class:"errorboxEle" }}/></div>
-            )
+        msgStacks.formdata.forEach((element, i) => {
+            // let eleID = msgStacks.formdata[i]?.id;
+            let the_msg = msgStacks.formdata[i]?.msg;
+            // let the_ele = document.getElementById(eleID);
+            bbx.push( <div key={i} > <BoxTitle data={{text:`${i}. ${the_msg}`, type:"span", class:"errorboxEle" }}/> </div> )
         });
-        return ( <div> {bbx} </div> )
+        return ( <div className='errorbox' id='errorbox' style={{top: "15px", right: "15px" }} > <div style={{width:"20px", height:"20px", margin:"0px"}}><Buttonz data={{value:"X", class:"error-box-closer", func:(e)=>{setMsgStacks( defaultErrorStack )} }} /> </div> {bbx} </div> )
     }
 }
 
-export {MsgBox}
+export { MsgBox }
