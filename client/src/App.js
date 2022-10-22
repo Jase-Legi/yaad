@@ -3,7 +3,7 @@ import { SelectCreateOption } from './pages/CreateOptions';
 import { RandomGenerator } from './pages/generator';
 import { SingleNft } from './pages/singleNFT';
 import { useState, useEffect } from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { StateContext } from './context/StateContext';
 import { MsgContext } from './context/msgcontext';
 import { LoadingBox, showLoading, hideLoading } from "./components/ui/loading";
@@ -82,7 +82,7 @@ const App = ()=>{
         <div className="App">
             <MsgContext.Provider value={{ msgStacks, setMsgStacks }}>
                 <StateContext.Provider value={{ state, setState }}>
-                {/* <Router> */}
+                <Router>
                     <Routes>
                         <Route index element={ <> <LoadingBox data={{ data:activeStatus }}/> <MsgBox subState={ state.currsubState } /> <div className='popupdark'> <WelcomeBox data={{message: "De-Fi"}} /> </div> </> } />
                         <Route path='selectCreateOption' element={ <> <MsgBox subState={ state.currsubState } /> <SelectCreateOption /> </>} />
@@ -90,7 +90,7 @@ const App = ()=>{
                         <Route path='createnft' element={ <> <LoadingBox data={{class:activeStatus}}/> <SingleNft/> </> } />
                         <Route path='*' element={ <Navigate to='/'/> } />
                     </Routes>
-                {/* </Router> */}
+                </Router>
                 </StateContext.Provider>
             </MsgContext.Provider>
         </div>
