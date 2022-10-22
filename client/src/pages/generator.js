@@ -141,13 +141,14 @@ function RandomGenerator (props){
                 wrongFiles = wrongfiles;
 
                 if( err !== null || ( wrongfiles.length === currentFiles.length )) {
+                    hideLoading(e);
                     return setMsgStacks((prev)=>({...prev, substate: state.currsubState, formdata:(err !== null)?[err]:[{id: "LayerUpldLabel", value: "", msg:"Images too large Max height: 2000px, max width: 2000px."}] }));
                 }
 
                 if( document.getElementById('bg_upld') ) document.getElementById('bg_upld').textContent = ( currentFiles.length > 0)?'NEXT':'No Background';
                 
                 da_files = ( currentFiles.length === 0 )?[]:currentFiles;
-                hideLoading();
+                hideLoading(e);
             });
             
             return;
