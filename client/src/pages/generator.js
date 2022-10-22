@@ -179,7 +179,7 @@ function RandomGenerator (props){
 
         let file_len = da_files.length, last_index = file_len-1, loadedindx = 0;
         const filesToLoadLen = da_files.length - wrongFiles.length;
-        showLoading();
+        showLoading(e);
         loop1:
         for ( let n = 0; n < file_len; n++ ){
             loop2:

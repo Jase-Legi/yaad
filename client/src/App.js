@@ -86,7 +86,7 @@ function App() {
                 <MsgContext.Provider value={{ msgStacks, setMsgStacks }}>
                     <StateContext.Provider value={{ state, setState }}>
                         <Routes>
-                            <Route path='*' element={ <Navigate to='/'/> } />
+                            {/* <Route path='*' element={ <Navigate to='/'/> } /> */}
                             <Route path='/' element={ <> <LoadingBox data={{ data:activeStatus }}/> <MsgBox subState={ state.currsubState } /> <div className='popupdark'> <WelcomeBox data={{message: "De-Fi"}} /> </div> </> } />
                             <Route path='/SelectCreateOption' element={ <> <MsgBox subState={ state.currsubState } /> <SelectCreateOption /> </>} />
                             <Route path='/pfpgenerator' element={ <> <RandomGenerator/> </> } />
