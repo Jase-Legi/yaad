@@ -86,11 +86,12 @@ function App() {
                 <MsgContext.Provider value={{ msgStacks, setMsgStacks }}>
                     <StateContext.Provider value={{ state, setState }}>
                         <Routes>
-                            <Route exact path='/' component={ <> <LoadingBox data={{ data:activeStatus }}/> <MsgBox subState={ state.currsubState } /> <div className='popupdark'> <WelcomeBox data={{message: "De-Fi"}} /> </div> </> } />
-                            <Route path='/SelectCreateOption' component={ <> <MsgBox subState={ state.currsubState } /> <SelectCreateOption /> </>} />
-                            <Route path='/pfpgenerator' component={ <> <RandomGenerator/> </> } />
-                            <Route path='/createnft' component={ <> <LoadingBox data={{class:activeStatus}}/> <SingleNft/> </> } />
-                            <Route path='*' component={ <Navigate to='/'/> } />
+                            <Route exact path='/' element={ <> <LoadingBox data={{ data:activeStatus }}/> <MsgBox subState={ state.currsubState } /> <div className='popupdark'> <WelcomeBox data={{message: "De-Fi"}} /> </div> </> } />
+                            <Route path='/SelectCreateOption' element={ <> <MsgBox subState={ state.currsubState } /> <SelectCreateOption /> </>} />
+                            <Route path='/pfpgenerator' element={ <> <RandomGenerator/> </> } />
+                            <Route path='/createnft' element={ <> <LoadingBox data={{class:activeStatus}}/> <SingleNft/> </> } />
+                            <Route path='*' element={ <WelcomeBox data={{message: "De-Fi"}} /> } />
+                            {/* <Navigate to='/'/> */}
                         </Routes>
                     </StateContext.Provider>
                 </MsgContext.Provider>
