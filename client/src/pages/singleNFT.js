@@ -38,7 +38,7 @@ function SingleNft (props){
         
         if ( state.data?.filename ) body.append( 'name', state.data?.filename );
         
-        const singleUploaded = await fetch(`${state.baseServerUri}api/upldSingle`, {method:"POST", body, }).then( (res)=> res.json() ).then( (piss)=> piss );
+        const singleUploaded = await fetch(`${state.baseServerUri}upldSingle`, {method:"POST", body, }).then( (res)=> res.json() ).then( (piss)=> piss );
         
         if(singleUploaded.error){
             setState( (prev)=> ( {...prev, data: singleUploaded } ) );

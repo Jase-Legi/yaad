@@ -8,7 +8,7 @@ const validateIMGtype = async ( demFiles, childClassName, parentIdName, wrongFil
     if ( demlen === 0 ){
         return callback([{id:null, value: null, msg:"Upload a file."}, wrongFiles]);
     }
-    const last_indx = demFiles.length-1;
+    
     let loadedImgs = 0;
 
     const signatures = ['89504e47'.toLowerCase(), 'FFD8FFE0'.toLowerCase(), 'FFD8FFE1'.toLowerCase(), 'FFD8FFE2'.toLowerCase(), 'FFD8FFE8'.toLowerCase() ];

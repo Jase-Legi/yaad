@@ -1,10 +1,9 @@
-// import logo from './logo.svg';
 import { WelcomeBox } from './pages/home';
 import { SelectCreateOption } from './pages/CreateOptions';
 import { RandomGenerator } from './pages/generator';
 import { SingleNft } from './pages/singleNFT';
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { StateContext } from './context/StateContext';
 import { MsgContext } from './context/msgcontext';
 import { LoadingBox, showLoading, hideLoading } from "./components/ui/loading";
@@ -15,7 +14,7 @@ const pumpum = window.location.host;
 let baseServerUri =(pumpum  === "localhost:3000")?'api/':'https://yaadlabs.herokuapp.com/api/';
 const homeSate = { state:"", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:"createbox", temp_index: null, baseServerUri,};
 const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
-function App() {
+const App = ()=>{
     const [ state, setState ] = useState(homeSate);
 
     let [ msgStacks, setMsgStacks ] = useState(defaultErrorStack);
@@ -80,22 +79,21 @@ function App() {
         setMsgStacks( defaultErrorStack )
     }, [ state.state, state.currsubState])
     return (
-        <BrowserRouter>
-        
-            <div className="App">
-                <MsgContext.Provider value={{ msgStacks, setMsgStacks }}>
-                    <StateContext.Provider value={{ state, setState }}>
-                        <Routes>
-                            <Route path='/' element={ <> <LoadingBox data={{ data:activeStatus }}/> <MsgBox subState={ state.currsubState } /> <div className='popupdark'> <WelcomeBox data={{message: "De-Fi"}} /> </div> </> } />
-                            <Route path='/SelectCreateOption' element={ <> <MsgBox subState={ state.currsubState } /> <SelectCreateOption /> </>} />
-                            <Route path='/pfpgenerator' element={ <> <RandomGenerator/> </> } />
-                            <Route path='/createnft' element={ <> <LoadingBox data={{class:activeStatus}}/> <SingleNft/> </> } />
-                            <Route path='*' element={ <Navigate to='/'/> } />
-                        </Routes>
-                    </StateContext.Provider>
-                </MsgContext.Provider>
-            </div>
-        </BrowserRouter>
+        <div className="App">
+            <MsgContext.Provider value={{ msgStacks, setMsgStacks }}>
+                <StateContext.Provider value={{ state, setState }}>
+                <Router>
+                    <Routes>
+                        <Route index element={ <> <LoadingBox data={{ data:activeStatus }}/> <MsgBox subState={ state.currsubState } /> <div className='popupdark'> <WelcomeBox data={{message: "De-Fi"}} /> </div> </> } />
+                        <Route path='/selectCreateOption' element={ <> <MsgBox subState={ state.currsubState } /> <SelectCreateOption /> </>} />
+                        <Route path='/pfpgenerator' element={ <> <RandomGenerator/> </> } />
+                        <Route path='/createnft' element={ <> <LoadingBox data={{class:activeStatus}}/> <SingleNft/> </> } />
+                        <Route path='*' element={ <Navigate to='/'/> } />
+                    </Routes>
+                </Router>
+                </StateContext.Provider>
+            </MsgContext.Provider>
+        </div>
     );
 }
 
