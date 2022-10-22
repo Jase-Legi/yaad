@@ -1,10 +1,10 @@
 // import logo from './logo.svg';
-import { BrowserRouter, Routes, Route, Navigate, Switch, Redirect } from 'react-router-dom';
 import { WelcomeBox } from './pages/home';
 import { SelectCreateOption } from './pages/CreateOptions';
 import { RandomGenerator } from './pages/generator';
 import { SingleNft } from './pages/singleNFT';
 import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { StateContext } from './context/StateContext';
 import { MsgContext } from './context/msgcontext';
 import { LoadingBox, showLoading, hideLoading } from "./components/ui/loading";
@@ -91,7 +91,6 @@ function App() {
                             <Route path='/pfpgenerator' element={ <> <RandomGenerator/> </> } />
                             <Route path='/createnft' element={ <> <LoadingBox data={{class:activeStatus}}/> <SingleNft/> </> } />
                             <Route path='*' element={ <Navigate to='/'/> } />
-                            {/* <Navigate to='/'/> */}
                         </Routes>
                     </StateContext.Provider>
                 </MsgContext.Provider>
