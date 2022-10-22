@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { Header } from '../components/header/header';
-import { Link } from 'react-router-dom';
+import { walletConnected } from "../helpers/web3Helpers";
+import { showLoading, LoadingBox, hideLoading } from "../components/ui/loading";
 import { StateContext } from '../context/StateContext';
 
 function WelcomeBox({ data }){
@@ -8,18 +9,19 @@ function WelcomeBox({ data }){
 
     return (
         <>
+        <LoadingBox/>
         <Header/>
         <div className='welcomeBox'>
                 <div className="welcomeBoxElement">
-                    <Link to='/selectCreateOption'>
-                        {/* onClick={ async()=>{ showLoading(); const conndt = await iswalletConnected(); if(conndt === false){ hideLoading(); }else{ hideLoading(); setState((prev)=>({...prev, state: "SelectCreateOption"})) } }} */}
-                        <button className='containerbox' >
+                    {/* <Link to='/selectCreateOption'> */}
+                        
+                        <button className='containerbox' onClick={ async()=>{ showLoading(); const conndt = await walletConnected(); if( conndt === false ){ hideLoading(); }else{ hideLoading(); setState((prev)=>({...prev, state: "SelectCreateOption"})) } }} >
                             <div className='title'>
                                 <h1>Create</h1>
                                 <span style={{display:"block", textAlign:"center", }}> NFTs, Tokens(ERC20, 721, 1155) </span> 
                             </div>
                         </button>
-                    </Link>
+                    {/* </Link> */}
                 </div>
             
             <div className="welcomeBoxElement">

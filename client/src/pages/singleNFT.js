@@ -23,6 +23,7 @@ function SingleNft (props){
     let [errStacks, setErrStacks] = useState(defaultErrorStack);
 
     const { state, setState } = useContext( StateContext );
+    console.log(`base(single) uri: ${state.baseServerUri}`)
 
     const handlesingleUload = async (e)=>{
     
@@ -57,7 +58,7 @@ function SingleNft (props){
             
             let body = new FormData();
             body.append('data', JSON.stringify(state.data) );
-            const createNft = await fetch(state.baseServerUri+"api/createone", { method:"POST", body,}).then((res)=> res.json()).then( (piss)=> piss );
+            const createNft = await fetch(state.baseServerUri+"createone", { method:"POST", body,}).then((res)=> res.json()).then( (piss)=> piss );
             
             if(createNft.error){
                 if(createNft.error.message === "duplicate"){
@@ -128,7 +129,7 @@ function SingleNft (props){
     // let singleNFTDetailsForm = (state.currsubState === "SingleNFTDetailsForm")?<SingleNFTDetailsForm/>:"";
     return (
         <div className='popupdark'>
-            <Link to='/'> <button className='closeBox' onClick={()=> setState((prev)=>homeSate) } >X</button> </Link>
+            <button className='closeBox' onClick={()=> setState((prev)=>homeSate) } >X</button>
             <div className='popupBox'> <SingleNFTDetailsForm/> </div>
         </div>
     )

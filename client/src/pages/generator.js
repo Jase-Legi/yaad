@@ -1163,7 +1163,7 @@ function RandomGenerator (props){
         if(!currentSubState){
             return(
                 <>
-                    <Link to='/'> <button className='closeBox' onClick={()=> setState((prev)=>homeSate) }>X</button></Link>
+                    <button className='closeBox' onClick={()=> setState((prev)=>homeSate) }>X</button>
                     <div className='RandomGenerator'>
                         {coll_Name_Box}
                         <div className='LayerGenBox'>

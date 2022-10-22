@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+// import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
 function Header({state}){
     function SearchBar(){ return ( <div className='search-Header-Div'> <button className="headerElementSearch" type='button'> </button> </div> ) };
@@ -30,11 +30,11 @@ function Header({state}){
     
     return (
         <header className='header' >
-            <Link to='/'>
+            {/* <Link to='/'> */}
                 <div className='headerElementlogo'>
                     <img src='./yaad.svg' alt='home'/>
                 </div>
-            </Link>
+            {/* </Link> */}
             {/* <SearchBar style={logoBox}/> */}
             <Dropdown/>
         </header>
