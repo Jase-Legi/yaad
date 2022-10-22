@@ -13,8 +13,23 @@ function LoadingBox({ data } ){
     )
 }
 
-const showLoading = ()=>{ document.getElementById('loadingpopup')?.classList.remove('inactive'); }
+const showLoading = (e)=>{
+    document.getElementById('loadingpopup')?.classList.remove('inactive');
+    if ( e ) {
+        if ( !e.target?.classList.contains('inactive') ){
+            e.target?.classList.add('inactive');
+        }
+    }
+}
 
-const hideLoading = ()=>{ document.getElementById('loadingpopup')?.classList.add('inactive'); }
+const hideLoading = (e)=>{
+
+    document.getElementById('loadingpopup')?.classList.add('inactive');
+    if ( e ) {
+        if ( e.target?.classList.contains('inactive') ){
+            e.target?.classList.remove('inactive');
+        }
+    }
+}
 
 export { LoadingBox, showLoading, hideLoading };

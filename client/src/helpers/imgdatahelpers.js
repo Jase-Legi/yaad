@@ -4,6 +4,10 @@ const validateIMGtype = async ( demFiles, childClassName, parentIdName, wrongFil
     const parentEle = document.getElementById(parentIdName);
     parentEle.innerHTML = "";
     const demlen = demFiles.length;
+    console.log(`files length: ${demlen}`);
+    if ( demlen === 0 ){
+        return callback([{id:null, value: null, msg:"Upload a file."}, wrongFiles]);
+    }
     const last_indx = demFiles.length-1;
     let loadedImgs = 0;
 
@@ -39,7 +43,7 @@ const validateIMGtype = async ( demFiles, childClassName, parentIdName, wrongFil
             }else{
                 wrongFiles.push(n);
                 if(demFiles.length === wrongFiles.length){
-                    return callback([{id: "LayerUpldLabel", value: "", msg:"Unsupported file types! JPG, JPEG, PNG only."}, wrongFiles]);
+                    return callback([{id:null, value: null, msg:"Unsupported file types! JPG, JPEG, PNG only."}, wrongFiles]);
                 }
             }
         });

@@ -129,35 +129,36 @@ function RandomGenerator (props){
     }
     
     const handleAddLayerUpld = async (e)=>{
-        showLoading();
-        e.target.classList.add('inactive'); e.preventDefault();
+        showLoading(e);
         let layerName, bgElement = false;
         
         if( e.target.getAttribute('type') === 'file' && ( e.target.getAttribute('name') === 'multi_asset' || e.target.getAttribute('name') === 'bg_asset' ) ){
-            await validateIMGtype( e.target.files, 'LayerUpldContentBox', 'layerContentBox', [], ([err, wrongfiles])=>{
+            // if( da_files.length > 0 ) showLoading()
+            const currentFiles = ( e.target.files.length < 1 && da_files.length > 0 )?da_files:e.target.files;
+            if ( currentFiles.length < 1 ) { e.target.classList.remove('inactive'); hideLoading(); return; }
+
+            await validateIMGtype( currentFiles, 'LayerUpldContentBox', 'layerContentBox', [], ([err, wrongfiles])=>{
                 wrongFiles = wrongfiles;
 
-                if( err !== null || ( wrongfiles.length === e.target.files.length )) { 
+                if( err !== null || ( wrongfiles.length === currentFiles.length )) {
                     return setMsgStacks((prev)=>({...prev, substate: state.currsubState, formdata:(err !== null)?[err]:[{id: "LayerUpldLabel", value: "", msg:"Images too large Max height: 2000px, max width: 2000px."}] }));
                 }
 
-                if( document.getElementById('bg_upld') ) document.getElementById('bg_upld').textContent = (e.target.files.length > 0)?'NEXT':'No Background';
+                if( document.getElementById('bg_upld') ) document.getElementById('bg_upld').textContent = ( currentFiles.length > 0)?'NEXT':'No Background';
                 
-                da_files = (e.target.files.length === 0 )?[]:e.target.files;
-                
+                da_files = ( currentFiles.length === 0 )?[]:currentFiles;
                 hideLoading();
             });
+            
             return;
         }
         
-        if(e.target.getAttribute("id") !== "bg_upld"){
+        if( e.target.getAttribute("id") !== "bg_upld" ){
             layerName = ( state.temp_index === null )? state.formVals:document.getElementById("LayerName").value.trim();
             let formdata = [];
-            if ( layerName === null ){ formdata.push({id: "LayerName", value: "", msg:"Enter a layer name!"}) }
-            if ( document.getElementById("multi_asset").files.length < 1 ){ formdata.push({id: null, value: null, msg:"Click the '+' to upload files!" }) }
-            if ( formdata.length > 0 ) { hideLoading(); e.target.classList.remove('inactive'); return setMsgStacks((prev)=>({...prev, substate: state.currsubState, formdata, } ) ) }
-            e.target.classList.remove('inactive');
-            hideLoading();
+            if ( !layerName ){ formdata.push({id: "LayerName", value: "", msg:"Enter a layer name!"}) }
+            if ( da_files.length < 1 ){ formdata.push({id: null, value: null, msg:"Click the '+' to upload files!" }) }
+            if ( formdata.length > 0 ) { hideLoading(e); return setMsgStacks((prev)=>({...prev, substate: state.currsubState, formdata, } ) ) }
         }
         
         bgElement=(e.target.getAttribute("id") === "bg_upld")&& true;
@@ -213,6 +214,8 @@ function RandomGenerator (props){
 
             img.src = URL.createObjectURL(da_files[n]);
         }
+        hideLoading(e);
+        return;
     }
 
     const delLayer = async (e)=>{
@@ -1088,7 +1091,7 @@ function RandomGenerator (props){
                     <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:'multi_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/>
                 </label>
                 <div id='layerContentBox'></div>
-                <Buttonz data={{class:"LayerUpldBttn", id:'', value: (typeof( state.temp_index ) === "number")?'Add':'Create', func: handleAddLayerUpld}} />
+                <Buttonz data={{class:"LayerUpldBttn", id:'addLayerImages', value: (typeof( state.temp_index ) === "number")?'Add':'Create', func: handleAddLayerUpld }} />
             </div>;
             break;
         case "RandomGenerator-LayerOptions-BG-Upld":
