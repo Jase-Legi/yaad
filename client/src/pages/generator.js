@@ -157,13 +157,13 @@ function RandomGenerator (props){
             layerName = ( state.temp_index === null )? state.formVals:document.getElementById("LayerName").value.trim();
             let formdata = [];
             if ( !layerName ){ formdata.push({id: "LayerName", value: "", msg:"Enter a layer name!"}) }
-            if ( da_files.length < 1 || !da_files ){ formdata.push({id: null, value: null, msg:"Click the '+' to upload files!" }) }
-            if ( formdata.length > 0 ) { hideLoading(e); return setMsgStacks((prev)=>({...prev, substate: state.currsubState, formdata, } ) ) }
+            if ( da_files?.length < 1 || !da_files ){ formdata.push({id: null, value: null, msg:"Click the '+' to upload files!" }) }
+            if ( formdata?.length > 0 ) { hideLoading(e); return setMsgStacks((prev)=>({...prev, substate: state.currsubState, formdata, } ) ) }
         }
         
         bgElement=(e.target.getAttribute("id") === "bg_upld")&& true;
 
-        if((da_files === undefined || da_files.length === 0 || da_files.length === "") && e.target.getAttribute("id") === "bg_upld"){
+        if(( da_files === undefined || da_files.length === 0 || da_files.length === "") && e.target.getAttribute("id") === "bg_upld"){
             state.data.background = (  state.data.background.length === 0 )?[]:state.data.background;
             return closeLayerOptionsBox();
         }
