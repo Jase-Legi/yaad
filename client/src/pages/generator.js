@@ -157,7 +157,7 @@ function RandomGenerator (props){
             layerName = ( state.temp_index === null )? state.formVals:document.getElementById("LayerName").value.trim();
             let formdata = [];
             if ( !layerName ){ formdata.push({id: "LayerName", value: "", msg:"Enter a layer name!"}) }
-            if ( da_files.length < 1 ){ formdata.push({id: null, value: null, msg:"Click the '+' to upload files!" }) }
+            if ( da_files.length < 1 || !da_files ){ formdata.push({id: null, value: null, msg:"Click the '+' to upload files!" }) }
             if ( formdata.length > 0 ) { hideLoading(e); return setMsgStacks((prev)=>({...prev, substate: state.currsubState, formdata, } ) ) }
         }
         
