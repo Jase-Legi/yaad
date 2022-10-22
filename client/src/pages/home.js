@@ -1,14 +1,16 @@
-import { useContext } from 'react'
+import { useContext } from 'react';
+import { Header } from '../components/header/header';
 import { Link } from 'react-router-dom';
 import { StateContext } from '../context/StateContext';
 
 function WelcomeBox({ data }){
-    const currentStateContext = useContext(StateContext);
+    const { state , setState } = useContext( StateContext );
     // console.log(`current context state: ${currentStateContext}, data:: ${JSON.stringify(data)}`);
 
     return (
+        <>
+        <Header/>
         <div className='welcomeBox'>
-            
                 <div className="welcomeBoxElement">
                     <Link to='/SelectCreateOption'>
                         {/* onClick={ async()=>{ showLoading(); const conndt = await iswalletConnected(); if(conndt === false){ hideLoading(); }else{ hideLoading(); setState((prev)=>({...prev, state: "SelectCreateOption"})) } }} */}
@@ -46,6 +48,7 @@ function WelcomeBox({ data }){
                 </button>
             </div>
         </div>
+        </>
     );
 }
 

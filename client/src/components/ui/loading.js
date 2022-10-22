@@ -13,8 +13,8 @@ function LoadingBox({ data } ){
     )
 }
 
-const showLoading = ()=>{ document.getElementById('loadingpopup').classList.remove('inactive'); }
+const showLoading = ()=>{ document.getElementById('loadingpopup')?.classList.remove('inactive'); }
 
-const hideLoading = ()=>{ document.getElementById('loadingpopup').classList.add('inactive'); }
+const hideLoading = ()=>{ document.getElementById('loadingpopup')?.classList.add('inactive'); }
 
 export { LoadingBox, showLoading, hideLoading };

@@ -1,11 +1,10 @@
 // import logo from './logo.svg';
-import { Header } from './components/header/header';
 import { WelcomeBox } from './pages/home';
 import { SelectCreateOption } from './pages/CreateOptions';
 import { RandomGenerator } from './pages/generator';
 import { SingleNft } from './pages/singleNFT';
-import { useState, useEffect, useContext } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { StateContext } from './context/StateContext';
 import { MsgContext } from './context/msgcontext';
 import { LoadingBox, showLoading, hideLoading } from "./components/ui/loading";
@@ -87,7 +86,8 @@ function App() {
                 <MsgContext.Provider value={{ msgStacks, setMsgStacks }}>
                     <StateContext.Provider value={{ state, setState }}>
                         <Routes>
-                            <Route path='/' element={ <> <LoadingBox data={{class:activeStatus}}/> <MsgBox subState={ state.currsubState } /> <div className='popupdark'> <Header/> <WelcomeBox data={{message: "De-Fi"}} /> </div> </> } />
+                            <Route path='*' element={ <Navigate to='/'/> } />
+                            <Route path='/' element={ <> <LoadingBox data={{ data:activeStatus }}/> <MsgBox subState={ state.currsubState } /> <div className='popupdark'> <WelcomeBox data={{message: "De-Fi"}} /> </div> </> } />
                             <Route path='/SelectCreateOption' element={ <> <MsgBox subState={ state.currsubState } /> <SelectCreateOption /> </>} />
                             <Route path='/pfpgenerator' element={ <> <RandomGenerator/> </> } />
                             <Route path='/createnft' element={ <> <LoadingBox data={{class:activeStatus}}/> <SingleNft/> </> } />

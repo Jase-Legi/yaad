@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect, useMemo } from 'react'
 import { StateContext } from '../context/StateContext';
 import { imgToBase64String, imgURLFromBase64String } from "../helpers/imgBLOBto64";
 import { ContractFactory } from "ethers";
@@ -21,9 +21,16 @@ function RandomGenerator (props){
     const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
     const { msgStacks, setMsgStacks } = useContext( MsgContext );
     const { state, setState } = useContext( StateContext );
-    
-    
+    useEffect(()=>{
+        if ( state.data.layers.length > 0 ){
+            state.data.possibleCombos = 1;
+            state.data.layers.forEach((val, indx, arr)=>{
+                state.data.possibleCombos *= ( val.priority )?(val.traits.length):(val.traits.length+1) 
+            });
 
+            console.log(`possible combos: ${state.data.possibleCombos}`);
+        }
+    }, [ state.data.layers.length ])
     let da_files;
     var wrongFiles = [];
     state.data.activeContract = 0;
@@ -145,19 +152,12 @@ function RandomGenerator (props){
         
         if(e.target.getAttribute("id") !== "bg_upld"){
             layerName = ( state.temp_index === null )? state.formVals:document.getElementById("LayerName").value.trim();
-            if( layerName === null || document.getElementById("multi_asset").files.length < 1){
-                
-                if( ( layerName === null && document.getElementById("multi_asset").files.length < 1 )  || (  layerName === null)) {
-                    setMsgStacks((prev)=>({...prev, substate: state.currsubState, formdata: [{id: "LayerName", value: "", msg:"Enter a layer name!"}, {id: null, value: null, msg:"Click the '+' to upload files!" }] }));
-                }
-                // if( document.getElementById("multi_asset").files.length < 1 ) {
-                //     setMsgStacks((prev)=>({...prev, substate: state.currsubState, formdata: [{id: "LayerUpldLabel", value: "", msg:"Click the '+' to upload files!"}] }));
-                // }
-
-                e.target.classList.remove('inactive');
-                hideLoading();
-                return false;
-            }
+            let formdata = [];
+            if ( layerName === null ){ formdata.push({id: "LayerName", value: "", msg:"Enter a layer name!"}) }
+            if ( document.getElementById("multi_asset").files.length < 1 ){ formdata.push({id: null, value: null, msg:"Click the '+' to upload files!" }) }
+            if ( formdata.length > 0 ) { hideLoading(); e.target.classList.remove('inactive'); return setMsgStacks((prev)=>({...prev, substate: state.currsubState, formdata, } ) ) }
+            e.target.classList.remove('inactive');
+            hideLoading();
         }
         
         bgElement=(e.target.getAttribute("id") === "bg_upld")&& true;
@@ -207,16 +207,8 @@ function RandomGenerator (props){
                         indxx = state.data.layers.length-1;
                     }
                 }
-                
-                if ( loadedindx === filesToLoadLen ){
-                    state.data.possibleCombos = 1;
-                    state.data.layers.forEach((val, indx, arr)=>{
-                        state.data.possibleCombos *= ( val.priority )?(val.traits.length):(val.traits.length+1) 
-                    });
 
-                    console.log(`possible combos: ${state.data.possibleCombos}`);
-                    return closeLayerOptionsBox(); 
-                }
+                return closeLayerOptionsBox();
             })
 
             img.src = URL.createObjectURL(da_files[n]);
@@ -311,7 +303,7 @@ function RandomGenerator (props){
         if ( parseInt(state.data.possibleCombos) < 200 ){ 
             console.log(`less than 200;`);
             hideLoading()
-            return setMsgStacks((prev)=>({...prev, formdata: {id: null, value: null, msg: "Add more images to generate project, "}, substate: state.currentSubState}));
+            return setMsgStacks((prev)=>({...prev, formdata: [ {id: null, value: null, msg: "Add more images to your layers or add more layer."} ], substate: state.currentSubState}));
         }
         let conntd = await walletConnected();
         if( conntd === false ){ return false; }
@@ -1048,7 +1040,7 @@ function RandomGenerator (props){
         return(
             <div style={{marginBottom:"20px"}}>
                 <input type="file" id={(contractZone)?'project_contract':'single_asset'} name={(contractZone)?'project_contract':'single_asset'} accept={(contractZone)?'*':"image/*"} multiple="multiple" style={{opacity:100, zIndex:1}} onChange={(contractZone)?handleSol:state.data.func} hidden/>
-                <button className='generatorRightPanelAddNewLayer' id='generatorRightPanelAddNewLayer' onClick={(e)=>{if(!contractZone){ if(state.data.coll_name?.length > 0){ state.temp_index = null; handleAddLayer(e); }else{ setMsgStacks( (prev)=>({...prev, formdata:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState }) )} }else{ return ()=>{return false}}}} > + </button>
+                <button className='generatorRightPanelAddNewLayer' id='generatorRightPanelAddNewLayer' onClick={(e)=>{ if( state.data.coll_name?.length > 0 && state.data.coll_symbol?.length > 0 ){ state.temp_index = null; handleAddLayer(e); }else{ let formdata = []; if( !state.data.coll_symbol ){ formdata.push( {id:null, value: null, msg: "Enter a project/NFT name!"} ) } if( !state.data.coll_name ){ formdata.push( {id:null, value: null, msg: "Enter a project/NFT symbol!"} ) } if( formdata.length > 0 ){ return setMsgStacks( (prev)=>({...prev, formdata, substate:state.currsubState }) ) } } }} > + </button>
             </div>
         )
     }
