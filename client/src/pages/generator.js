@@ -161,6 +161,7 @@ function RandomGenerator (props){
             if ( da_files?.length < 1 || !da_files ){ formdata.push({id: null, value: null, msg:"Click the '+' to upload files!" }) }
             if ( formdata?.length > 0 ) { hideLoading(e); return setMsgStacks((prev)=>({...prev, substate: state.currsubState, formdata, } ) ) }
         }
+        showLoading(e);
         
         bgElement=(e.target.getAttribute("id") === "bg_upld")&& true;
 
@@ -179,7 +180,7 @@ function RandomGenerator (props){
 
         let file_len = da_files.length, last_index = file_len-1, loadedindx = 0;
         const filesToLoadLen = da_files.length - wrongFiles.length;
-        showLoading(e);
+        
         loop1:
         for ( let n = 0; n < file_len; n++ ){
             loop2:
@@ -1179,7 +1180,7 @@ function RandomGenerator (props){
         if(!currentSubState){
             return(
                 <>
-                    <button className='closeBox' onClick={()=> setState((prev)=>( {...prev, state:null, currsubState:null } )) }>X</button>
+                    <button className='closeBox' onClick={()=> setState((prev)=>( {...prev, state:"home", currsubState:null } )) }>X</button>
                     <div className='RandomGenerator'>
                         {coll_Name_Box}
                         <div className='LayerGenBox'>
