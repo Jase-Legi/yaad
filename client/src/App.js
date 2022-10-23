@@ -12,13 +12,13 @@ import { MsgBox } from "./components/errorbox/errorbox";
 const pumpum = window.location.host;
 
 let baseServerUri = (pumpum  === "localhost:3000")?'api/':'https://yaadlabs.herokuapp.com/api/';
-const homeSate = { state:"", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:"createbox", temp_index: null, baseServerUri: baseServerUri,};
+const homeState = { state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null, baseServerUri: baseServerUri,};
 const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
 const App = ()=>{
-    const [ state, setState ] = useState( { state:"", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:"createbox", temp_index: null, baseServerUri: baseServerUri } );
+    const [ state, setState ] = useState( homeState );
 
     let [ msgStacks, setMsgStacks ] = useState(defaultErrorStack);
-console.log(`base uri: ${state.baseServerUri}, state: ${JSON.stringify(state)}`)
+    
     let activeStatus = 'inactive';
     useEffect(()=>{
         showLoading(); let db; const req_localDB = indexedDB.open("yaad", 1);

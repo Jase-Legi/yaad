@@ -12,18 +12,18 @@ import { LoadingBox, showLoading, hideLoading } from "../components/ui/loading";
 import { MsgBox } from '../components/errorbox/errorbox';
 import { Link } from 'react-router-dom';
 
-const homeSate = {state:"", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:"createbox", temp_index: null};
+
 
 function SingleNft (props){
     let baseServerUri = ( window.location.host  === "localhost:3000" )?'./':'https://yaadlabs.herokuapp.com/';
     
-    // const homeSate = { state:"", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:"createbox", temp_index: null, state.baseServerUri,};
     const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
 
     let [errStacks, setErrStacks] = useState(defaultErrorStack);
 
     const { state, setState } = useContext( StateContext );
     console.log(`base(single) uri: ${state.baseServerUri}`)
+    const homeSate = { state:"", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null, baseServerUri,};
 
     const handlesingleUload = async (e)=>{
     

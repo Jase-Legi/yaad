@@ -15,14 +15,14 @@ import { MsgContext } from "../context/msgcontext";
 import { Link } from 'react-router-dom';
 
 function RandomGenerator (props){
-    let baseServerUri = ( window.location.host  === "localhost:3000" )?'./':'https://yaadlabs.herokuapp.com/';
+    // let baseServerUri = ( window.location.host  === "localhost:3000" )?'./':'https://yaadlabs.herokuapp.com/';
     
-    const homeSate = { state:"", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:"createbox", temp_index: null, baseServerUri,};
+    // const homeSate = { state:"", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:"createbox", temp_index: null, baseServerUri,};
     const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
     const { msgStacks, setMsgStacks } = useContext( MsgContext );
     const { state, setState } = useContext( StateContext );
     useEffect(()=>{
-        if ( state.data.layers.length > 0 ){
+        if ( state.data.layers?.length > 0 ){
             state.data.possibleCombos = 1;
             state.data.layers.forEach((val, indx, arr)=>{
                 state.data.possibleCombos *= ( val.priority )?(val.traits.length):(val.traits.length+1) 
@@ -30,7 +30,7 @@ function RandomGenerator (props){
 
             console.log(`possible combos: ${state.data.possibleCombos}`);
         }
-    }, [ state.data.layers.length ])
+    }, [ state.data.layers?.length ])
     let da_files;
     var wrongFiles = [];
     state.data.activeContract = 0;
@@ -82,7 +82,7 @@ function RandomGenerator (props){
                 let contractData = new FormData();
                 if(connected === false) { hideLoading(); return false; }
                 contractData.append('contractJSON', JSON.stringify(contractOptions));
-                const compiledContract = await fetch(state.baseServerUri+"/compileContract", {method:'POST',body: contractData} ).then((theresponse)=>theresponse.json()).then((compiled)=>compiled);
+                const compiledContract = await fetch( state.baseServerUri+"compileContract", {method:'POST',body: contractData} ).then((theresponse)=>theresponse.json()).then((compiled)=>compiled);
                 const abi = compiledContract.abi;
                 const bytecode = compiledContract.bytecode;
                 const factory = new ContractFactory(abi, bytecode, signer);
@@ -165,12 +165,12 @@ function RandomGenerator (props){
         bgElement=(e.target.getAttribute("id") === "bg_upld")&& true;
 
         if(( da_files === undefined || da_files.length === 0 || da_files.length === "") && e.target.getAttribute("id") === "bg_upld"){
-            state.data.background = (  state.data.background.length === 0 )?[]:state.data.background;
+            state.data.background = ( !state.data.background || state.data.background?.length === 0 )?[]:state.data.background;
             return closeLayerOptionsBox();
         }
         
         let exists = false, indxx = null;
-        state.data.layers.forEach((val,indx, arr)=>{
+        state.data.layers?.forEach((val,indx, arr)=>{
             if( val.name === layerName ){
                 exists = true;
                 indxx = indx;
@@ -209,13 +209,14 @@ function RandomGenerator (props){
                         indxx = state.data.layers.length-1;
                     }
                 }
-
-                return closeLayerOptionsBox();
+                
+                if( loadedindx + wrongFiles.length === file_len ){
+                    return closeLayerOptionsBox();
+                }
             })
 
             img.src = URL.createObjectURL(da_files[n]);
         }
-        hideLoading(e);
         return;
     }
 
@@ -234,15 +235,27 @@ function RandomGenerator (props){
     }
     
     const renameLayer = (e)=>{
-        e.preventDefault();
-        const ele = e.target;
+        showLoading(e);
+        const the_value = state.formVals;
         if(state.currsubState === "RandomGenerator-LayerOptions-Edit-Layer"){
-            setState((prev)=>({...prev, currsubState: "RandomGenerator-LayerOptions-Rename_Layer" }));
+            return setState((prev)=>({...prev, currsubState: "RandomGenerator-LayerOptions-Rename_Layer" }));
         }else{
-            if(ele.value){
-                state.data.layers[ state.temp_index ].name = ele.value;
-                ele.setAttribute('placeholder', ele.value);
+            let alreadyExists = false;
+            if ( !isAplhaNumeric( the_value, [ "_", " ","." ] ) || !stringLengthRange( the_value, 1, 50 ) ) { hideLoading(e); return; }
+            state.data.layers.forEach((val, indx, arr)=>{
+                if ( val.name === the_value.trim() ){
+                    alreadyExists = true;
+                }
+            });
+
+            if ( alreadyExists === true ) {
+                hideLoading(e);
+                return setMsgStacks((prev)=>({...prev, formdata:[{id:null, msg:"Layer name is already in use, Enter another name."}]}));
             }
+
+            state.data.layers[ state.temp_index ].name = state.formVals;
+            // ele.setAttribute('placeholder', state.formVals);
+            return closeLayerOptionsBox();
         }
     };
     
@@ -302,11 +315,11 @@ function RandomGenerator (props){
     };
     
     const generate_it = async (e)=>{
-        showLoading();
+        showLoading(e);
         console.log(`combo length: ${state.data.possibleCombos}`);
         if ( parseInt(state.data.possibleCombos) < 200 ){ 
             console.log(`less than 200;`);
-            hideLoading()
+            hideLoading(e)
             return setMsgStacks((prev)=>({...prev, formdata: [ {id: null, value: null, msg: "Add more images to your layers or add more layer."} ], substate: state.currentSubState}));
         }
         let conntd = await walletConnected();
@@ -331,7 +344,7 @@ function RandomGenerator (props){
             }
         };
 
-        const loop_and_pin_layers = async (collName, layers)=>{
+        const loop_and_pin_layers = async ( collName, layers )=>{
             let emptyComboArray = []; state.data.newlayers = [];
             layers.reverse();
             for(let indx = 0; indx < layers.length; indx++){
@@ -355,7 +368,7 @@ function RandomGenerator (props){
                     const newimgBlob = await fetchBlob.blob();
                     pin_body.append( 'img', newimgBlob, assetName );
                     pin_body.append( 'the_options', JSON.stringify(options) );
-                    const pinnedItem = await fetch( `${state.baseServerUri}/pinnit`, {method:'POST', body: pin_body} ).then((resp)=>resp.json()).then((pinned)=> pinned );
+                    const pinnedItem = await fetch( `${state.baseServerUri}pinnit`, {method:'POST', body: pin_body} ).then((resp)=>resp.json()).then((pinned)=> pinned );
                     layers[indx].traits[pin].ipfsHash = pinnedItem.IpfsHash;
                     state.data.newlayers.push({ trait_name: layers[indx].traits[pin].trait_name, layer_index:indx, trait_index:pin, ipfsHash:pinnedItem.IpfsHash })
                     emptyComboArray[indx].traits.push({ trait_name: layers[indx].traits[pin].trait_name, layer_index:indx, trait_index:pin, ipfsHash:pinnedItem.IpfsHash });
@@ -365,7 +378,7 @@ function RandomGenerator (props){
             return emptyComboArray;
         };
 
-        const loop_and_pin_background = async (backgrounds)=>{
+        const loop_and_pin_background = async ( backgrounds )=>{
             let newBGArray = [];
             for(let f = 0; f < backgrounds.length; f++){
                 const options = {
@@ -389,7 +402,7 @@ function RandomGenerator (props){
                 // pin_body.append( 'path',backgrounds[f].path );
                 pin_body.append( 'the_options', JSON.stringify(options) );
                 console.log(`pinning layers!`);
-                const pinnedBG = await fetch( `${state.baseServerUri}/pinnit`, {method:'POST', body: pin_body}).then((resp)=>resp.json()).then((pinned)=>pinned);
+                const pinnedBG = await fetch( `${state.baseServerUri}pinnit`, {method:'POST', body: pin_body}).then((resp)=>resp.json()).then((pinned)=>pinned);
                 backgrounds[f].ipfsHash = pinnedBG.IpfsHash;
                 newBGArray.push({ trait_name: backgrounds[f].trait_name, trait_index: f, ipfsHash: pinnedBG.IpfsHash});
             }
@@ -413,7 +426,7 @@ function RandomGenerator (props){
             return [traitTypes, isPriority];
         };
         
-        const traitTypesPushNA = async (traitTypes, priorities) => {
+        const traitTypesPushNA = async ( traitTypes, priorities ) => {
             let endo = 0;
             while ( endo < traitTypes.length ) {
                 if(!priorities.includes(traitTypes[endo][0].trait_type)){
@@ -424,8 +437,8 @@ function RandomGenerator (props){
             return traitTypes
         };
 
-        const insertBackground = async (comboz) =>{
-            let d = 0; const backgrounds = await loop_and_pin_background( state.data.background );
+        const insertBackground = async ( comboz, backgroundArray ) =>{
+            let d = 0; const backgrounds = await loop_and_pin_background( backgroundArray );
             while( d < comboz.length ){
                 let newBG = backgrounds[ Math.floor(Math.random() * backgrounds.length) ];
                 comboz[d].splice(0, 0, { trait_type: "background", trait_name: newBG.trait_name, value: newBG.ipfsHash });
@@ -433,20 +446,21 @@ function RandomGenerator (props){
             }
         };
 
-        const allPossibleCombos = async ()=> {
+        const allPossibleCombos = async ( collectionName, layersArray, bgArray )=> {
             let comboz = [];
             // let layerz = JSON.parse( JSON.stringify(state.data.layers) );
-            const loop_and_pin = await loop_and_pin_layers( state.data.coll_name, state.data.layers );
+            const loop_and_pin = await loop_and_pin_layers( collectionName, layersArray );
             const map_traits = await mapTraitTypes(loop_and_pin);
             const traittypes_fin = await traitTypesPushNA(map_traits[0], map_traits[1]);
             
             await get_all_possible_combos(traittypes_fin, comboz);
             await shuffle(comboz);
-            await insertBackground(comboz);
+            console.log(`bg: ${JSON.stringify(bgArray)}`)
+            if ( bgArray?.length > 0 ) { await insertBackground( comboz, bgArray ); }
             return comboz;
         };
 
-        let combo =  await allPossibleCombos();
+        let combo =  await allPossibleCombos( state.data.coll_name, state.data.layers, state.data.background );
         const possibleCombos = combo.length;
         const byteSize = async (obj)=>{
             let str = null;
@@ -476,7 +490,8 @@ function RandomGenerator (props){
         
         let pinnedCombo;
         if(getBytes < 20000000){
-            pinnedCombo = await pinCombo( combo, optns, `${state.baseServerUri}/pinnitcombo` );
+            pinnedCombo = await pinCombo( combo, optns, `${state.baseServerUri}pinnitcombo` );
+            console.log(`pinning combo!`)
         }
         else{
             pinnedCombo = {IpfsHash: null};
@@ -485,7 +500,6 @@ function RandomGenerator (props){
         const drawimage = async (traitTypes, width, height) => {
             let sampleArray = []; const cap_it = traitTypes.length;
             for( let v = 0; v < cap_it; v++ ){
-                console.log(`traits: ${v}`)
                 const  drawableTraits = traitTypes[v].filter( x=> x.value !== 'N/A');
                 const drawableTraits_length = drawableTraits.length;
                 const canvas = document.createElement("canvas");
@@ -495,13 +509,15 @@ function RandomGenerator (props){
                 let loadedimgs = 1;
                 for(let p = 0; p < drawableTraits_length; p++) {
                     let  drawableTrait = drawableTraits[p];
-                    // try {
+                    try {
                         // newlayers =  { trait_name: layers[indx].traits[pin].trait_name, layer_index:indx, trait_index:pin, ipfsHash:pinnedItem.IpfsHash }
                         let iterlength = (p === 0)?state.data.background.length:state.data.newlayers.length;
                         loop1:
                         for( let i = 0; i < iterlength; i++ ) {
                             const traitinfo = (p === 0)?state.data.background[i]:state.data.newlayers[i];
                             if( traitinfo.ipfsHash === drawableTrait.value ){
+                                console.log(`drawing images: ${p}`)
+
                                 // console.log(`trait ipfsHash: ${traitinfo.ipfsHash}, drawableTrait value: ${ drawableTrait.value }, name:: ${JSON.stringify(state.data.layers[traitinfo.layer_index].traits[traitinfo.trait_index].trait_name)}`);
                                 let img = new Image();
                                 let base4path = (p === 0)?traitinfo.path:state.data.layers[traitinfo.layer_index].traits[traitinfo.trait_index].path;
@@ -536,9 +552,10 @@ function RandomGenerator (props){
                                 break loop1;
                             }
                         }
-                    // } catch (error) {
-                    //     // return res.json({error, current_state: `looping through attributes, failed to draw index ${p}. Details: ${JSON.stringify(traits[p])}`})
-                    // }
+                    } catch (error) {
+                        console.log(`drawing error occurred: ${JSON.stringify(error)}`)
+                        // return res.json({error, current_state: `looping through attributes, failed to draw index ${p}. Details: ${JSON.stringify(traits[p])}`})
+                    }
                 }
             }
         };
@@ -889,7 +906,6 @@ function RandomGenerator (props){
             
             const eleindex = parseInt(ele.getAttribute('id').split('_')[1]);
             const delVal = state.data.background.splice(eleindex, 1);
-            let boddy = new FormData();
 
             // const conntd = await walletConnected();
             // if(conntd !== false){
@@ -911,7 +927,7 @@ function RandomGenerator (props){
 
             if( state.data.background?.length === 0 ) delete state.data.background;
 
-            hideLoading();
+            // hideLoading();
             return setState((prev)=>({...prev}));
         };
         
@@ -1130,8 +1146,8 @@ function RandomGenerator (props){
         case "RandomGenerator-LayerOptions-Rename_Layer":
             currentSubState = <div className='LayerUpldBox'>
                 <BoxTitle data={{class:"generatorRightPanelTitle", type:'h4', text:'Change layer name.'}}/>
-                <DaInput data={{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:state.data.layers[ state.temp_index ]?.name, onChange:renameLayer}}/>
-                <Buttonz data={{class:"nodelLayerBttn", id:'', value:'SUBMIT', func: closeLayerOptionsBox}} />
+                <DaInput data={{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:state.data.layers[ state.temp_index ].name, onChange:formDataHandler}}/>
+                <button className="nodelLayerBttn" onClick={renameLayer}>RENAME</button>
             </div>
             break;
         case "RandomGenerator-LayerOptions-Del-Layer":
@@ -1163,7 +1179,7 @@ function RandomGenerator (props){
         if(!currentSubState){
             return(
                 <>
-                    <button className='closeBox' onClick={()=> setState((prev)=>homeSate) }>X</button>
+                    <button className='closeBox' onClick={()=> setState((prev)=>( {...prev, state:null, currsubState:null } )) }>X</button>
                     <div className='RandomGenerator'>
                         {coll_Name_Box}
                         <div className='LayerGenBox'>
