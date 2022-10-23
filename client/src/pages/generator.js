@@ -15,9 +15,9 @@ import { MsgContext } from "../context/msgcontext";
 import { Link } from 'react-router-dom';
 
 function RandomGenerator (props){
-    // let baseServerUri = ( window.location.host  === "localhost:3000" )?'./':'https://yaadlabs.herokuapp.com/';
-    
-    // const homeSate = { state:"", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:"createbox", temp_index: null, baseServerUri,};
+    const pumpum = window.location.host;
+    let baseServerUri = ( pumpum  === "localhost:3000")?'api/':'https://yaadlabs.herokuapp.com/api/';
+    const homeState = { state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null, baseServerUri: baseServerUri,};
     const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
     const { msgStacks, setMsgStacks } = useContext( MsgContext );
     const { state, setState } = useContext( StateContext );
@@ -506,22 +506,22 @@ function RandomGenerator (props){
                 const canvas = document.createElement("canvas");
                 canvas.width = width;
                 canvas.height = height;
-                const ctx = canvas.getContext('2d');
+                const ctx = canvas.getContext( '2d' );
                 let loadedimgs = 1;
                 for(let p = 0; p < drawableTraits_length; p++) {
                     let  drawableTrait = drawableTraits[p];
                     try {
                         // newlayers =  { trait_name: layers[indx].traits[pin].trait_name, layer_index:indx, trait_index:pin, ipfsHash:pinnedItem.IpfsHash }
-                        let iterlength = (p === 0)?state.data.background.length:state.data.newlayers.length;
+                        let iterlength = ( ( p === 0 ) && state.data.background.length > 0 )?state.data.background.length:state.data.newlayers.length;
                         loop1:
                         for( let i = 0; i < iterlength; i++ ) {
-                            const traitinfo = (p === 0)?state.data.background[i]:state.data.newlayers[i];
+                            const traitinfo = ( ( p === 0 ) && state.data.background.length > 0 )?state.data.background[i]:state.data.newlayers[i];
                             if( traitinfo.ipfsHash === drawableTrait.value ){
                                 console.log(`drawing images: ${p}`)
 
                                 // console.log(`trait ipfsHash: ${traitinfo.ipfsHash}, drawableTrait value: ${ drawableTrait.value }, name:: ${JSON.stringify(state.data.layers[traitinfo.layer_index].traits[traitinfo.trait_index].trait_name)}`);
                                 let img = new Image();
-                                let base4path = (p === 0)?traitinfo.path:state.data.layers[traitinfo.layer_index].traits[traitinfo.trait_index].path;
+                                let base4path = ( ( p === 0 ) && state.data.background.length > 0 )?traitinfo.path:state.data.layers[traitinfo.layer_index].traits[traitinfo.trait_index].path;
                                 img.src = imgURLFromBase64String(base4path);
                                 // eslint-disable-next-line no-loop-func
                                 img.addEventListener( "load", async ()=>{
@@ -1180,7 +1180,7 @@ function RandomGenerator (props){
         if(!currentSubState){
             return(
                 <>
-                    <button className='closeBox' onClick={()=> setState((prev)=>( {...prev, state:"home", currsubState:null } )) }>X</button>
+                    <button className='closeBox' onClick={()=> setState( homeState ) }>X</button>
                     <div className='RandomGenerator'>
                         {coll_Name_Box}
                         <div className='LayerGenBox'>

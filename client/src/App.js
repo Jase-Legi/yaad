@@ -21,7 +21,7 @@ const App = ()=>{
     
     let activeStatus = 'inactive';
     useEffect(()=>{
-        showLoading(); let db; const req_localDB = indexedDB.open("yaad", 1);
+        showLoading(); let db; const req_localDB = indexedDB.open( "yaad", 1);
 
         req_localDB.addEventListener('upgradeneeded', ()=>{
             db = req_localDB.result;
