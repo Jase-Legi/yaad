@@ -88,15 +88,15 @@ function RandomGenerator (props){
                 const nftToken = await factory.deploy(state.data.coll_name, state.data.coll_symbol).then((tx)=>tx).catch((e)=>e);
                 console.log(`nft token: ${JSON.stringify(nftToken)}`);
                 contractData = null;
-                if( nftToken.code === "ACTION_REJECTED" ){
+                if( nftToken.code ){
                     hideLoading(e);
                     return;
                 }
 
                 // {"name":"ropsten","chainId":3,"ensAddress":"0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"}
                 if(nftToken.address){
-                    hideLoading();
-                    setState( (prev)=>( { ...prev, currsubState: "RandomGenerator-ContractDeployed", data:{...prev.data, contract_address: nftToken.address, contract_link: `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`} } ));
+                    hideLoading(e);
+                    return setState( (prev)=>( { ...prev, currsubState: "RandomGenerator-ContractDeployed", data:{...prev.data, contract_address: nftToken.address, contract_link: `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`} } ));
                 }
             });
         } catch (error) {
