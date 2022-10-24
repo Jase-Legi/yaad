@@ -48,9 +48,8 @@ function RandomGenerator (props){
     };
 
     const deployContract = async (e)=>{
-        showLoading();
-        const ele = e.target;
-        ele.classList.add("inactive");
+        showLoading(e);
+        
         if(!state.data.coll_name || state.data.coll_name.trim() === ""){
             return setMsgStacks( (prev)=>({...prev, formdata:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState }) );
         }
@@ -60,7 +59,7 @@ function RandomGenerator (props){
         }
 
         try {
-            fetch(nftcontract).then(r=>r.text()).then( async (contract)=>{
+            fetch(nftcontract).then( r=>r.text()).then( async (contract)=>{
                 // console.log(`contract: ${text}`)
                 let contractOptions = {
                     language: "Solidity", 
@@ -80,17 +79,17 @@ function RandomGenerator (props){
 
                 const connected = await walletConnected();
                 let contractData = new FormData();
-                if(connected === false) { hideLoading(); return false; }
+                if( connected === false ) { hideLoading(); return false; }
                 contractData.append('contractJSON', JSON.stringify(contractOptions));
-                const compiledContract = await fetch( state.baseServerUri+"compileContract", {method:'POST',body: contractData} ).then((theresponse)=>theresponse.json()).then((compiled)=>compiled);
+                const compiledContract = await fetch( state.baseServerUri+"compileContract", { method:'POST',body: contractData} ).then((theresponse)=>theresponse.json()).then((compiled)=>compiled);
                 const abi = compiledContract.abi;
                 const bytecode = compiledContract.bytecode;
                 const factory = new ContractFactory(abi, bytecode, signer);
                 const nftToken = await factory.deploy(state.data.coll_name, state.data.coll_symbol).then((tx)=>tx).catch((e)=>e);
+                console.log(`nft token: ${JSON.stringify(nftToken)}`);
                 contractData = null;
-                if(nftToken.code === "ACTION_REJECTED"){
-                    ele.classList.remove("inactive");
-                    hideLoading();
+                if( nftToken.code === "ACTION_REJECTED" ){
+                    hideLoading(e);
                     return;
                 }
 
@@ -315,11 +314,11 @@ function RandomGenerator (props){
         hideLoading();
     };
     
-    const generate_it = async (e)=>{
+    const generate_it = async ( e, printCap )=>{
         showLoading(e);
         console.log(`combo length: ${state.data.possibleCombos}`);
-        if ( parseInt(state.data.possibleCombos) < 200 ){ 
-            console.log(`less than 200;`);
+        if ( parseInt(state.data.possibleCombos) < printCap ){ 
+            console.log(`less than printCap;`);
             hideLoading(e)
             return setMsgStacks((prev)=>({...prev, formdata: [ {id: null, value: null, msg: "Add more images to your layers or add more layer."} ], substate: state.currentSubState}));
         }
@@ -506,7 +505,7 @@ function RandomGenerator (props){
                 const canvas = document.createElement("canvas");
                 canvas.width = width;
                 canvas.height = height;
-                const ctx = canvas.getContext( '2d' );
+                const ctx = canvas.getContext( '2d'  );
                 let loadedimgs = 1;
                 for(let p = 0; p < drawableTraits_length; p++) {
                     let  drawableTrait = drawableTraits[p];
@@ -573,7 +572,7 @@ function RandomGenerator (props){
             return drawimage(sampleImgs, 1000, 1000);
         };
 
-        const samples = await getSamplesAndClearComboData(combo, 200);
+        const samples = await getSamplesAndClearComboData(combo, printCap);
     }
     
     const handleSol = async (e)=>{
@@ -961,7 +960,7 @@ function RandomGenerator (props){
             return(
                 <div>
                     <TheBGs/>
-                    <Buttonz data={{class:"LayerUpldBttn", id:(state.data.background)?'Generate-pfp':'selectBG', value: Bgwords, func: (state.data.background)?generate_it:handleAddLayer}} />
+                    <button id={(state.data.background)?'Generate-pfp':'selectBG'} className="LayerUpldBttn" onClick={(e)=>{ return (state.data.background)?generate_it( e, 200 ):handleAddLayer(e)}} >{ Bgwords }</button>
                 </div>
             )
         }
@@ -1202,7 +1201,7 @@ function RandomGenerator (props){
         }
     }
     
-    return( <> <LoadingBox/> <MsgBox subState={ state.currsubState } /> <div className='popup' id='popup'> <MainContainer/> </div> </> )
+    return( <> <LoadingBox/> <MsgBox subState={ state.currsubState } /> <div className='popupdark' id='popup'> <MainContainer/> </div> </> )
 };
 
 export { RandomGenerator };

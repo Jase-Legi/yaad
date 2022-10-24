@@ -1476,7 +1476,7 @@ text {
 
 .contract-box{
     border: solid 0.5px rgb(52, 52, 52);
-    border-radius: 10px;
+    border-radius: 20px;
     background-color: rgb(10, 11, 21);
     width: 100%;
     height: fit-content;
