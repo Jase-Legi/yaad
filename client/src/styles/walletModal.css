@@ -1,0 +1,305 @@
+.scroller{
+    scrollbar-color: rgb(10, 11, 21);
+    scrollbar-width: thin;
+}
+
+::-webkit-scrollbar{
+    width: 5px;
+}
+
+::-webkit-scrollbar-track{
+    background-color: rgb(10, 11, 21);
+}
+
+::-webkit-scrollbar-thumb{
+    background-color: rgb(190, 190, 190);
+    border-radius: 5px;
+}
+
+.boxOverlay{
+    -webkit-box-align: center !important;
+    padding: 0px;
+    margin: 0px auto;
+    position:absolute;
+    width: 100% !important;
+    min-height: 100vh !important;
+    height: 100% !important;
+    overflow-y:auto;
+    overflow-x:hidden;
+    box-sizing: border-box !important;
+    background-color:rgba(33, 33, 33, 0.9) !important;
+    backdrop-filter: blur(5px);
+    scrollbar-color: rgb(10, 11, 21);
+    scrollbar-width: thin;
+}
+
+.headerStyle{
+    font-size: 17px !important;
+    height:fit-content;
+    line-height:normal;
+    vertical-align: middle !important;
+    text-align: center !important;
+    box-sizing: border-box;
+    /* border-bottom:solid rgb(52, 52, 52) 0.5px; */
+    position: relative;
+    padding: 15px 10px ;
+    margin: 0px auto;
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    color: whitesmoke;
+}
+
+.centeredText{
+    
+    margin: 0px;
+    line-height:normal;
+    vertical-align: middle;
+    text-align:left;
+}
+
+.walletBox{
+    background-color: rgba(10,11,11,.95);
+    margin: 60px auto;
+    padding: 20px;
+    position: relative;
+    box-sizing: border-box;
+    border-radius: 20px;
+    height: fit-content !important;
+    min-height: 300px;
+}
+
+.walletOptions{
+    display: flexbox;
+    width: 100% !important;
+    padding: 10px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.walletElement{
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    vertical-align: middle;
+    box-sizing: border-box;
+    border:solid rgb(52, 52, 52) 0.5px;
+    border-radius: 10px;
+    margin: 15px auto;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    vertical-align: middle;
+    /* align-content: flex-start; */
+    clear: both;
+}
+
+.walletElement:hover{
+    background-color: rgb(52, 52, 52);
+}
+
+.walletElement > img{
+    /* display:inline-flex; */
+    margin: 0px 15px 0px 0px;
+}
+
+.walletElement > span {
+    color:whitesmoke;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 18px;
+    text-align: left;
+    height: 18px;
+    margin: auto auto auto 0px;
+}
+
+.networkOptions{
+    display: flexbox;
+    width: 100% !important;
+    padding: 10px;
+    box-sizing: border-box;
+    position: relative;
+    /* border:solid rgb(52, 52, 52) 0.5px; */
+}
+
+.networkElements{
+    width: 100%;
+    max-width: 400px;
+    height: fit-content;
+    padding: 10px;
+    vertical-align: middle;
+    box-sizing: border-box;
+    /* overflow-x: scroll; */
+    border:solid rgb(52, 52, 52) 0.5px;
+    border-radius: 10px;
+    margin: 5px auto;
+    /* flex-direction:; */
+    vertical-align: middle;
+    clear: both;
+}
+
+.networkElement{
+    width: 84px;
+    height: 90 !important;
+    padding: 10px;
+    vertical-align: middle;
+    box-sizing: border-box;
+    border:solid rgb(52, 52, 52) 0.5px;
+    border-radius: 10px;
+    margin: 5px;
+    display: inline-block;
+    flex-direction: column;
+    cursor: pointer;
+    vertical-align: middle;
+    /* align-content: flex-start; */
+    clear: both;
+    overflow: hidden;
+}
+
+.walletOptions {
+    display: flexbox;
+    width: 100% !important;
+    padding: 10px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.networkElement > span {
+
+}
+
+.networkElement > img {
+    margin: auto !important;
+    width: auto !important;
+    height: auto;
+    box-sizing: border-box;
+}
+
+@media (max-width: 300px){
+    .walletBox{
+        width: 80vw !important;
+        min-width: 80vw !important;
+    }
+    
+    .headerStyle{
+        font-size: 14px !important;
+        height:fit-content;
+        line-height:normal;
+        vertical-align: middle !important;
+        text-align: center !important;
+        box-sizing: border-box;
+        /* border-bottom:solid rgb(52, 52, 52) 0.5px; */
+        position: relative;
+        padding: 15px 10px ;
+        width: 100%;
+        max-width: 400px;
+        margin: 0px auto;
+        display: flex;
+        color: whitesmoke;
+    }
+
+    .walletElement > span {
+        color:whitesmoke;
+        font-weight: 500;
+        font-size: 11px;
+        line-height: 11px;
+        text-align: left;
+        height: 21px;
+        padding: auto 0px;
+        margin: auto auto auto 0px;
+    }
+
+    .networkElements{
+        height: fit-content !important;
+    }
+
+    .networkElement {
+        width: 23%;
+        margin: auto;
+        height: auto !important;
+        border-radius: 50%;
+        padding: 2px;
+    }
+
+    .networkElement > span{
+        display: none;
+        visibility: hidden;
+    }
+    
+    .networkElement > img {
+        margin: auto !important;
+        width: 100% !important;
+        height: auto;
+        box-sizing: border-box;
+    }
+}
+
+@media (min-width: 301px) and (max-width:500px){
+    .walletBox{
+        width: 80vw !important;
+        min-width: 80vw !important;
+    }
+
+    .walletElement > span {
+        color:whitesmoke;
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 13px;
+        height: 13px;
+        text-align: left;
+        padding: auto 0px;
+        margin: auto auto auto 0px;
+    }
+
+    .networkElement > span {
+        font-size: 9px !important;
+        line-height: 9px !important;
+        height: 9px !important;
+        margin: 0px auto 5px auto !important;
+    }
+
+    .networkElement {
+        padding: 10px 4px;
+    }
+
+    .networkElement > img {
+        max-height: calc( 100% - 14px );
+        max-width: 100% !important;
+    }
+}
+
+@media (min-width: 501px) and (max-width:800px){
+    .walletBox{
+        width: 480px !important;
+    }
+
+    .networkElement > span {
+        font-size: 12px !important;
+        line-height: 12px !important;
+        height: 12px !important;
+        margin: 0px auto 5px auto !important;
+    }
+
+    .networkElement > img {
+        max-height: calc( 100% - 17px );
+        max-width: 100% !important;
+    }
+}
+
+@media (min-width:801px){
+    .walletBox{
+        width: 500px;
+    }
+
+    .networkElement > span {
+        font-size: 12px !important;
+        line-height: 12px !important;
+        height: 12px !important;
+        margin: 0px auto 5px auto !important;
+    }
+
+    .networkElement > img {
+        max-height: calc( 100% - 17px );
+        max-width: 100% !important;
+    }
+}

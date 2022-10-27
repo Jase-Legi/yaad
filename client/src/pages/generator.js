@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect, useMemo } from 'react'
 import { StateContext } from '../context/StateContext';
 import { imgToBase64String, imgURLFromBase64String } from "../helpers/imgBLOBto64";
 import { ContractFactory } from "ethers";
-import { walletConnected, signer,  currentNetwork, oldNetwork } from "../helpers/web3Helpers";
+import { walletConnected, signer,  currentNetwork, blockchainNetworks, } from "../helpers/web3Helpers";
 import { validateIMGtype } from "../helpers/imgdatahelpers";
 import { isAplhaNumeric, stringLengthRange } from "../helpers/stringValidator";
 import { shuffle } from "../helpers/generatorhelpers";
@@ -77,7 +77,7 @@ function RandomGenerator (props){
                     }
                 };
 
-                const connected = await walletConnected();
+                const connected = await walletConnected( blockchainNetworks[6] );
                 let contractData = new FormData();
                 if( connected === false ) { hideLoading(); return false; }
                 contractData.append('contractJSON', JSON.stringify(contractOptions));
@@ -322,7 +322,7 @@ function RandomGenerator (props){
             hideLoading(e)
             return setMsgStacks((prev)=>({...prev, formdata: [ {id: null, value: null, msg: "Add more images to your layers or add more layer."} ], substate: state.currentSubState}));
         }
-        let conntd = await walletConnected();
+        let conntd = await walletConnected( blockchainNetworks[6] );
         if( conntd === false ){ return false; }
         
         state.data.account = conntd;
@@ -790,7 +790,7 @@ function RandomGenerator (props){
                 let eleKey = [].indexOf.call(document.getElementsByClassName(eleClassName), eleparentNode);
                 let delVal = state.data.layers[eleKey].traits.splice(eleindex, 1);
                 let boddy = new FormData();
-                let conntd = await walletConnected();
+                let conntd = await walletConnected( blockchainNetworks[6] );
                 
                 if(conntd !== false){
                     boddy.append('account', conntd);
@@ -1068,11 +1068,11 @@ function RandomGenerator (props){
     function CollNameBox(){
         return(<div className='coll_name_box'>
             <div className='contractNameContainer'>
-                <BoxTitle data={{class:'contractNameText', type:'span', text:'Name:'}}/>
+                <BoxTitle data={{divClass:'contractNameText', textType:'span', text:'Name:'}}/>
                 <DaInput data={{ type:'text', typeId:'contractName', typeClass:'contractName', placeholder:(state.data.coll_name)?state.data.coll_name:"Enter your project name.", onChange:formDataHandler, onClick:(e)=>{e.target.value = state.data.coll_name}}}/>
             </div>
             <div className='contractSymbolContainer'>
-                <BoxTitle data={{class:'contractSymbolText', type:'span', text:'Symbol:'}}/>
+                <BoxTitle data={{divClass:'contractSymbolText', textType:'span', text:'Symbol:'}}/>
                 <DaInput data={{ type:'text', typeId:'contractSymbol', typeClass:'contractSymbol', placeholder:(state.data.coll_symbol)?state.data.coll_symbol:"Enter project symbol.", onChange:formDataHandler}}/>
             </div>
         </div>)
@@ -1084,11 +1084,11 @@ function RandomGenerator (props){
         case "RandomGenerator-ContractDeployed":
             mainBox = <div className='contract-box' id='LayerGenBoxx'> 
                 <div className='contract-deployed-container'>
-                    <BoxTitle data={{class:'generatorRightPanelTitle', type:'h2', text:'Contract Deployed.'}}/>
-                    <a href={state.data.contract_link} target="_blank" rel="noreferrer"><BoxTitle data={{class:'regularText', type:'span', text:`Contract address: ${state.data.contract_address}`}}/></a>
+                    <BoxTitle data={{divClass:'generatorRightPanelTitle', textType:'h2', text:'Contract Deployed.'}}/>
+                    <a href={state.data.contract_link} target="_blank" rel="noreferrer"><BoxTitle data={{divClass:'regularText', textType:'span', text:`Contract address: ${state.data.contract_address}`}}/></a>
                 </div>
                 <div className="contract-deployed-container" style={{marginTop:"20px"}}>
-                    <BoxTitle data={{class:'generatorRightPanelTitle', type:'h4', text:'Generated Samples.'}}/>
+                    <BoxTitle data={{ divClass:'generatorRightPanelTitle', textType:'h4', text:'Generated Samples.'}}/>
                     <ThaSamples/>
                 </div>
             </div>;
@@ -1096,13 +1096,13 @@ function RandomGenerator (props){
         case "RandomGenerator-RandomGenerated":
             coll_Name_Box = <CollNameBox/>;
             daButtn = <Buttonz data={{class:"LayerUpldBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />;
-            mainBox = <div><div className='contract-deployed-container'><ContractBox/><div id='LayerGenBoxx'><div className='contract-deployed-container' style={{marginTop:"20px"}}><BoxTitle data={{class:'generatorRightPanelTitle', type:'h4', text:'Generated Samples.'}}/><ThaSamples/></div></div></div></div>;
-            // LayerUpldBoxTitle = <div> <BoxTitle data={{class:'generatorRightPanelTitle', type:'h1', text:'Contract.'}}/><BoxTitle data={{class:'generatorRightPanelTitle', type:'span', text:`Click the "${(activeContract)?state.data["contracts"][activeContract]?.name:state.data["contracts"][0]?.name}" button to view the NFT contract. \nIf you already have a contract, click "Already have a contract" to link your contract.` }}/></div>
+            mainBox = <div><div className='contract-deployed-container'><ContractBox/><div id='LayerGenBoxx'><div className='contract-deployed-container' style={{marginTop:"20px"}}><BoxTitle data={{divClass:'generatorRightPanelTitle', textType:'h4', text:'Generated Samples.'}}/><ThaSamples/></div></div></div></div>;
+            // LayerUpldBoxTitle = <div> <BoxTitle data={{divClass:'generatorRightPanelTitle', textType:'h1', text:'Contract.'}}/><BoxTitle data={{divClass:'generatorRightPanelTitle', textType:'span', text:`Click the "${(activeContract)?state.data["contracts"][activeContract]?.name:state.data["contracts"][0]?.name}" button to view the NFT contract. \nIf you already have a contract, click "Already have a contract" to link your contract.` }}/></div>
             break;
         case "RandomGenerator-LayerOptions-AddLayer":
             currentSubState = <div className='LayerUpldBox'>
                 <DaInput data={( state.temp_index  !== null )? { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.layers[ state.temp_index ]?.name } : { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:(state.formVals !== null)?state.formVals:'Enter layer name.', onChange:formDataHandler, onClick:(e)=>{ e.target.value = state.formVals;} } }/>
-                <BoxTitle data={{class:"generatorRightPanelTitle", type:'span', text:`Click the "+" to upload layer images${( state.temp_index !== null)?" for: "+state.data.layers[ state.temp_index ]?.name:""}.`}}/>
+                <BoxTitle data={{ divClass:"generatorRightPanelTitle", textType:'span', text:`Click the "+" to upload layer images${( state.temp_index !== null)?" for: "+state.data.layers[ state.temp_index ]?.name:""}.`}}/>
                 <label className='LayerUpldBttn' id='LayerUpldLabel' htmlFor='multi_asset' onClick={(e)=>{ let ele_val = state.formVals; if( !ele_val && state.temp_index === null ) { e.preventDefault(); setMsgStacks((prev)=>( {...prev, formdata:[{id:"LayerName", value: document.getElementById("LayerName").value, msg: "Enter a layer name!"}], substate:state.currsubState } )) } }}>
                     <h1>+</h1>
                     <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:'multi_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/>
@@ -1113,7 +1113,7 @@ function RandomGenerator (props){
             break;
         case "RandomGenerator-LayerOptions-BG-Upld":
             currentSubState = <div className='LayerUpldBox'>
-                <BoxTitle data={{class:"generatorRightPanelTitle", type:'span', text:'Click the "+" to upload background images.'}}/>
+                <BoxTitle data={{ divClass:"generatorRightPanelTitle", textType:'span', text:'Click the "+" to upload background images.'}}/>
                 <label className='LayerUpldBttn' htmlFor='multi_asset'>
                     <h1>+</h1>
                     <DaInput data={{typeClass:'LayerName', typeId:'multi_asset', name:'bg_asset', type:'file', multiple:'multiple', hidden:true, accept:'image/*', onChange:handleAddLayerUpld}}/>
@@ -1124,13 +1124,13 @@ function RandomGenerator (props){
             break;
         case "RandomGenerator-LayerOptions-Edit-Layer":
             currentSubState = <div className='LayerUpldBox'>
-                <BoxTitle data={{class:"editBoxTitle", type:'h2', text:`Edit '${state.data.layers[ state.temp_index ]?.name}' layer.`}}/>
+                <BoxTitle data={{divClass:"editBoxTitle", textType:'h2', text:`Edit '${state.data.layers[ state.temp_index ]?.name}' layer.`}}/>
                 <div style={{ padding:"0px 10px 10px 10px"}}>
-                    <BoxTitle data={{class:"generatorRightPanelTitle", type:'h4', text:`Rename layer.`}}/>
+                    <BoxTitle data={{divClass:"generatorRightPanelTitle", textType:'h4', text:`Rename layer.`}}/>
                     <Buttonz data={{class:'renameLayerBttn', id:'bg_upld', value:'Rename', func: renameLayer}} />
                 </div>
                 <div style={{ padding: "0px 10px 10px 10px", width: "30%", boxSizing: "border-box", display: "inline-block"}}>
-                    <BoxTitle data={{class:"generatorRightPanelTitle", type:'h4', text:`Prioritized.`}}/>
+                    <BoxTitle data={{divClass:"generatorRightPanelTitle", textType:'h4', text:`Prioritized.`}}/>
                     <button id="priorityLayerBttn" className={( state.data.layers[ state.temp_index ].priority === true )?'disablepriorityLayerBttn':'makepriorityLayerBttn'} onClick={(e)=>{ let isPriority = state.data.layers[ state.temp_index ].priority; state.data.layers[ state.temp_index ].priority = ( isPriority === true )?false:true; document.getElementById("priorityLayerBttn").classList.toggle("disablepriorityLayerBttn"); document.getElementById("priorityLayerBttn").classList.toggle("makepriorityLayerBttn"); document.getElementById("makepriorityLayerOption").classList.toggle('ispriorityLayerOption'); document.getElementById("makepriorityLayerOption").classList.toggle('notpriorityLayerOption'); document.getElementById("makepriorityLayerOptionSpan").innerText =( isPriority === true )?"NO":"YES"; }}>
                         <div id='makepriorityLayerOption' className={( state.data.layers[ state.temp_index ].priority === true )?'ispriorityLayerOption':'notpriorityLayerOption'}>
                             <span id='makepriorityLayerOptionSpan'>{( state.data.layers[ state.temp_index ].priority === true )?"YES":"NO"}</span>
@@ -1138,28 +1138,28 @@ function RandomGenerator (props){
                     </button>
                 </div>
                 <div style={{ padding: "0px 10px 10px 10px", width: "70%", boxSizing: "border-box", display: "inline-block", float:"right"}}>
-                    <BoxTitle data={{class:"generatorRightPanelTitle", type:'h4', text:`Delete layer.`}}/>
+                    <BoxTitle data={{divClass:"generatorRightPanelTitle", textType:'h4', text:`Delete layer.`}}/>
                     <Buttonz data={{class:"delLayerBttn", id:'bg_upld', value: 'DELETE', func: delLayer}} />
                 </div>
             </div>
             break;
         case "RandomGenerator-LayerOptions-Rename_Layer":
             currentSubState = <div className='LayerUpldBox'>
-                <BoxTitle data={{class:"generatorRightPanelTitle", type:'h4', text:'Change layer name.'}}/>
+                <BoxTitle data={{divClass:"generatorRightPanelTitle", textType:'h4', text:'Change layer name.'}}/>
                 <DaInput data={{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:state.data.layers[ state.temp_index ].name, onChange:formDataHandler}}/>
                 <button className="nodelLayerBttn" onClick={renameLayer}>RENAME</button>
             </div>
             break;
         case "RandomGenerator-LayerOptions-Del-Layer":
             currentSubState = <div className='LayerUpldBox'>
-                <BoxTitle data={{class:"generatorRightPanelTitle", type:'h4', text:`Select yes to delete ${state.data.layers[ state.temp_index ]?.name} layer.`}}/>
+                <BoxTitle data={{divClass:"generatorRightPanelTitle", textType:'h4', text:`Select yes to delete ${state.data.layers[ state.temp_index ]?.name} layer.`}}/>
                 <Buttonz data={{class:'delLayerBttn', id:'', value:'YES', func: delLayer}} />
                 <Buttonz data={{class:'nodelLayerBttn', id:'', value:'NO', func: closeLayerOptionsBox}} />
             </div>
             break;
         case "RandomGenerator-LayerOptions-ContractName":
             currentSubState = <div className='LayerUpldBox'>
-                <BoxTitle data={{class:"generatorRightPanelTitle", type:'h2', text:'enter contract name.'}}/>
+                <BoxTitle data={{divClass:"generatorRightPanelTitle", textType:'h2', text:'enter contract name.'}}/>
                 <DaInput data={{typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:"Enter main contract name.", onChange:formDataHandler}}/>
                 <ContractBox/>
                 <Buttonz data={{class:"nodelLayerBttn", id:'', value:'SUBMIT', func: ()=>{return false}}} />
@@ -1171,7 +1171,7 @@ function RandomGenerator (props){
             state.formVals = null; state.temp_index = null;
             coll_Name_Box = <CollNameBox/>; addLayer = <AddLayer/>;
             mainBox = <div id='LayerGenBoxx'><GenLayers/></div>;
-            LayerUpldBoxTitle = <div> <BoxTitle data={{class:'generatorRightPanelTitle', type:'h2', text:'LAYERS'}}/> <BoxTitle data={{class:'generatorRightPanelTitle', type:'span', text:`Click the "+" icon to create new layer`}}/></div>;
+            LayerUpldBoxTitle = <div> <BoxTitle data={{divClass:'generatorRightPanelTitle', textType:'h2', text:'LAYERS'}}/> <BoxTitle data={{divClass:'generatorRightPanelTitle', textType:'span', text:`Click the "+" icon to create new layer`}}/></div>;
             break;
     }
     

@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { StateContext } from '../context/StateContext';
 import { imgToBase64String, imgURLFromBase64String } from "../helpers/imgBLOBto64";
-import { walletConnected, signer,  currentNetwork, oldNetwork, mintNFT } from "../helpers/web3Helpers";
+import { walletConnected, signer,  currentNetwork, oldNetwork, mintNFT, blockchainNetworks } from "../helpers/web3Helpers";
 import { validateIMGtype } from "../helpers/imgdatahelpers";
 import { isAplhaNumeric } from "../helpers/stringValidator";
 import { shuffle } from "../helpers/generatorhelpers";
@@ -31,7 +31,7 @@ function SingleNft (props){
         let newItemName = ( state.data?.filename )? state.data?.filename.split('.'):null;
         
         newItemName?.pop();
-        let conntd = await walletConnected();
+        let conntd = await walletConnected( blockchainNetworks[6] );
     
         if ( conntd !== false ) { body.append('account', conntd) } else { return false; }
         let assetName = conntd+"__"+Date.now()+"."+e.target.files[0].name.split('.')[e.target.files[0].name.split('.').length-1];

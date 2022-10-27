@@ -3,15 +3,17 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 30 30" style="enable-background:new 0 0 30 30;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#FFFFFF;}
-	.st1{fill:#4D4D4D;}
-	.st2{fill:#3A3A3A;}
+	.st0{fill:#AAAAAA;}
+	.st1{fill:#6B6B6B;}
+	.st2{fill:#5E5E5E;}
 </style>
 <rect class="st0" width="30" height="30"/>
 <g>
 	<polygon class="st1" points="15,20.5 8.4,16.5 15,26 21.6,16.5 	"/>
 	<polygon class="st1" points="21.6,15.2 15,4 8.4,15.2 15,19.2 	"/>
 </g>
-<polygon class="st2" points="15,4 15,19.2 21.6,15.2 "/>
-<polygon class="st2" points="15,20.5 21.6,16.5 15,26 "/>
+<g>
+	<polygon class="st2" points="15,4 15,19.2 21.6,15.2 	"/>
+	<polygon class="st2" points="15,20.5 21.6,16.5 15,26 	"/>
+</g>
 </svg>

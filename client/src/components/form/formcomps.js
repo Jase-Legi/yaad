@@ -1,69 +1,69 @@
-function BoxTitle(props){
-    let textType;
-    switch (props.data.type) {
+function BoxTitle( { data } ){
+    // console.log(`type:${ data.textType }`)
+    switch ( data.textType ) {
         case 'h2':
-            textType = <h2 className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</h2>;
+            data.textType = <h2 className={( data.textClass )? data.textClass :''} id={( data.textID )? data.textID :''}>{ data.text }</h2>;
             break;
         case 'span':
-            textType = <span className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</span>;
+            data.textType = <span className={( data.textClass )? data.textClass :''} id={( data.textID )? data.textID :''}>{ data.text }</span>;
             break;
         case 'h1':
-            textType = <h1 className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</h1>;
+            data.textType = <h1 className={( data.textClass )? data.textClass :''} id={( data.textID )? data.textID :''}>{ data.text }</h1>;
             break;
         case 'h3':
-                textType = <h3 className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</h3>;
+                data.textType = <h3 className={( data.textClass )? data.textClass :''} id={( data.textID )? data.textID :''}>{ data.text }</h3>;
                 break;
         case 'h4':
-            textType = <h4 className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''}>{props.data.text}</h4>;
+            data.textType = <h4 className={( data.textClass )? data.textClass :''} id={( data.textID )? data.textID :''}>{ data.text }</h4>;
             break;
         default:
             break;
     }
-    return ( <div className={(props.data.class)?props.data.class:''} id={(props.data.id)?props.data.id:''}> {textType} </div> )
+    return ( <div className={( data.divClass )? data.divClass :''} id={( data.divID )? data.divID :''}> { data.textType } </div> )
 };
 
-function Buttonz(props){
+function Buttonz( { data} ){
     return (
-        <button className={(props.data.class)?props.data.class:''} id={(props.data.id)?props.data.id:''} style={{zIndex: 11}} onClick={props.data.func}> {props.data.value} </button>
+        <button className={( data.class )? data.class :''} id={( data.id )? data.id :''} style={{zIndex: 11}} onClick={ data.func }> { data.value } </button>
     )
 };
 
-function DaInput(props){
+function DaInput( { data } ){
     let daInput;
     
-    if(props.data.hidden){
-        switch (props.data.type) {
+    if( data.hidden){
+        switch ( data.type) {
             case 'file':
-                daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''} name={(props.data.name)?props.data.name:''} readOnly={(props.data.readOnly)?props.data.readOnly:false} type='file' multiple={(props.data.multiple)?props.data.multiple:''} accept={(props.data.accept)?props.data.accept:'*'} onChange={(props.data.onChange)?props.data.onChange:()=>{return;}} hidden/>;
+                daInput = <input className={( data.typeClass )? data.typeClass :''} id={( data.typeId )? data.typeId :''} name={( data.name )? data.name :''} readOnly={( data.readOnly)? data.readOnly:false} type='file' multiple={( data.multiple )? data.multiple :''} accept={( data.accept)? data.accept:'*'} onChange={( data.onChange )? data.onChange :()=>{ return; }} hidden/>;
                 break;
             case 'textarea':
-                daInput = <textarea className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} value={props.data.value} readOnly={(props.data.readOnly)?props.data.readOnly:false} onChange={(props.data.onChange)?props.data.onChange:()=>{return;}} hidden></textarea>;
+                daInput = <textarea className={( data.typeClass )? data.typeClass :''} id={( data.typeId )? data.typeId :'' } name={( data.name )? data.name :''} value={ data.value } readOnly={( data.readOnly)? data.readOnly:false} onChange={( data.onChange )? data.onChange :()=>{ return; }} hidden></textarea>;
                 break;
             case 'text':
-                daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} type='text' value={props.data.value} readOnly={(props.data.readOnly)?props.data.readOnly:false} onChange={(props.data.onChange)?(e)=>props.data.onChange(e):()=>{return;}} hidden/>;
+                daInput = <input className={( data.typeClass )? data.typeClass :''} id={( data.typeId )? data.typeId :'' } name={( data.name )? data.name :''} type=' data.text ' value={ data.value } readOnly={( data.readOnly)? data.readOnly:false} onChange={( data.onChange )?(e)=> data.onChange(e):()=>{ return; }} hidden/>;
                 break;
             default:
                 break;
         }
         return(daInput);
     }else{
-        switch (props.data.type) {
+        switch ( data.type) {
             case 'file':
-                daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:''} name={(props.data.name)?props.data.name:''} type='file' multiple={(props.data.multiple)?props.data.multiple:''} accept={(props.data.accept)?props.data.accept:'*'} onChange={(props.data.onChange)?props.data.onChange:()=>{return;}} onClick={(props.data.onClick)?(e)=>props.data.onClick:()=>{return;}}/>;
+                daInput = <input className={( data.typeClass )? data.typeClass :''} id={( data.typeId )? data.typeId :''} name={( data.name )? data.name :''} type='file' multiple={( data.multiple )? data.multiple :''} accept={( data.accept)? data.accept:'*'} onChange={( data.onChange )? data.onChange :()=>{ return; }} onClick={( data.onClick )?(e)=> data.onClick :()=>{ return; }}/>;
                 break;
             case 'textarea':
-                daInput = <textarea className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} placeholder={(props.data.placeholder)?props.data.placeholder:''} onChange={(props.data.onChange)?props.data.onChange:()=>{return;}} onClick={(props.data.onClick)?(e)=>props.data.onClick(e):()=>{return;}} ></textarea>;
+                daInput = <textarea className={( data.typeClass )? data.typeClass :''} id={( data.typeId )? data.typeId :'' } name={( data.name )? data.name :''} placeholder={( data.placeholder )? data.placeholder :''} onChange={( data.onChange )? data.onChange :()=>{ return; }} onClick={( data.onClick )?(e)=> data.onClick (e):()=>{ return; }} ></textarea>;
                 break;
             case 'text':
-                daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} type='text' placeholder={(props.data.placeholder)?props.data.placeholder:''} onChange={(props.data.onChange)?props.data.onChange:()=>{return;}} onClick={(props.data.onClick)?(e)=>props.data.onClick(e):()=>{return;}}/>;
+                daInput = <input className={( data.typeClass )? data.typeClass :''} id={( data.typeId )? data.typeId :'' } name={( data.name )? data.name :''} type=' data.text ' placeholder={( data.placeholder )? data.placeholder :''} onChange={( data.onChange )? data.onChange :()=>{ return; }} onClick={( data.onClick )?(e)=> data.onClick (e):()=>{ return; }}/>;
                 break;
             case 'number':
-                daInput = <input className={(props.data.typeClass)?props.data.typeClass:''} id={(props.data.typeId)?props.data.typeId:'' } name={(props.data.name)?props.data.name:''} type='number' placeholder={(props.data.placeholder)?props.data.placeholder:''} onChange={(props.data.onChange)?props.data.onChange:()=>{return;}} onClick={(props.data.onClick)?(e)=>props.data.onClick(e):()=>{return;}} />;
+                daInput = <input className={( data.typeClass )? data.typeClass :''} id={( data.typeId )? data.typeId :'' } name={( data.name )? data.name :''} type='number' placeholder={( data.placeholder )? data.placeholder :''} onChange={( data.onChange )? data.onChange :()=>{ return; }} onClick={( data.onClick )?(e)=> data.onClick (e):()=>{ return; }} />;
                 break;
             default:
                 break;
         }
-        return( <div className={(props.data.class)?props.data.class:''} id={(props.data.id)?props.data.id:''}> {daInput} </div> );
+        return( <div className={( data.class )? data.class :''} id={( data.id )? data.id :''}> {daInput} </div> );
     }
 };
 

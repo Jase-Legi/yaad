@@ -7,7 +7,10 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { StateContext } from './context/StateContext';
 import { MsgContext } from './context/msgcontext';
 import { LoadingBox, showLoading, hideLoading } from "./components/ui/loading";
+import { WalletBox } from './components/ui/walletmodal';
 import { MsgBox } from "./components/errorbox/errorbox";
+// import './styles/walletModal.css';
+
 
 const pumpum = window.location.host;
 
@@ -21,32 +24,35 @@ const App = ()=>{
     
     let activeStatus = 'inactive';
     useEffect(()=>{
-        showLoading(); let db; const req_localDB = indexedDB.open( "yaad", 1);
+        showLoading();
+        if( window.sessionStorage.getItem( "state" ) ){
+            let db; const req_localDB = indexedDB.open( "yaad", 1);
 
-        req_localDB.addEventListener('upgradeneeded', ()=>{
-            db = req_localDB.result;
-            console.log(`store names:::::`);
-            if(!db.objectStoreNames.contains("state")){
-                const project = db.createObjectStore("state", { keyPath:"state" });
-                project.createIndex("state", "state", { unique:true });
-                window.sessionStorage.setItem("state", state.state);
-                project.put({...state,});
-                
-            }
-        });
-
-        req_localDB.onsuccess = ()=>{
-            db = req_localDB.result;
-            const tx = db?.transaction("state", "readonly");
-            const yaadState = tx.objectStore("state").index("state");
-            const state_request = yaadState.get( window.sessionStorage.getItem("state") );
-            state_request.onsuccess = ()=>{
-                const cursorState = state_request.result;
-                // console.log(`cursorState: ${JSON.stringify(cursorState)}`);
-                hideLoading();
-                setState( cursorState );
-            }
-        };
+            req_localDB.addEventListener('upgradeneeded', ()=>{
+                db = req_localDB.result;
+                console.log(`store names:::::`);
+                if(!db.objectStoreNames.contains("state")){
+                    const project = db.createObjectStore("state", { keyPath:"state" });
+                    project.createIndex("state", "state", { unique:true });
+                    window.sessionStorage.setItem("state", state.state);
+                    project.put({...state,});
+                    
+                }
+            });
+            
+            req_localDB.onsuccess = ()=>{
+                db = req_localDB.result;
+                const tx = db?.transaction( "state", "readonly" );
+                const yaadState = tx.objectStore("state").index("state");
+                const state_request = yaadState.get( window.sessionStorage.getItem("state") );
+                state_request.onsuccess = ()=>{
+                    const cursorState = state_request.result;
+                    // console.log(`cursorState: ${JSON.stringify(cursorState)}`);
+                    hideLoading();
+                    setState( cursorState );
+                }
+            };
+        }
 
     }, []);
 
@@ -80,6 +86,9 @@ const App = ()=>{
     }, [ state.state, state.currsubState])
     let currentState;
     switch ( state.state ) {
+        case 'connect':
+            currentState = <WalletBox/>;
+            break;
         case 'createnft':
             currentState = <> <LoadingBox data={{class:activeStatus}}/> <SingleNft/> </>;
             break;
@@ -90,15 +99,17 @@ const App = ()=>{
             currentState = <> <MsgBox subState={ state.currsubState } /> <SelectCreateOption /> </>
             break;
         default:
-            currentState = <> <LoadingBox data={{ data:activeStatus }}/> <MsgBox subState={ state.currsubState } /> <div className='popupdark'> <WelcomeBox data={{message: "De-Fi"}} /> </div> </>
+            currentState = <> <div className='popupdark'> <WelcomeBox data={{message: "De-Fi"}} /> </div> </>
             // currentState = <div style={{ backgroundColor: "rgba(0, 3, 40, 0.7)", backdropFilter: "blur(5px)", minHeight:"100vh", width:"100%"}}><Header data={state}/>{/* <div style={{padding:"20px", backgroundColor:"yellow", height: "fit-content", margin: "20px 0px"}}> <h1 style={{color:"#000"}}> Create & deploy assets to the blockchain! </h1> <span style={{display: "block", textAlign: "center", fontSize:"15px", fontWeight: "500"}}>-Generate and Store NFT projects(no code needed)<br></br><br></br>-Create NFTs -Create Tokens<br></br></span></div> <button className="enableEthereumButton" onClick={mintNEW}>mint</button> <button className="enableEthereumButton" onClick={iswalletConnected}>Enable Ethereum</button> */}<WelcomeBox/></div>;
             break;
     }
 
     return (
         <div className="App">
+            <LoadingBox/>
             <MsgContext.Provider value={{ msgStacks, setMsgStacks }}>
                 <StateContext.Provider value={{ state, setState }}>
+                    <MsgBox subState={ state.currsubState } />
                     {currentState}
                 </StateContext.Provider>
             </MsgContext.Provider>

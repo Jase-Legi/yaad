@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { Header } from '../components/header/header';
-import { walletConnected } from "../helpers/web3Helpers";
+import { walletConnected, blockchainNetworks } from "../helpers/web3Helpers";
 import { showLoading, LoadingBox, hideLoading } from "../components/ui/loading";
 import { StateContext } from '../context/StateContext';
 
@@ -15,7 +15,7 @@ function WelcomeBox({ data }){
                 <div className="welcomeBoxElement">
                     {/* <Link to='/selectCreateOption'> */}
                         
-                        <button className='containerbox' onClick={ async()=>{ showLoading(); const conndt = await walletConnected(); if( conndt === false ){ hideLoading(); }else{ hideLoading(); setState((prev)=>({...prev, state: "SelectCreateOption"})) } }} >
+                        <button className='containerbox' onClick={ ()=>{ showLoading(); setState((prev)=>({...prev, state:"connect", newState:"SelectCreateOption", oldState:null } ) ); }} >
                             <div className='title'>
                                 <h1>Create</h1>
                                 <span style={{display:"block", textAlign:"center", }}> NFTs, Tokens(ERC20, 721, 1155) </span> 

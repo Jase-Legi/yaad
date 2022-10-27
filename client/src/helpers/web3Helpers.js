@@ -1,15 +1,14 @@
-import { providers, Contract, utils, BigNumber, ContractFactory } from "ethers";
+import { providers, Contract, utils, BigNumber, ContractFactory } from 'ethers';
 
 let provider = null, signer = null, currentNetwork = null, oldNetwork = null;
 
-if (typeof window.ethereum !== 'undefined') {
-    provider = new providers.Web3Provider(window.ethereum, "any");
-    
-    provider.on("network", (newNetwork, old_Network) => {
+// Chec for web 3 injected global variable 
+if ( typeof window.ethereum !== 'undefined' ) {
+    provider = new providers.Web3Provider(window.ethereum, 'any');
+    // Wait for network connection
+    provider.on('network', (newNetwork, old_Network) => {
         currentNetwork = newNetwork;
-        console.log(`new Network: ${JSON.stringify(newNetwork)}`);
-
-        // When a Provider makes its initial connection, it emits a "network"
+        // When a Provider makes its initial connection, it emits a 'network'
         // event with a null oldNetwork along with the newNetwork. So, if the
         // oldNetwork exists, it represents a changing network
         if (old_Network) {
@@ -28,49 +27,184 @@ if (typeof window.ethereum !== 'undefined') {
     signer = provider.getSigner();
 }
 
-const addBinanceNetwork = ()=>{
-    window.ethereum.request({
-        method: 'wallet_addEthereumChain',
-        params: [{
-        chainId: '0x38',
-        chainName: 'Binance Smart Chain',
-        nativeCurrency: {
-            name: 'Binance Coin',
-            symbol: 'BNB',
-            decimals: 18
+
+const blockchainNetworks = [
+    {
+        name: 'Ethereum',
+        chainType: 'EVM',
+        networkParameters: {
+            chainId: '0x1',
+            chainName: 'homestead',
+            nativeCurrency: {
+                name: 'Ethereum',
+                symbol: 'ETH',
+                decimals: 18
+            },
+            rpcUrls: ['https://mainnet.infura.io/v3/'],
+            blockExplorerUrls: ['https://etherscan.io']
         },
-        rpcUrls: ['https://bsc-dataseed.binance.org/'],
-        blockExplorerUrls: ['https://bscscan.com']
-        }]
-    }).catch((error) => {
+        logo:'solidity_icon.svg'
+    },
+    {
+        name: 'Binance',
+        chainType: 'EVM',
+        networkParameters: {
+            chainId: '0x38',
+            chainName: 'Smart Chain',
+            nativeCurrency: {
+                name: 'Binance Coin',
+                symbol: 'BNB',
+                decimals: 18
+            },
+            rpcUrls: ['https://bsc-dataseed.binance.org/'],
+            blockExplorerUrls: ['https://bscscan.com']
+        },
+        logo:'bsc_2.svg'
+    },
+    {
+        name: 'Avalanche',
+        chainType: 'EVM',
+        networkParameters: {
+            chainId: '0xa86a',//43114,
+            chainName: 'Avalanche C-Chain',
+            nativeCurrency: {
+                name: 'Avalanche',
+                symbol: 'AVAX',
+                decimals: 18
+            },
+            rpcUrls: ['https://api.avax.network/ext/bc/C/rpc'],
+            blockExplorerUrls: ['https://snowtrace.io']
+        },
+        logo:'avalanche.svg'
+    },
+    {
+        name: 'Optimism',
+        chainType: 'EVM',
+        networkParameters: {
+            chainId: '0xa',//10,
+            chainName: 'Optimism',
+            nativeCurrency: {
+                name:'Ether',
+                symbol: 'ETH',
+                decimals: 18
+            },
+            rpcUrls: ['https://mainnet.optimism.io/', 'https://mainnet-optimism.brave.com/' ],
+            blockExplorerUrls: ['https://optimistic.etherscan.io']
+        },
+        logo:'optimism.svg'
+    },
+    {
+        name: 'Polygon',
+        chainType: 'EVM',
+        networkParameters: {
+            chainId: '0x89',//137,
+            chainName: 'Polygon Mainnet',
+            nativeCurrency: {
+                name: 'MATIC',
+                symbol: 'MATIC',
+                decimals: 18
+            },
+            rpcUrls: ['https://polygon-rpc.com/', 'https://mainnet-polygon.brave.com/'],
+            blockExplorerUrls: ['https://polygonscan.com/']
+        },
+        logo:'polygon.svg'
+    },
+    {
+        name: 'Fantom',
+        chainType: 'EVM',
+        networkParameters: {
+            chainId: '0xfa',//250,
+            chainName: 'Fantom Opera',
+            nativeCurrency: {
+                name: 'Fantom',
+                symbol: 'FTM',
+                decimals: 18
+            },
+            rpcUrls: [ 'https://rpc.ftm.tools/' ],
+            blockExplorerUrls: ['https://ftmscan.com/']
+        },
+        logo:'fantom.svg'
+    },
+    {
+        name: 'Celo',
+        chainType: 'EVM',
+        networkParameters: {
+            chainId: '0xa4ec',
+            chainName: 'Celo Mainnet',
+            nativeCurrency: {
+                name: 'CELO',
+                symbol: 'CELO',
+                decimals: 18
+            },
+            rpcUrls: [ 'https://forno.celo.org/' ],
+            blockExplorerUrls: [ 'https://explorer.celo.org' ]
+        },
+        logo: 'celo.svg'
+    },
+    {
+        name: 'Goerli',
+        chainType: 'EVM',
+        networkParameters: {
+            chainId: '0x5',
+            chainName: 'Goerli',
+            nativeCurrency: {
+                name: 'GoerliETH',
+                symbol: 'GoerliETH',
+                decimals: 18
+            },
+            rpcUrls: ['https://goerli.infura.io/v3/'],
+            blockExplorerUrls: ['https://goerli.etherscan.io']
+        },
+        logo:'eth_testnet.svg'
+    }
+]
 
-        console.log(error);
-
-    }) 
-}
-
-const walletConnected = async ()=>{
+const walletConnected = async ( chain )=>{
     if(window.ethereum){
-        const accounts = await window.ethereum.request({method:'eth_accounts'});
-        // let gaslimit = gasNow.add(50000)
+        try {
+            console.log(`chain: ${JSON.stringify(chain)}`);
 
-        if(accounts.length  > 0){
+            // Switch to selected EVM chain
+            const switchChain = await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [ { chainId: chain.networkParameters.chainId } ]});
+            console.log(`switched!: ${switchChain}`);
+            const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
             return accounts[0];
-        }else{
-            try {
-                const accounts = await window.ethereum.request({method: "eth_requestAccounts"}).finally((rez)=>rez).catch((error)=>error);
-                return accounts[0];
-            } catch (error) {
-                return false;
-            }            
+        } catch ( switcherror ) {
+            // Error code 4902 occurs when selected chain isn't present in seelcted wallet 
+            if( switcherror.code === 4902 ){
+                try {
+                    // If chain not added, then add the chain
+                    await window.ethereum.request({ method:'wallet_addEthereumChain', params:[ chain.networkParameters ] });
+                    const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
+                    return accounts[0];
+                } catch ( addAccountError ) {
+
+                    // handle user rejection error
+                    if ( addAccountError.code === 4001 ) {
+                        
+                    }
+
+                    // Handle all other errors
+                    return addAccountError;
+                }
+            }
+
+            // handle user rejection error
+            if ( switcherror.code === 4001 ) {
+
+            }
+
+            // Handle all other errors
+            return switcherror;
         }
     }else{
-        return window.location = "https://metamask.app.link/send/pay-https://www.yaadlabs.com?value=1e17";
+        return window.location = 'https://metamask.app.link/send/pay-https://www.yaadlabs.com?value=1e17';
     }
 };
 
-
-const getGas = async (trans)=>{ return (trans)?trans.estimateGas():false; };
+const getGas = async (trans)=>{
+    return (trans)?trans.estimateGas():false;
+};
 
 const mintNFT = async (uri, tokenAddress, tokenAbi, signer )=>{
     let isconnected = await walletConnected();
@@ -101,4 +235,4 @@ const mintNFT = async (uri, tokenAddress, tokenAbi, signer )=>{
     return isconnected;
 }
 
-export { walletConnected, signer, currentNetwork, oldNetwork, mintNFT }
+export { walletConnected, signer, currentNetwork, oldNetwork, mintNFT, blockchainNetworks }

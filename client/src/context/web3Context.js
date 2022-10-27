@@ -52,9 +52,7 @@ const addBinanceNetwork = ()=>{
 
 const walletConnected = async ()=>{
     if(window.ethereum){
-        const accounts = await window.ethereum.request({method:'eth_accounts'});
-        // let gaslimit = gasNow.add(50000)
-
+        const accounts = await window.ethereum.request( { method:'eth_accounts' } );
         if(accounts.length  > 0){
             return accounts[0];
         }else{
@@ -70,4 +68,4 @@ const walletConnected = async ()=>{
     }
 };
 
-export const walletContext = createContext({ signer, walletConnected, currentNetwork, oldNetwork,})
+// export const walletContext = createContext({ signer, walletConnected, currentNetwork, oldNetwork,})
