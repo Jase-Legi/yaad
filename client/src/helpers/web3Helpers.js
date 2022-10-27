@@ -163,19 +163,18 @@ const walletConnected = async ( chain )=>{
     if(window.ethereum){
         try {
             console.log(`chain: ${JSON.stringify(chain)}`);
-
+            const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
             // Switch to selected EVM chain
             const switchChain = await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [ { chainId: chain.networkParameters.chainId } ]});
             console.log(`switched!: ${switchChain}`);
-            const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
             return accounts[0];
         } catch ( switcherror ) {
             // Error code 4902 occurs when selected chain isn't present in seelcted wallet 
             if( switcherror.code === 4902 ){
                 try {
-                    // If chain not added, then add the chain
-                    await window.ethereum.request({ method:'wallet_addEthereumChain', params:[ chain.networkParameters ] });
                     const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
+                    // If chain not added, then add the chain
+                    const switchChain = await window.ethereum.request({ method:'wallet_addEthereumChain', params:[ chain.networkParameters ] });
                     return accounts[0];
                 } catch ( addAccountError ) {
 

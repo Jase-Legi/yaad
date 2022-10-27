@@ -150,8 +150,6 @@
     display: inline-block;
     flex-direction: column;
     cursor: pointer;
-    vertical-align: middle;
-    /* align-content: flex-start; */
     clear: both;
     overflow: hidden;
 }
@@ -290,28 +288,34 @@
         padding: auto 0px;
         margin: auto auto auto 0px;
     }
-
-    .networkElement > span {
-        font-size: 9px !important;
-        line-height: 9px !important;
-        height: 9px !important;
-        width: 43px !important;
-        min-width: 43px !important;
-        display: inline;
-        margin: 9px auto !important;
-    }
-
+    
     .networkElement {
-        flex-direction: row !important;
+        flex-direction:row !important;
+        /* display: inline-block; */
+        height: 54.2px !important;
         padding: 10px 4px;
         width: calc( 50% - 10px ) !important;
     }
 
+    .networkElement > span {
+        font-size: 9px !important;
+        line-height: 9px !important;
+        height: 30px !important;
+        width: calc( 100% - 35px ) !important;
+        min-width: calc( 100% - 35px ) !important;
+        text-align: left;
+        /* padding: 9px 0px; */
+        display: inline-block;
+        vertical-align: middle;
+        /* margin: 9px 0px !important; */
+    }
+
     .networkElement > img {
-        display: inline;
+        /* display: inline; */
         height:30px !important;
+        display: inline-box;
         width: 30px !important;
-        margin-right: 5px !important;
+        margin: 0px 5px 0px 0px !important;
     }
 }
 
