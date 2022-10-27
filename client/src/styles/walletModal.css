@@ -234,7 +234,7 @@
     }
 }
 
-@media (min-width: 301px) and (max-width:500px){
+@media (min-width: 301px) and (max-width:370px){
     .walletBox{
         width: 80vw !important;
         min-width: 80vw !important;
@@ -255,16 +255,63 @@
         font-size: 9px !important;
         line-height: 9px !important;
         height: 9px !important;
-        margin: 0px auto 5px auto !important;
+        width: 100% !important;
+        min-width: 43px !important;
+        display: block;
+        /* margin: 0px !important; */
     }
 
     .networkElement {
+        flex-direction: column !important;
         padding: 10px 4px;
+        width: calc( 50% - 10px ) !important;
     }
 
     .networkElement > img {
-        max-height: calc( 100% - 14px );
-        max-width: 100% !important;
+        display: block;
+        height:30px !important;
+        width: 30px !important;
+    }
+}
+
+@media (min-width: 371px) and (max-width:500px){
+    .walletBox{
+        width: 80vw !important;
+        min-width: 80vw !important;
+    }
+
+    .walletElement > span {
+        color:whitesmoke;
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 13px;
+        height: 13px;
+        text-align: left;
+        padding: auto 0px;
+        margin: auto auto auto 0px;
+    }
+
+    .networkElement > span {
+        font-size: 9px !important;
+        line-height: 9px !important;
+        height: 9px !important;
+        width: 43px !important;
+        min-width: 43px !important;
+        display: inline;
+        margin: 9px auto !important;
+    }
+
+    .networkElement {
+        flex-direction: row !important;
+        padding: 10px 4px;
+        width: calc( 50% - 10px ) !important;
+    }
+
+    .networkElement > img {
+        display: inline;
+        height:30px !important;
+        width: 30px !important;
+        margin-right: 5px !important;
     }
 }
 
@@ -281,8 +328,8 @@
     }
 
     .networkElement > img {
-        max-height: calc( 100% - 17px );
-        max-width: 100% !important;
+        height: 63.2px !important;
+        width: 63.2px !important;
     }
 }
 
@@ -299,7 +346,7 @@
     }
 
     .networkElement > img {
-        max-height: calc( 100% - 17px );
-        max-width: 100% !important;
+        height: 63.2px !important;
+        width: 63.2 !important;
     }
 }

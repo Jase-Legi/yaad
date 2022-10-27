@@ -14,8 +14,8 @@ const WalletBox = ( )=>{
         let selectedChain = ( networkSelected.index === i )?<div style={{ height:'5px', width:'100%', borderTopLeftRadius:'5px', borderTopRightRadius:'5px', borderBottomLeftRadius:'5px', borderBottomRightRadius:'5px', backgroundColor:'green', float:'left'}}></div>:''
         
         bbx.push( <div className='networkElement' key={i} onClick={ (e)=>{ setNetworkSelected((prev)=>({...prev, status:( prev.index !== i )?true:false, index:( prev.index !== i )?i:null })) } }>
-            <span style={{ margin:'0px auto', boxSizing: 'border-box', color:'whitesmoke' }} > { blockchainNetworks[i].name } </span>
             <img src={(blockchainNetworks[i].logo)?blockchainNetworks[i].logo:'solidity_icon.svg'} alt='' style={{ margin:'0px auto 0px auto', borderRadius: '50%' }}/>
+            <span style={{ margin:'0px auto', boxSizing: 'border-box', color:( networkSelected.index === i )?'green':'whitesmoke' }} > { blockchainNetworks[i].name } </span>
             {selectedChain}
         </div>)
     });
