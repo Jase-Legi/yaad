@@ -39,7 +39,7 @@ body{
     -ms-touch-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
-    scrollbar-color: rgb(10, 11, 21);
+    scrollbar-color: rgb(10, 11, 12);
     scrollbar-width: thin;
 }
 
@@ -71,7 +71,7 @@ option {
 }
 
 .scroller{
-    scrollbar-color: rgb(10, 11, 21);
+    scrollbar-color: rgb(10, 11, 12);
     scrollbar-width: thin;
 }
 
@@ -80,7 +80,7 @@ option {
 }
 
 ::-webkit-scrollbar-track{
-    background-color: rgb(10, 11, 21);
+    background-color: rgb(10, 11, 12);
 }
 
 ::-webkit-scrollbar-thumb{
@@ -217,7 +217,7 @@ text {
 }
 .error-box-closer:hover{
     background-color: #fff;
-    color: rgb(10, 11, 21);
+    color: rgb(10, 11, 12);
 }
 
 #loadingbttn{
@@ -227,7 +227,7 @@ text {
     width: 120px;
     top: calc(50vh - 60px);
     left: calc(50vw - 60px);
-    background-color: rgb(10, 11, 21);
+    background-color: rgb(10, 11, 12);
     border-radius: 10px;
 }
 
@@ -248,7 +248,7 @@ text {
     background-color:rgba(255, 255, 255, .3);
     inset: 0px !important;
     display: flex !important;
-    scrollbar-color: rgb(10, 11, 21);
+    scrollbar-color: rgb(10, 11, 12);
     scrollbar-width: thin;
     backdrop-filter: blur(5px);
 
@@ -274,7 +274,7 @@ text {
     box-sizing: border-box !important;
     background-color:rgba(255, 255, 255, .6) !important;
     backdrop-filter: blur(5px);
-    scrollbar-color: rgb(10, 11, 21);
+    scrollbar-color: rgb(10, 11, 12);
     scrollbar-width: thin;
 }
 
@@ -288,9 +288,9 @@ text {
     height: 100% !important;
     overflow-y:auto;
     box-sizing: border-box !important;
-    background-color:rgba(10, 11, 21, .6) !important;
+    background-color:rgba(10, 11, 12, .75) !important;
     backdrop-filter: blur(5px);
-    scrollbar-color: rgb(10, 11, 21);
+    scrollbar-color: rgb(10, 11, 12);
     scrollbar-width: thin;
 }
 
@@ -308,7 +308,7 @@ text {
     align-content: center;
     vertical-align: middle;
     line-height:normal;
-    background-color: rgba(10, 11, 21, 1);
+    background-color: rgba(10, 11, 12, 1);
     color: white;
     border-radius: 50px;
     /*margin: 50px;*/
@@ -400,7 +400,7 @@ text {
     min-width: 150px;
     height: 200px;
     text-align: center;
-    background-color: rgb(10, 11, 21, 0.9);
+    background-color: rgb(10, 11, 12, 0.95);
     color: white;
     font-size:1.5em;
     font-weight: 700;
@@ -437,7 +437,7 @@ text {
     text-align:left;
     background-color: rgb(243, 242, 242);
     border:none;
-    color: rgb(10, 11, 21);
+    color: rgb(10, 11, 12);
     font-size:1.5em;
     font-weight: 700;
     border-radius: 15px;
@@ -550,7 +550,7 @@ text {
     float: right;
     color: #444;
     font-weight: bold;
-    border: rgb(10, 11, 21) solid 1px;
+    border: rgb(10, 11, 12) solid 1px;
     background-color: rgb(190, 190, 190);
     border-radius: 10px;
     font-size: 10px;
@@ -883,7 +883,7 @@ text {
     max-width: 460px;
     width: 92vw;
     /* left: calc(50vw - 230px); */
-    background-color: rgb(10, 11, 21);
+    background-color: rgb(10, 11, 12);
     border-radius: 20px;
     box-sizing: border-box;
     padding: 30px;
@@ -1039,7 +1039,7 @@ text {
 
 .LayerUpldBttn > h1 {
     font-size: 60px;
-    color: rgb(10, 11, 21);
+    color: rgb(10, 11, 12);
     padding: 0px 0px 5px 0px;
     display: table-cell;
 }
@@ -1166,9 +1166,9 @@ text {
 
 .delLayerBttn:hover { background: red; border:none; color: #fff;}
 
-.nodelLayerBttn:hover { background: yellow; border:none; color: rgb(10, 11, 21);}
+.nodelLayerBttn:hover { background: yellow; border:none; color: rgb(10, 11, 12);}
 
-.LayerUpldBttn:hover{ background-color: yellow; cursor: pointer; color: rgb(10, 11, 21);}
+.LayerUpldBttn:hover{ background-color: yellow; cursor: pointer; color: rgb(10, 11, 12);}
 
 .detail-edit-trait-box{
     height: fit-content;
@@ -1329,7 +1329,7 @@ text {
     padding: 1vw;
     user-select: none;
     text-align: center;
-    background-color: rgb(10, 11, 11, .7);
+    background-color: rgb(10, 11, 11, .95);
     box-sizing: border-box;
     /* border: 0.5px solidrgb(52, 52, 52); */
     border-radius: 25px;
@@ -1339,7 +1339,7 @@ text {
     /* position: absolute; */
     width: 93vw;
     max-width: 1000px;
-    background-color: rgb(10, 11, 21, .6);
+    background-color: rgb(10, 11, 12, .8);
     border-radius: 20px;
     border: 0.5px solid rgb(52, 52, 52);
     box-sizing: border-box;
@@ -1470,14 +1470,14 @@ text {
     flex-direction: row;
     overflow-x:auto;
     overflow-y:hidden;
-    scrollbar-color: rgb(10, 11, 21) !important;
+    scrollbar-color: rgb(10, 11, 12) !important;
     scrollbar-width: thin !important;
 }
 
 .contract-box{
     border: solid 0.5px rgb(52, 52, 52);
     border-radius: 20px;
-    background-color: rgb(10, 11, 21);
+    background-color: rgb(10, 11, 12);
     width: 100%;
     height: fit-content;
     padding: 15px;
@@ -1488,23 +1488,24 @@ text {
     overflow-wrap: break-word;
 }
 
-.expand-contract{
+.expander-div{
     width: 100%;
-    background-color:rgb(10, 11, 21);
+    background-color:rgb(10, 11, 12);
     height: 30px;
     border-bottom-left-radius: 7.5px;
     border-bottom-right-radius: 7.5px;
     cursor: pointer;
     font-weight: bold;
-    color: #ccc;
+    color: white;
     font-size: 11px;
-    border-top: 0.5px solid rgb(34, 34, 34);
+    border-top: 1px solid rgb(34, 34, 34);
     border-bottom: none;
     border-right: none;
     border-left: none;
+    margin: -10px 0px 10px 0px;
 }
 
-.expand-contract:hover{
+.expander-div:hover{
     background-color: rgb(10, 11, 11) !important;
     color: rgb(190, 190, 190);
 }
@@ -1514,8 +1515,26 @@ text {
     border: 0.5px solid rgb(52, 52, 52);
     box-sizing: border-box;
     padding: 10px;
+    border-radius: 25px;
+    overflow-y: hidden;
+}
+
+.nftSamples-contracted-container{
+    height: 200px !important;
+    max-height:200px !important;
+    border: 0.5px solid rgb(52, 52, 52);
+    box-sizing: border-box;
+    padding: 10px;
     border-radius: 10px;
     overflow-y: hidden;
+}
+
+.nftSamples-expanded-container{
+    height: fit-content !important;
+    border: 0.5px solid rgb(52, 52, 52);
+    box-sizing: border-box;
+    padding: 10px;
+    border-radius: 10px;
 }
 
 .contract-container{
@@ -1558,7 +1577,7 @@ text {
     height: 40px;
     user-select: none;
     text-align:left;
-    background-color: rgb(10, 11, 21);
+    background-color: rgb(10, 11, 12);
     border:solid 0.5px rgb(52, 52, 52) !important;
     box-sizing: border-box !important;
     color: #555;
@@ -1598,7 +1617,7 @@ text {
     height: 40px;
     user-select: none;
     text-align:left;
-    background-color: rgb(10, 11, 21);
+    background-color: rgb(10, 11, 12);
     border:solid 0.5px rgb(52, 52, 52) !important;
     box-sizing: border-box !important;
     color: rgb(83, 83, 83);

@@ -6,6 +6,7 @@ import { walletConnected, signer,  currentNetwork, blockchainNetworks, } from ".
 import { validateIMGtype } from "../helpers/imgdatahelpers";
 import { isAplhaNumeric, stringLengthRange } from "../helpers/stringValidator";
 import { shuffle } from "../helpers/generatorhelpers";
+import { expandABox } from "../helpers/domHandlers";
 import yaadcontract from '../contracts/yaad.json';
 import nftcontract from '../contracts/the_yaad.sol';
 import { DaInput, BoxTitle, Buttonz } from '../components/form/formcomps';
@@ -1008,20 +1009,6 @@ function RandomGenerator (props){
     function ContractBox(){
         let boxxcont = [];
         if(state.data.contracts?.length > 0 && state.currsubState !== "RandomGenerator-ContractDeployed"){
-            const expandContractBox  = (e)=>{
-                let ele = e.target;
-                let cntrctbox = document.getElementById('contract-container');
-                if (cntrctbox.classList.contains("contract-container-expanded")){
-                    cntrctbox.classList.remove('contract-container-expanded');
-                    cntrctbox.classList.add('contract-container');
-                    ele.innerText = "expand"
-                }else{
-                    cntrctbox.classList.add('contract-container-expanded');
-                    cntrctbox.classList.remove('contract-container');
-                    ele.innerText = "less"
-                }
-            };
-
             let sampleLen = 0;
             const the_contracts = state.data.contracts;
             const showContract = (e)=>{
@@ -1046,13 +1033,8 @@ function RandomGenerator (props){
                 sampleLen++;
             }
             
-            let contractDetailsBox = <div className='contract-box'><div id='contract-container' className='contract-container'><h2>{state.data.contracts[0]?.name}.sol</h2><span>{state.data.contracts[0]?.contract}</span></div><Buttonz data={{class:"expand-contract", id: "expand_contract", value: "expand", func:expandContractBox}} /></div>;
-            return(
-                <div>
-                    {/* <div id="pissingD"> {boxxcont} </div> */}
-                    {contractDetailsBox}
-                </div>
-            )
+            let contractDetailsBox = <div className='contract-box'><div id='contract-container' className='contract-container'><h2>{state.data.contracts[0]?.name}.sol</h2><span>{state.data.contracts[0]?.contract}</span></div><button className="expander-div" onClick={(e)=>expandABox( e, document.getElementById('contract-container'), 'contract-container-expanded', 'contract-container') } >..expand..</button></div>;
+            return( <> {/* <div id="pissingD"> {boxxcont} </div> */} {contractDetailsBox} </> )
         }
     }
 
@@ -1087,16 +1069,26 @@ function RandomGenerator (props){
                     <BoxTitle data={{divClass:'generatorRightPanelTitle', textType:'h2', text:'Contract Deployed.'}}/>
                     <a href={state.data.contract_link} target="_blank" rel="noreferrer"><BoxTitle data={{divClass:'regularText', textType:'span', text:`Contract address: ${state.data.contract_address}`}}/></a>
                 </div>
-                <div className="contract-deployed-container" style={{marginTop:"20px"}}>
+                <div className="nftSamples-contracted-container" id='nftSamples-container' style={{marginTop:"20px", maxHeight:"400px",  overflowY:"hidden", marginBottom:"20px" }}>
                     <BoxTitle data={{ divClass:'generatorRightPanelTitle', textType:'h4', text:'Generated Samples.'}}/>
                     <ThaSamples/>
+                    <button className="expander-div" onClick={(e)=>{ expandABox( e, document.getElementById( 'nftSamples-container' ), 'nftSamples-expanded-container', 'nftSamples-contracted-container' ); }} >..expand..</button>
                 </div>
             </div>;
             break;
         case "RandomGenerator-RandomGenerated":
             coll_Name_Box = <CollNameBox/>;
             daButtn = <Buttonz data={{class:"LayerUpldBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />;
-            mainBox = <div><div className='contract-deployed-container'><ContractBox/><div id='LayerGenBoxx'><div className='contract-deployed-container' style={{marginTop:"20px"}}><BoxTitle data={{divClass:'generatorRightPanelTitle', textType:'h4', text:'Generated Samples.'}}/><ThaSamples/></div></div></div></div>;
+            mainBox = <div className='contract-deployed-container' >
+                <ContractBox/>
+                <div id='LayerGenBoxx'>
+                    <div id='nftSamples-container' className='nftSamples-contracted-container' >
+                        <BoxTitle data={{divClass:'generatorRightPanelTitle', textType:'h4', text:'Generated Samples.'}}/>
+                        <ThaSamples/>
+                    </div>
+                    <button  className="expander-div" onClick={(e)=>{ expandABox(e, document.getElementById( 'nftSamples-container' ), 'nftSamples-expanded-container', 'nftSamples-contracted-container' ); }} >..expand..</button>
+                </div>
+            </div>;
             // LayerUpldBoxTitle = <div> <BoxTitle data={{divClass:'generatorRightPanelTitle', textType:'h1', text:'Contract.'}}/><BoxTitle data={{divClass:'generatorRightPanelTitle', textType:'span', text:`Click the "${(activeContract)?state.data["contracts"][activeContract]?.name:state.data["contracts"][0]?.name}" button to view the NFT contract. \nIf you already have a contract, click "Already have a contract" to link your contract.` }}/></div>
             break;
         case "RandomGenerator-LayerOptions-AddLayer":
@@ -1201,7 +1193,7 @@ function RandomGenerator (props){
         }
     }
     
-    return( <> <LoadingBox/> <MsgBox subState={ state.currsubState } /> <div className='popupdark' id='popup'> <MainContainer/> </div> </> )
+    return( <div className='popupdark' id='popup'> <MainContainer/> </div> )
 };
 
 export { RandomGenerator };

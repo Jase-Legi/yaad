@@ -90,16 +90,16 @@ const App = ()=>{
             currentState = <WalletBox/>;
             break;
         case 'createnft':
-            currentState = <> <LoadingBox data={{class:activeStatus}}/> <SingleNft/> </>;
+            currentState = <SingleNft/>;
             break;
         case 'RandomGenerator':
             currentState = <RandomGenerator/>
             break;
         case 'SelectCreateOption':
-            currentState = <> <MsgBox subState={ state.currsubState } /> <SelectCreateOption /> </>
+            currentState = <SelectCreateOption />
             break;
         default:
-            currentState = <> <div className='popupdark'> <WelcomeBox data={{message: "De-Fi"}} /> </div> </>
+            currentState = <WelcomeBox data={{message: "De-Fi"}} />;
             // currentState = <div style={{ backgroundColor: "rgba(0, 3, 40, 0.7)", backdropFilter: "blur(5px)", minHeight:"100vh", width:"100%"}}><Header data={state}/>{/* <div style={{padding:"20px", backgroundColor:"yellow", height: "fit-content", margin: "20px 0px"}}> <h1 style={{color:"#000"}}> Create & deploy assets to the blockchain! </h1> <span style={{display: "block", textAlign: "center", fontSize:"15px", fontWeight: "500"}}>-Generate and Store NFT projects(no code needed)<br></br><br></br>-Create NFTs -Create Tokens<br></br></span></div> <button className="enableEthereumButton" onClick={mintNEW}>mint</button> <button className="enableEthereumButton" onClick={iswalletConnected}>Enable Ethereum</button> */}<WelcomeBox/></div>;
             break;
     }
