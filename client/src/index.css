@@ -25,7 +25,7 @@ body{
 	clear: both;
 	height: 100%;
 	font-size:13px;
-    background-color: rgb(109, 109, 109);
+    background-color: rgb(1, 1, 1);
 	background: url("../public/yaadfavicon_bg.svg") no-repeat center center fixed;
     background-size: cover;
 	-webkit-background-size: cover;
@@ -76,7 +76,7 @@ option {
 }
 
 ::-webkit-scrollbar{
-    width: 10px;
+    width: 7.5px;
 }
 
 ::-webkit-scrollbar-track{
@@ -85,7 +85,7 @@ option {
 
 ::-webkit-scrollbar-thumb{
     background-color: rgb(190, 190, 190);
-    border-radius: 5px;
+    border-radius: 3.75px;
 }
 
 button:hover { background: yellow; border:none; color: #000;}

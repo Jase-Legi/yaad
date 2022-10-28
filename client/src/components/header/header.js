@@ -1,6 +1,9 @@
+import { useContext } from "react";
+import { StateContext } from "../../context/StateContext";
 // import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
-function Header({state}){
+const Header = ()=>{
+    const { state, setState } = useContext( StateContext );
     function SearchBar(){ return ( <div className='search-Header-Div'> <button className="headerElementSearch" type='button'> </button> </div> ) };
     
     function Dropdown(props) {
@@ -20,7 +23,7 @@ function Header({state}){
         
     
         return(
-            <div className='headerElementMenu'>
+            <div className='headerElementMenu' onClick={ ()=>{ setState( (prev)=>( {...prev, state:"connect", newState:( !state.state )?"home":state.state, oldState:null } ) ); } } >
                 <div className="cd-header">
                     <img src='./wallet.svg' alt="" />	
                 </div>

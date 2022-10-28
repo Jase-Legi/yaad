@@ -9,13 +9,12 @@ function WelcomeBox({ data }){
 
     return (
         <>
-        <LoadingBox/>
         <Header/>
         <div className='welcomeBox'>
                 <div className="welcomeBoxElement">
                     {/* <Link to='/selectCreateOption'> */}
-                        
-                        <button className='containerbox' onClick={ ()=>{ showLoading(); setState((prev)=>({...prev, state:"connect", newState:"SelectCreateOption", oldState:null } ) ); }} >
+                        <button className='containerbox' onClick={ ()=>{ showLoading(); setState((prev)=>({...prev, state:"SelectCreateOption" } ) ); }} > 
+                        {/* setState((prev)=>({...prev, state:"connect", newState:"SelectCreateOption", oldState:null } ) );*/}
                             <div className='title'>
                                 <h1>Create</h1>
                                 <span style={{display:"block", textAlign:"center", }}> NFTs, Tokens(ERC20, 721, 1155) </span> 
@@ -23,8 +22,7 @@ function WelcomeBox({ data }){
                         </button>
                     {/* </Link> */}
                 </div>
-            
-            <div className="welcomeBoxElement">
+            {/* <div className="welcomeBoxElement">
                 <button className='containerbox' onClick={()=>{return;}} >
                     <div className='title'>
                         <h1> { data?.message } </h1>
@@ -47,7 +45,7 @@ function WelcomeBox({ data }){
                         <span style={{display:"block", textAlign:"center"}}> coming soon </span>
                     </div>
                 </button>
-            </div>
+            </div> */}
         </div>
         </>
     );

@@ -39,7 +39,7 @@
 }
 
 .headerElementMenu{
-	width:40px;
+	width:50px;
 	z-index: 2000;
 	max-width: 50px !important;
 	line-height: 50px;
@@ -203,10 +203,16 @@
 .cd-header{
 	width:30px;
     height: 30px;
-    /* background-color: black; */
-    border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 20px;
+    padding: 5px;
     margin: auto;
 	z-index:200;
+    cursor: pointer !important;
+}
+
+.cd-header:hover{
+    background-color: rgb( 255, 255, 0 );
 }
 
 .nav-but-wrap{

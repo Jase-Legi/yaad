@@ -19,6 +19,7 @@ const WalletBox = ( )=>{
             {selectedChain}
         </div>)
     });
+    console.log(`new state: "${state.newState}"`);
     
     return(<div className='boxOverlay'>
         <div className='walletBox'>
@@ -28,7 +29,7 @@ const WalletBox = ( )=>{
             </div>
             <div className='walletOptions'>
                 <BoxTitle data={{ textType:"h3", divClass:"headerStyle", textClass:"centeredText", text:"2. Connect wallet", divID:"divID" }} />
-                <div className='walletElement' onClick={ async (e)=>{ showLoading(e); if( networkSelected.status ){ console.log(`heyalll`); await walletConnected( blockchainNetworks[ networkSelected.index ] ); hideLoading(e); if ( state.newState ) setState((prev)=>({...prev, state:prev.newState, newState:null, oldState:null })) } else {  return hideLoading(e); } }}>
+                <div className='walletElement' onClick={ async (e)=>{ showLoading(e); if( networkSelected.status ){ console.log(`heyalll`); await walletConnected( blockchainNetworks[ networkSelected.index ] ); hideLoading(e); if ( state.newState ) return setState((prev)=>({...prev, state:prev.newState, newState:null, oldState:null })) } else {  return hideLoading(e); } }}>
                     <img src='./metamask.svg' alt='' style={{ height:'35px', width:'35px', borderRadius:'7.5px' }}/>
                     <span>Metamask Wallet</span>
                 </div>

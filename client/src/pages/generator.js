@@ -31,7 +31,8 @@ function RandomGenerator (props){
 
             console.log(`possible combos: ${state.data.possibleCombos}`);
         }
-    }, [ state.data.layers?.length ])
+    }, [ state.data.layers?.length ] )
+    
     let da_files;
     var wrongFiles = [];
     state.data.activeContract = 0;

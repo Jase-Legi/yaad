@@ -4,7 +4,7 @@
 }
 
 ::-webkit-scrollbar{
-    width: 5px;
+    width: 7.5px;
 }
 
 ::-webkit-scrollbar-track{
@@ -13,7 +13,7 @@
 
 ::-webkit-scrollbar-thumb{
     background-color: rgb(190, 190, 190);
-    border-radius: 5px;
+    border-radius: 3.75px;
 }
 
 .boxOverlay{
@@ -29,6 +29,17 @@
     box-sizing: border-box !important;
     background-color:rgba(33, 33, 33, 0.9) !important;
     backdrop-filter: blur(5px);
+    -webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover; 
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    user-select: none;
+    -ms-user-select: none;
+    -ms-touch-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
     scrollbar-color: rgb(10, 11, 21);
     scrollbar-width: thin;
 }
