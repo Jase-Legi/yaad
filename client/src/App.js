@@ -13,7 +13,7 @@ import { MsgBox } from "./components/errorbox/errorbox";
 // import './styles/walletModal.css';
 
 let baseServerUri = ( window.location.host  === "localhost:3000" )?'api/':'https://yaadlabs.herokuapp.com/api/';
-const homeState = { state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null, baseServerUri, chainID: null, address: null };
+const homeState = { state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null, baseServerUri, chainData: null, account: null };
 const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
 const App = ()=>{
     const [ state, setState ] = useState( homeState );

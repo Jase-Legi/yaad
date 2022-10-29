@@ -53,7 +53,7 @@ function RandomGenerator (props){
         showLoading(e);
         
         if(!state.data.coll_name || state.data.coll_name.trim() === ""){
-            return setMsgStacks( (prev)=>({...prev, msgdetails:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState }) );
+            return setMsgStacks( (prev)=>({...prev, formdata:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState }) );
         }
         
         if(!state.data.coll_symbol || state.data.coll_symbol.trim() === ""){
@@ -1150,7 +1150,7 @@ function RandomGenerator (props){
         if(!currentSubState){
             return(
                 <>
-                    <button className='closeBox' onClick={()=> setState( homeState ) }>X</button>
+                    <button className='closeBox' onClick={()=> setState( (prev)=>({...prev, state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null, }) ) }>X</button>
                     <div className='RandomGenerator'>
                         {coll_Name_Box}
                         <div className='LayerGenBox'>
