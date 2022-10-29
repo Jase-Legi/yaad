@@ -288,8 +288,8 @@ text {
     height: 100% !important;
     overflow-y:auto;
     box-sizing: border-box !important;
-    background-color:rgba(10, 11, 12, .75) !important;
-    backdrop-filter: blur(5px);
+    background-color:rgba(21, 21, 21, 0.95) !important;
+    backdrop-filter: blur(10px);
     scrollbar-color: rgb(10, 11, 12);
     scrollbar-width: thin;
 }
@@ -400,8 +400,8 @@ text {
     min-width: 150px;
     height: 200px;
     text-align: center;
-    background-color: rgb(10, 11, 12, 0.95);
-    color: white;
+    background-color: rgba( 255, 255, 255 );
+    color: #000000;
     font-size:1.5em;
     font-weight: 700;
     border-radius: 25px;

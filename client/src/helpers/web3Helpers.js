@@ -1,10 +1,12 @@
+import { useContext } from 'react'
+import { MsgContext } from '../context/msgcontext'
 import { providers, Contract, utils, BigNumber, ContractFactory } from 'ethers';
 
 let provider = null, signer = null, currentNetwork = null, oldNetwork = null;
 
 // Chec for web 3 injected global variable 
 if ( typeof window.ethereum !== 'undefined' ) {
-    provider = new providers.Web3Provider(window.ethereum, 'any');
+    provider = new providers.Web3Provider( window.ethereum, 'any' );
     // Wait for network connection
     provider.on('network', (newNetwork, old_Network) => {
         currentNetwork = newNetwork;
@@ -159,6 +161,47 @@ const blockchainNetworks = [
     }
 ]
 
+const connectToChain = async ( chain )=>{
+    if ( window.ethereum ){
+        try {
+            const switchChain = await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [ { chainId: chain.networkParameters.chainId } ]});
+            if ( switchChain === null ){
+                return true;
+            }
+        } catch ( switcherror ) {
+            if ( switcherror.code === 4902 ) {
+                try {
+                    const switchChain = await window.ethereum.request({ method:'wallet_addEthereumChain', params:[ chain.networkParameters ] });
+                    if ( switchChain === null ) {
+                        return true;
+                    }
+                } catch ( addAccountError ) {
+                    
+                    return addAccountError;
+                        
+                }
+            }
+
+            return switcherror;
+        }
+    } else {
+        return { code: 'NO_WALLET', msg:'No web3 wallet detected.' }
+    }
+};
+
+const currentAddress = async ()=>{
+    if ( window.ethereum ){
+        try {
+            const account = await window.ethereum.request( { method: 'eth_requestAccounts' } );
+            return account[0];
+        } catch ( error ) {
+            return error;
+        }
+    } else {
+        return { code: 'NO_WALLET', msg:'No web3 wallet detected.' }
+    }
+};
+
 const walletConnected = async ( chain )=>{
     if(window.ethereum){
         try {
@@ -234,4 +277,4 @@ const mintNFT = async (uri, tokenAddress, tokenAbi, signer )=>{
     return isconnected;
 }
 
-export { walletConnected, signer, currentNetwork, oldNetwork, mintNFT, blockchainNetworks }
+export { currentAddress, signer, currentNetwork, oldNetwork, mintNFT, blockchainNetworks, connectToChain }

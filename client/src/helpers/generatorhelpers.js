@@ -15,5 +15,21 @@ const shuffle = (arra1)=> {
     return arra1;
 }
 
+const get_all_possible_array_combos =  async ( input, output, n, da_path )=>{
+    da_path = (da_path === null || da_path === undefined)? []: da_path;
+    n = (n === null || n === undefined)? 0:n;
+    if(n < input.length){
+        const current_item = input[n]; let gogo = 0;
+        while(gogo < current_item.length){
+            let val = current_item[gogo];
+            da_path.push(val);
+            get_all_possible_array_combos(input, output, n+1, da_path);
+            da_path.pop();
+            gogo++;
+        }
+    }else{
+        output.push(da_path.slice());
+    }
+};
 
-export { shuffle };
+export { shuffle, get_all_possible_array_combos };

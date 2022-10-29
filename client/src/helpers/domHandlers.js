@@ -16,4 +16,9 @@ const expandABox  = ( e, expandee, expandedClass, contractedClass )=>{
     }
 };
 
-export { expandABox }
+const divSwapper = (node1, node2)=>{
+    node1.parentNode.replaceChild(node1, node2);
+    node1.parentNode.insertBefore(node2, node1); 
+}
+
+export { expandABox, divSwapper }

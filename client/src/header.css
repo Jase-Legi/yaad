@@ -199,11 +199,11 @@
 
 /* #Navigation
 ================================================== */
- 
+
 .cd-header{
 	width:30px;
     height: 30px;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba( 255, 255, 0 );
     border-radius: 20px;
     padding: 5px;
     margin: auto;
@@ -212,7 +212,7 @@
 }
 
 .cd-header:hover{
-    background-color: rgb( 255, 255, 0 );
+    background-color: rgb( 255, 255, 255 );
 }
 
 .nav-but-wrap{

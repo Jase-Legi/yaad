@@ -4,6 +4,7 @@ import { RandomGenerator } from './pages/generator';
 import { SingleNft } from './pages/singleNFT';
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { connectToChain, signer,  currentNetwork, blockchainNetworks, currentAddress } from "./helpers/web3Helpers";
 import { StateContext } from './context/StateContext';
 import { MsgContext } from './context/msgcontext';
 import { LoadingBox, showLoading, hideLoading } from "./components/ui/loading";
@@ -11,11 +12,8 @@ import { WalletBox } from './components/ui/walletmodal';
 import { MsgBox } from "./components/errorbox/errorbox";
 // import './styles/walletModal.css';
 
-
-const pumpum = window.location.host;
-
-let baseServerUri = (pumpum  === "localhost:3000")?'api/':'https://yaadlabs.herokuapp.com/api/';
-const homeState = { state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null, baseServerUri: baseServerUri,};
+let baseServerUri = ( window.location.host  === "localhost:3000" )?'api/':'https://yaadlabs.herokuapp.com/api/';
+const homeState = { state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null, baseServerUri, chainID: null, address: null };
 const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
 const App = ()=>{
     const [ state, setState ] = useState( homeState );
@@ -100,7 +98,6 @@ const App = ()=>{
             break;
         default:
             currentState =<div className='popupdark'> <WelcomeBox data={{message: "De-Fi"}} /> </div>;
-            // currentState = <div style={{ backgroundColor: "rgba(0, 3, 40, 0.7)", backdropFilter: "blur(5px)", minHeight:"100vh", width:"100%"}}><Header data={state}/>{/* <div style={{padding:"20px", backgroundColor:"yellow", height: "fit-content", margin: "20px 0px"}}> <h1 style={{color:"#000"}}> Create & deploy assets to the blockchain! </h1> <span style={{display: "block", textAlign: "center", fontSize:"15px", fontWeight: "500"}}>-Generate and Store NFT projects(no code needed)<br></br><br></br>-Create NFTs -Create Tokens<br></br></span></div> <button className="enableEthereumButton" onClick={mintNEW}>mint</button> <button className="enableEthereumButton" onClick={iswalletConnected}>Enable Ethereum</button> */}<WelcomeBox/></div>;
             break;
     }
 

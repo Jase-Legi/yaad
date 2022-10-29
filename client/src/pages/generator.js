@@ -2,11 +2,11 @@ import React, { useContext, useState, useEffect, useMemo } from 'react'
 import { StateContext } from '../context/StateContext';
 import { imgToBase64String, imgURLFromBase64String } from "../helpers/imgBLOBto64";
 import { ContractFactory } from "ethers";
-import { walletConnected, signer,  currentNetwork, blockchainNetworks, } from "../helpers/web3Helpers";
+import { connectToChain, signer,  currentNetwork, blockchainNetworks, currentAddress } from "../helpers/web3Helpers";
 import { validateIMGtype } from "../helpers/imgdatahelpers";
 import { isAplhaNumeric, stringLengthRange } from "../helpers/stringValidator";
-import { shuffle } from "../helpers/generatorhelpers";
-import { expandABox } from "../helpers/domHandlers";
+import { shuffle, get_all_possible_array_combos } from "../helpers/generatorhelpers";
+import { expandABox, divSwapper } from "../helpers/domHandlers";
 import yaadcontract from '../contracts/yaad.json';
 import nftcontract from '../contracts/the_yaad.sol';
 import { DaInput, BoxTitle, Buttonz } from '../components/form/formcomps';
@@ -32,7 +32,7 @@ function RandomGenerator (props){
             console.log(`possible combos: ${state.data.possibleCombos}`);
         }
     }, [ state.data.layers?.length ] )
-    
+
     let da_files;
     var wrongFiles = [];
     state.data.activeContract = 0;
@@ -53,7 +53,7 @@ function RandomGenerator (props){
         showLoading(e);
         
         if(!state.data.coll_name || state.data.coll_name.trim() === ""){
-            return setMsgStacks( (prev)=>({...prev, formdata:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState }) );
+            return setMsgStacks( (prev)=>({...prev, msgdetails:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState }) );
         }
         
         if(!state.data.coll_symbol || state.data.coll_symbol.trim() === ""){
@@ -79,7 +79,7 @@ function RandomGenerator (props){
                     }
                 };
 
-                const connected = await walletConnected( blockchainNetworks[6] );
+                const connected = await connectToChain( blockchainNetworks[6] );
                 let contractData = new FormData();
                 if( connected === false ) { hideLoading(); return false; }
                 contractData.append('contractJSON', JSON.stringify(contractOptions));
@@ -324,27 +324,10 @@ function RandomGenerator (props){
             hideLoading(e)
             return setMsgStacks((prev)=>({...prev, formdata: [ {id: null, value: null, msg: "Add more images to your layers or add more layer."} ], substate: state.currentSubState}));
         }
-        let conntd = await walletConnected( blockchainNetworks[6] );
+        let conntd = await connectToChain( blockchainNetworks[6] );
         if( conntd === false ){ return false; }
         
         state.data.account = conntd;
-        
-        const get_all_possible_combos =  async ( input, output, n, da_path )=>{
-            da_path = (da_path === null || da_path === undefined)? []: da_path;
-            n = (n === null || n === undefined)? 0:n;
-            if(n < input.length){
-                const current_item = input[n]; let gogo = 0;
-                while(gogo < current_item.length){
-                    let val = current_item[gogo];
-                    da_path.push(val);
-                    get_all_possible_combos(input, output, n+1, da_path);
-                    da_path.pop();
-                    gogo++;
-                }
-            }else{
-                output.push(da_path.slice());
-            }
-        };
 
         const loop_and_pin_layers = async ( collName, layers )=>{
             let emptyComboArray = []; state.data.newlayers = [];
@@ -455,7 +438,7 @@ function RandomGenerator (props){
             const map_traits = await mapTraitTypes(loop_and_pin);
             const traittypes_fin = await traitTypesPushNA(map_traits[0], map_traits[1]);
             
-            await get_all_possible_combos(traittypes_fin, comboz);
+            await get_all_possible_array_combos(traittypes_fin, comboz);
             await shuffle(comboz);
             console.log(`bg: ${JSON.stringify(bgArray)}`)
             if ( bgArray?.length > 0 ) { await insertBackground( comboz, bgArray ); }
@@ -646,11 +629,6 @@ function RandomGenerator (props){
                     initPositions.push( element.getBoundingClientRect().top + document.getElementById('popup').scrollTop );
                 });
             },[elebox, initPositions])
-            
-            function swapSibling(node1, node2) {
-                node1.parentNode.replaceChild(node1, node2);
-                node1.parentNode.insertBefore(node2, node1); 
-            }
 
             const layer_move_initializer = (event)=>{
                 if(event.target.getAttribute('class') === 'generatorRightPanelLayerBox'){
@@ -678,7 +656,7 @@ function RandomGenerator (props){
                                 initPositions.forEach((element, i) => {
                                     if ( indexOfSelectedItem > i ) {
                                         if ( ( ( e.clientY + popup.scrollTop ) - 35 ) < ( element ) && ( ( e.clientY + popup.scrollTop ) - 35 ) > ( element - 70 ) ) {
-                                            swapSibling(arrayOfEles[i].parentNode, div.parentNode);
+                                            divSwapper(arrayOfEles[i].parentNode, div.parentNode);
                                             newindex = i;
                                             indexOfSelectedItem = i;
                                         }
@@ -686,7 +664,7 @@ function RandomGenerator (props){
 
                                     if( indexOfSelectedItem < i ) {
                                         if ( ( ( e.clientY + popup.scrollTop ) + 35 ) > ( element + 70 ) && ( ( e.clientY + popup.scrollTop ) + 35 ) < ( element + 140 ) ) {
-                                            swapSibling(div.parentNode, arrayOfEles[i].parentNode);
+                                            divSwapper(div.parentNode, arrayOfEles[i].parentNode);
                                             newindex = i;
                                             indexOfSelectedItem = i;
                                         }
@@ -701,7 +679,7 @@ function RandomGenerator (props){
                                 initPositions.forEach((element, i) => {
                                     if ( indexOfSelectedItem > i ) {
                                         if( ( ( e.touches[0].clientY + popup.scrollTop ) - 35 ) < (element) && ( ( e.touches[0].clientY + popup.scrollTop ) - 35 ) > ( element - 70 ) ){
-                                            swapSibling(arrayOfEles[i].parentNode, div.parentNode);
+                                            divSwapper(arrayOfEles[i].parentNode, div.parentNode);
                                             newindex = i;
                                             indexOfSelectedItem = i;
                                         }
@@ -709,7 +687,7 @@ function RandomGenerator (props){
 
                                     if ( indexOfSelectedItem < i ) {
                                         if( ( ( e.touches[0].clientY + popup.scrollTop ) + 35 ) > ( element + 70 ) && ( ( e.touches[0].clientY + popup.scrollTop ) + 35 ) < ( element + 140 )){
-                                            swapSibling( div.parentNode, arrayOfEles[i].parentNode );
+                                            divSwapper( div.parentNode, arrayOfEles[i].parentNode );
                                             newindex = i;
                                             indexOfSelectedItem = i;
                                         }
@@ -792,7 +770,7 @@ function RandomGenerator (props){
                 let eleKey = [].indexOf.call(document.getElementsByClassName(eleClassName), eleparentNode);
                 let delVal = state.data.layers[eleKey].traits.splice(eleindex, 1);
                 let boddy = new FormData();
-                let conntd = await walletConnected( blockchainNetworks[6] );
+                let conntd = await currentAddress();
                 
                 if(conntd !== false){
                     boddy.append('account', conntd);
@@ -833,7 +811,7 @@ function RandomGenerator (props){
                             <img src={imgsrc} alt=''/>
                             <div className='traitName'>
                                 <input className='traitNameBox' id={"traitName_"+indxx} placeholder={state.data.layers[props.obj.key].traits[indxx].trait_name} type="text" name='name' onClick={(e)=>{ e.target.value = state.data.layers[props.obj.key].traits[parseInt(e.target.getAttribute("id").split("_")[1])].trait_name}} onChange={setTrait} />
-                                <Buttonz data={{class:"edit-trait-img-svg", id:'delele_'+indxx, value:'X', func: delTrait}} />
+                                <button className="edit-trait-img-svg" id={`delele_${indxx}`} onCLick={delTrait} >X</button>
                             </div>
                         </div>
                     </div>)                             
@@ -909,7 +887,7 @@ function RandomGenerator (props){
             const eleindex = parseInt(ele.getAttribute('id').split('_')[1]);
             const delVal = state.data.background.splice(eleindex, 1);
 
-            // const conntd = await walletConnected();
+            // const conntd = await connectToChain();
             // if(conntd !== false){
             //     boddy.append('account', conntd);
             // }else{
