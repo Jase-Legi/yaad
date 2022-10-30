@@ -11,7 +11,7 @@ const validateIMGtype = async ( demFiles, childClassName, parentIdName, wrongFil
     
     let loadedImgs = 0;
 
-    const signatures = ['89504e47'.toLowerCase(), 'FFD8FFE0'.toLowerCase(), 'FFD8FFE1'.toLowerCase(), 'FFD8FFE2'.toLowerCase(), 'FFD8FFE8'.toLowerCase() ];
+    const signatures = ['89504e47'.toLowerCase(), 'FFD8FFE0'.toLowerCase(), 'FFD8FFE1'.toLowerCase(), 'FFD8FFE2'.toLowerCase(), 'FFD8FFE8'.toLowerCase(), 'FFD8FFDB'.toLowerCase(), 'FFD8FFEE'.toLowerCase() ];
 
     for ( let n = 0; n < demlen ; n++ ) {
         let dafile = demFiles[n];

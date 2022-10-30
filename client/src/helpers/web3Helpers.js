@@ -1,5 +1,3 @@
-import { useContext } from 'react'
-import { MsgContext } from '../context/msgcontext'
 import { providers, Contract, utils, BigNumber, ContractFactory } from 'ethers';
 
 let provider = null, signer = null, currentNetwork = null, oldNetwork = null;

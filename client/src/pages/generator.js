@@ -1151,8 +1151,8 @@ function RandomGenerator (props){
         if(!currentSubState){
             return(
                 <>
-                    <button className='closeBox' onClick={()=> setState( (prev)=>({...prev, state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null }) ) }>X</button>
                     <div className='RandomGenerator'>
+                        <button className='closeBox' onClick={()=> setState( (prev)=>({...prev, state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null }) ) }>X</button>
                         {coll_Name_Box}
                         <div className='LayerGenBox'>
                             {LayerUpldBoxTitle}
@@ -1164,12 +1164,10 @@ function RandomGenerator (props){
                 </>
             )
         }else{
-            return(
-                <>
-                    <Buttonz data={{class:"closeBox", id:'', value:'X', func: closeLayerOptionsBox}} />
-                    <div className='LayerOptionsBox'>{currentSubState}</div>
-                </>
-            )
+            return(<div className='LayerOptionsBox'>
+                <Buttonz data={{class:"closeBox", id:'', value:'X', func: closeLayerOptionsBox}} />
+                {currentSubState}
+            </div>)
         }
     }
     

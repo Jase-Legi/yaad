@@ -39,7 +39,7 @@ body{
     -ms-touch-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
-    scrollbar-color: rgb(10, 11, 12);
+    scrollbar-color: rgb(10, 11, 11);
     scrollbar-width: thin;
 }
 
@@ -71,7 +71,7 @@ option {
 }
 
 .scroller{
-    scrollbar-color: rgb(10, 11, 12);
+    scrollbar-color: rgb(10, 11, 11);
     scrollbar-width: thin;
 }
 
@@ -80,7 +80,7 @@ option {
 }
 
 ::-webkit-scrollbar-track{
-    background-color: rgb(10, 11, 12);
+    background-color: rgb(10, 11, 11);
 }
 
 ::-webkit-scrollbar-thumb{
@@ -217,7 +217,7 @@ text {
 }
 .error-box-closer:hover{
     background-color: #fff;
-    color: rgb(10, 11, 12);
+    color: rgb(10, 11, 11);
 }
 
 #loadingbttn{
@@ -227,7 +227,7 @@ text {
     width: 120px;
     top: calc(50vh - 60px);
     left: calc(50vw - 60px);
-    background-color: rgb(10, 11, 12);
+    background-color: rgb(10, 11, 11);
     border-radius: 10px;
 }
 
@@ -248,7 +248,7 @@ text {
     background-color:rgba(255, 255, 255, .3);
     inset: 0px !important;
     display: flex !important;
-    scrollbar-color: rgb(10, 11, 12);
+    scrollbar-color: rgb(10, 11, 11);
     scrollbar-width: thin;
     backdrop-filter: blur(5px);
 
@@ -273,8 +273,8 @@ text {
     overflow-y:auto;
     box-sizing: border-box !important;
     background-color:rgba(255, 255, 255, .1) !important;
-    backdrop-filter: blur(1px);
-    scrollbar-color: rgb(10, 11, 12);
+    /* backdrop-filter: blur(1px); */
+    scrollbar-color: rgb(10, 11, 11);
     scrollbar-width: thin;
 }
 
@@ -289,24 +289,22 @@ text {
     overflow-y:auto;
     box-sizing: border-box !important;
     background-color:rgba(21, 21, 21, 0.1) !important;
-    backdrop-filter: blur(1px);
-    scrollbar-color: rgb(10, 11, 12);
+    /* backdrop-filter: blur(1px); */
+    scrollbar-color: rgb(10, 11, 11);
     scrollbar-width: thin;
 }
 
 .closeBoxDark{
-    position: fixed;
-    top:20px;
-    left:20px;
+    position: relative;
+    display: block;
     width: 50px;
     height: 50px;
     font-size: 2em;
-    /* padding: 20px; */
+    margin-bottom: 10px;
     font-weight:800;
     user-select: none;
     align-items: center;
     align-content: center;
-    vertical-align: middle;
     line-height:normal;
     background-color: rgb(255, 255, 255);
     color: rgb(0, 0, 0);
@@ -323,20 +321,18 @@ text {
 }
 
 .closeBox{
-    position: fixed;
-    top:20px;
-    left:20px;
+    position: relative;
+    display: block;
     width: 50px;
     height: 50px;
     font-size: 2em;
-    /* padding: 20px; */
+    margin-bottom: 10px;
     font-weight:800;
     user-select: none;
     align-items: center;
     align-content: center;
-    vertical-align: middle;
     line-height:normal;
-    background-color: rgba(10, 11, 12, 1);
+    background-color: rgba( 10, 11, 11 );
     color: white;
     border-radius: 50px;
     box-sizing: border-box;
@@ -357,11 +353,11 @@ text {
     min-width: 100px;
     height:fit-content !important;
     box-sizing:border-box !important;
-    margin: 0px auto;
+    margin: 90px auto 40px auto;
     padding: 20px;
     user-select: none;
     text-align: center;
-    background-color: rgba(255, 255, 255, .6);
+    background-color: rgba( 255, 255, 255 );
     box-sizing: border-box;
     border-radius: 15px;
 }
@@ -434,7 +430,8 @@ text {
     font-weight: 700;
     border-radius: 25px;
     outline: none;
-    border:none;
+    border: solid 1px rgb( 52, 52, 52 );
+    box-sizing: border-box;
     display: table;
     width: 100%;
     padding: 0px !important;
@@ -465,7 +462,7 @@ text {
     text-align:left;
     background-color: rgb(243, 242, 242);
     border:none;
-    color: rgb(10, 11, 12);
+    color: rgb(10, 11, 11);
     font-size:1.5em;
     font-weight: 700;
     border-radius: 15px;
@@ -578,7 +575,7 @@ text {
     float: right;
     color: #444;
     font-weight: bold;
-    border: rgb(10, 11, 12) solid 1px;
+    border: rgb(10, 11, 11) solid 1px;
     background-color: rgb(190, 190, 190);
     border-radius: 10px;
     font-size: 10px;
@@ -911,7 +908,7 @@ text {
     max-width: 460px;
     width: 92vw;
     /* left: calc(50vw - 230px); */
-    background-color: rgb(10, 11, 12);
+    background-color: rgb( 10, 11, 11 );
     border-radius: 20px;
     box-sizing: border-box;
     padding: 30px;
@@ -1067,7 +1064,7 @@ text {
 
 .LayerUpldBttn > h1 {
     font-size: 60px;
-    color: rgb(10, 11, 12);
+    color: rgb(10, 11, 11);
     padding: 0px 0px 5px 0px;
     display: table-cell;
 }
@@ -1194,9 +1191,9 @@ text {
 
 .delLayerBttn:hover { background: red; border:none; color: #fff;}
 
-.nodelLayerBttn:hover { background: yellow; border:none; color: rgb(10, 11, 12);}
+.nodelLayerBttn:hover { background: yellow; border:none; color: rgb( 10, 11, 11 );}
 
-.LayerUpldBttn:hover{ background-color: yellow; cursor: pointer; color: rgb(10, 11, 12);}
+.LayerUpldBttn:hover{ background-color: yellow; cursor: pointer; color: rgb( 10, 11, 11 );}
 
 .detail-edit-trait-box{
     height: fit-content;
@@ -1208,7 +1205,7 @@ text {
     position:relative;
     border-radius: 8px;
     z-index: 9999999;
-    background-color: rgb(129, 129, 129, 0.98);
+    background-color: rgb( 129, 129, 129, 0.98 );
 }
 
 .LayerUpldContentBx{
@@ -1357,7 +1354,7 @@ text {
     padding: 1vw;
     user-select: none;
     text-align: center;
-    background-color: rgb(10, 11, 11, .95);
+    background-color: rgb( 10, 11, 11 );
     box-sizing: border-box;
     /* border: 0.5px solidrgb(52, 52, 52); */
     border-radius: 25px;
@@ -1367,7 +1364,7 @@ text {
     /* position: absolute; */
     width: 93vw;
     max-width: 1000px;
-    background-color: rgb(10, 11, 12, .8);
+    background-color: rgb(10, 11, 11, .8);
     border-radius: 20px;
     border: 0.5px solid rgb(52, 52, 52);
     box-sizing: border-box;
@@ -1498,14 +1495,14 @@ text {
     flex-direction: row;
     overflow-x:auto;
     overflow-y:hidden;
-    scrollbar-color: rgb(10, 11, 12) !important;
+    scrollbar-color: rgb(10, 11, 11) !important;
     scrollbar-width: thin !important;
 }
 
 .contract-box{
     border: solid 0.5px rgb(52, 52, 52);
     border-radius: 20px;
-    background-color: rgb(10, 11, 12);
+    background-color: rgb(10, 11, 11);
     width: 100%;
     height: fit-content;
     padding: 15px;
@@ -1518,7 +1515,7 @@ text {
 
 .expander-div{
     width: 100%;
-    background-color:rgb(10, 11, 12);
+    background-color:rgb(10, 11, 11);
     height: 30px;
     border-bottom-left-radius: 7.5px;
     border-bottom-right-radius: 7.5px;
@@ -1605,7 +1602,7 @@ text {
     height: 40px;
     user-select: none;
     text-align:left;
-    background-color: rgb(10, 11, 12);
+    background-color: rgb(10, 11, 11);
     border:solid 0.5px rgb(52, 52, 52) !important;
     box-sizing: border-box !important;
     color: #555;
@@ -1645,7 +1642,7 @@ text {
     height: 40px;
     user-select: none;
     text-align:left;
-    background-color: rgb(10, 11, 12);
+    background-color: rgb(10, 11, 11);
     border:solid 0.5px rgb(52, 52, 52) !important;
     box-sizing: border-box !important;
     color: rgb(83, 83, 83);

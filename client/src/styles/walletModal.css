@@ -27,8 +27,8 @@
     overflow-y:auto;
     overflow-x:hidden;
     box-sizing: border-box !important;
-    background-color:rgba(33, 33, 33, 0.9) !important;
-    backdrop-filter: blur(5px);
+    background-color:rgba(10, 11, 11, 0.05) !important;
+    /* backdrop-filter: blur(1px); */
     -webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
@@ -69,9 +69,35 @@
     text-align:left;
 }
 
+.closeWalletBox{
+    position: relative;
+    display: block;
+    width: 50px;
+    height: 50px;
+    font-size: 2em;
+    margin-bottom: 10px;
+    font-weight:800;
+    user-select: none;
+    align-items: center;
+    align-content: center;
+    line-height:normal;
+    background-color: rgb( 10, 11, 11 );
+    color: rgb(255, 255, 255);
+    border-radius: 50px;
+    box-sizing: border-box;
+    border: 1px solid rgb( 52, 52, 52 ) !important;
+    outline: none;
+    border:none;
+    padding: 0px !important;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
 .walletBox{
-    background-color: rgba(10,11,11,.95);
-    margin: 60px auto;
+    background-color: rgba( 10, 11, 11 );
+    margin: 90px auto;
     padding: 20px;
     position: relative;
     box-sizing: border-box;

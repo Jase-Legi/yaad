@@ -1,4 +1,5 @@
 const imgSignature = async ( file, callback )=>{
+    // initialize FileReader class
     let readr = new FileReader();
     // Read file as array buffer
     readr.readAsArrayBuffer(file);
@@ -13,6 +14,6 @@ const imgSignature = async ( file, callback )=>{
         for( let m = 0; m < buffArray.length; m++ ){ fileSignature += buffArray[m].toString(16); }
         return callback(fileSignature);
     }
-}
+};
 
 export { imgSignature }

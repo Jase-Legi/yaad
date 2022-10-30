@@ -54,6 +54,7 @@ const WalletBox = ( )=>{
     
     return(<div className='boxOverlay'>
         <div className='walletBox'>
+            <button className='closeWalletBox' onClick={()=>{ return setState( ( prev )=>( {...prev, state:( state.oldState )?prev.oldState:"home", newState:null, oldState:null } ))}} >X</button>
             <div className='networkOptions scroller'>
                 <BoxTitle data={{ textType:"h3", divClass:"headerStyle", textClass:"centeredText", text:'1. Select a network', divID:"divID" }} />
                 <div className='networkElements'> {bbx} </div>
