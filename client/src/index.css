@@ -307,7 +307,7 @@ text {
     align-content: center;
     line-height:normal;
     background-color: rgb(255, 255, 255);
-    color: rgb(0, 0, 0);
+    color: rgb( 0, 0, 0 );
     border-radius: 50px;
     box-sizing: border-box;
     border: 1px solid rgb( 52, 52, 52 );

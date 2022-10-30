@@ -6,7 +6,7 @@ function SelectCreateOption( { baseServerUri } ) {
     const {state, setState} = useContext( StateContext );
     return(
         <div className='createOptions'>
-            <button className='closeBoxDark' onClick={ ()=>setState((prev)=>({...prev, state:"", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null })) } >X</button>
+            <button className='closeBox' onClick={ ()=>setState((prev)=>({...prev, state:"", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null })) } >X</button>
             {/* <DaInput data={{ typeId:'single_asset', name:'single_asset', type:'file', hidden:true, accept:'image/*,video/*,audio/*,webgl/*', onChange:()=>false}}/> */}
             {/* <button className='popupBoxEle' id='createBox' onClick={()=>{document.getElementById('single_asset').click();}}>Single NFT</button> */}
             {/* <Link to='/createnft'> */}
