@@ -76,6 +76,7 @@
     position: relative;
     box-sizing: border-box;
     border-radius: 20px;
+    border: solid 1px rgb( 52, 52, 52 );
     height: fit-content !important;
     min-height: 300px;
 }

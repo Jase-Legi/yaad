@@ -272,8 +272,8 @@ text {
     height: 100% !important;
     overflow-y:auto;
     box-sizing: border-box !important;
-    background-color:rgba(255, 255, 255, .6) !important;
-    backdrop-filter: blur(5px);
+    background-color:rgba(255, 255, 255, .1) !important;
+    backdrop-filter: blur(1px);
     scrollbar-color: rgb(10, 11, 12);
     scrollbar-width: thin;
 }
@@ -288,10 +288,38 @@ text {
     height: 100% !important;
     overflow-y:auto;
     box-sizing: border-box !important;
-    background-color:rgba(21, 21, 21, 0.95) !important;
-    backdrop-filter: blur(10px);
+    background-color:rgba(21, 21, 21, 0.1) !important;
+    backdrop-filter: blur(1px);
     scrollbar-color: rgb(10, 11, 12);
     scrollbar-width: thin;
+}
+
+.closeBoxDark{
+    position: fixed;
+    top:20px;
+    left:20px;
+    width: 50px;
+    height: 50px;
+    font-size: 2em;
+    /* padding: 20px; */
+    font-weight:800;
+    user-select: none;
+    align-items: center;
+    align-content: center;
+    vertical-align: middle;
+    line-height:normal;
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    border-radius: 50px;
+    box-sizing: border-box;
+    border: 1px solid rgb( 52, 52, 52 );
+    outline: none;
+    border:none;
+    padding: 0px !important;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 .closeBox{
@@ -311,9 +339,9 @@ text {
     background-color: rgba(10, 11, 12, 1);
     color: white;
     border-radius: 50px;
-    /*margin: 50px;*/
+    box-sizing: border-box;
     outline: none;
-    border:none;
+    border:solid 1px rgb( 52, 52, 52 );
     padding: 0px !important;
     cursor: pointer;
     -webkit-appearance: none;
@@ -887,7 +915,7 @@ text {
     border-radius: 20px;
     box-sizing: border-box;
     padding: 30px;
-    /* top: 80px; */
+    border: 1px solid rgb( 52, 52, 52 );
     margin: 80px auto auto auto;
     height: fit-content;
     min-height: 100px;

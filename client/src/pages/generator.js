@@ -764,22 +764,23 @@ function RandomGenerator (props){
                 showLoading();
                 e.preventDefault();
                 const ele = e.target;
+                console.log(`del trait`)
                 let eleindex = parseInt(ele.getAttribute('id').split('_')[1]);
                 let eleparentNode = ele.parentNode.parentNode.parentNode.parentNode;
                 let eleClassName = eleparentNode.getAttribute('class');
                 let eleKey = [].indexOf.call(document.getElementsByClassName(eleClassName), eleparentNode);
                 let delVal = state.data.layers[eleKey].traits.splice(eleindex, 1);
-                let boddy = new FormData();
-                let conntd = await currentAddress();
+                // let boddy = new FormData();
+                // let conntd = await currentAddress();
                 
-                if(conntd !== false){
-                    boddy.append('account', conntd);
-                }else{
-                    console.log(`Wallet not connected!!`);
-                    return false;
-                }
+                // if(conntd !== false){
+                //     boddy.append('account', conntd);
+                // }else{
+                //     console.log(`Wallet not connected!!`);
+                //     return false;
+                // }
                 
-                boddy.append('value', JSON.stringify(delVal));
+                // boddy.append('value', JSON.stringify(delVal));
 
                 // let deletedTrait = await fetch(state.baseServerUri+'/delTrait', {method:"post", body: boddy,}).then((res)=> res.json()).then((piss)=>piss);
                 
@@ -811,7 +812,7 @@ function RandomGenerator (props){
                             <img src={imgsrc} alt=''/>
                             <div className='traitName'>
                                 <input className='traitNameBox' id={"traitName_"+indxx} placeholder={state.data.layers[props.obj.key].traits[indxx].trait_name} type="text" name='name' onClick={(e)=>{ e.target.value = state.data.layers[props.obj.key].traits[parseInt(e.target.getAttribute("id").split("_")[1])].trait_name}} onChange={setTrait} />
-                                <button className="edit-trait-img-svg" id={`delele_${indxx}`} onCLick={delTrait} >X</button>
+                                <button className="edit-trait-img-svg" id={`delele_${indxx}`} onClick={delTrait} >X</button>
                             </div>
                         </div>
                     </div>)                             
@@ -1150,7 +1151,7 @@ function RandomGenerator (props){
         if(!currentSubState){
             return(
                 <>
-                    <button className='closeBox' onClick={()=> setState( (prev)=>({...prev, state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null, }) ) }>X</button>
+                    <button className='closeBox' onClick={()=> setState( (prev)=>({...prev, state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null }) ) }>X</button>
                     <div className='RandomGenerator'>
                         {coll_Name_Box}
                         <div className='LayerGenBox'>
