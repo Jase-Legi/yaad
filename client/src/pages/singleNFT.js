@@ -4,6 +4,7 @@ import { MsgContext } from '../context/msgcontext';
 import { imgToBase64String, imgURLFromBase64String } from "../helpers/imgBLOBto64";
 import { connectToChain, currentAddress, signer,  currentNetwork, oldNetwork, mintNFT, blockchainNetworks } from "../helpers/web3Helpers";
 import { validateIMGtype } from "../helpers/imgdatahelpers";
+import { imgSignature } from "../helpers/imgSignatures";
 import { isAplhaNumeric } from "../helpers/stringValidator";
 import yaadcontract from '../contracts/yaad.json';
 import nftcontract from '../contracts/the_yaad.sol';
@@ -11,15 +12,33 @@ import { DaInput, BoxTitle, Buttonz } from '../components/form/formcomps';
 import { LoadingBox, showLoading, hideLoading } from "../components/ui/loading";
 import { Link } from 'react-router-dom';
 
-
-
 function SingleNft (props){    
     const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
     const { state, setState } = useContext( StateContext );
     const { msg, setMsg } = useContext( MsgContext );
-
+    
     const handlesingleUpload = async (e)=>{
-        const files = e.target.files[0];
+        showLoading();
+        let fileLoaded = 0;
+        imgSignature(e.target.files[0], (fl)=>{
+            console.log(`file signature: ${fl}`);
+        })
+        const file = e.target.files[0];
+        const readr = new FileReader();
+        readr.addEventListener("load", ()=>{
+            fileLoaded++;
+            // console.log(`results: ${readr.result}`);
+            if ( fileLoaded === 1 ){
+                hideLoading();
+                return;
+            }
+
+        });
+
+        const uurl = readr.readAsDataURL( file );
+        return;
+        // const imgstring = await imgToBase64String(file);
+        // state.data.file
         let body = new FormData();
         let newItemName = ( state.data?.filename )? state.data?.filename.split('.'):null;
         
@@ -111,7 +130,7 @@ function SingleNft (props){
                 <input className='popupBoxTextEle' placeholder={ ( state.data?.name )?state.data?.name:'Name' } type="text" name='name' id='singleNFTName' onChange={ inputChnages } style={ {opacity:100, zIndex:1 } } />
                 <DaInput data={{ typeId:'singleNFTDesc', typeClass:'popupBoxTextAreaEle', name:'desc', placeholder:( state.data?.description )?state.data?.description:'Description', type:'textarea', onChange:inputChnages } } />
                 <input className='popupBoxTextEle' placeholder={ ( state.data?.collection )?state.data?.collection:'Collection' } type="text" name='collection' id='singleNFTColl' onChange={ inputChnages }  style={{opacity:100, zIndex:1}} />
-                <div style={{flexDirection:"row"}}>
+                <div style={{ flexDirection:"row", maxWidth:'600px', width: '100%', margin: '0px auto' }}>
                     <input className='popupBoxSmallTextAreaLeftEle' placeholder={ ( state.data?.price )?state.data?.price:'Price' } type="number" name='price' id='singleNFTPrice' onChange={ inputChnages }  style={{opacity:100, zIndex:1}} />
                     <input className='popupBoxSmallTextAreaRightEle' placeholder={ ( state.data?.royalties )?state.data?.royalties:'Royalties: max 50%' } type="number" name='royalties' id='singleNFTRoyalty' onChange={inputChnages} style={{opacity:100, zIndex:1}} />
                 </div>
@@ -132,4 +151,4 @@ function SingleNft (props){
     )
 }
 
-export { SingleNft }
+export default SingleNft;

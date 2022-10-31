@@ -3,7 +3,7 @@ import { StateContext } from '../context/StateContext';
 import { Link, Outlet } from 'react-router-dom';
 
 function SelectCreateOption( { baseServerUri } ) {
-    const {state, setState} = useContext( StateContext );
+    const { state, setState } = useContext( StateContext );
     return(
         <div className='createOptions'>
             <button className='closeBox' onClick={ ()=>setState((prev)=>({...prev, state:"", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null })) } >X</button>
@@ -20,4 +20,4 @@ function SelectCreateOption( { baseServerUri } ) {
     )
 };
 
-export { SelectCreateOption }
+export default SelectCreateOption;

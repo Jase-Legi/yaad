@@ -1,17 +1,24 @@
-import { WelcomeBox } from './pages/home';
-import { SelectCreateOption } from './pages/CreateOptions';
-import { RandomGenerator } from './pages/generator';
-import { SingleNft } from './pages/singleNFT';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+
+// import { WelcomeBox } from './pages/home';
+// import { SelectCreateOption } from './pages/CreateOptions';
+// import { RandomGenerator } from './pages/generator';
+// import { SingleNft } from './pages/singleNFT';
 import { connectToChain, signer,  currentNetwork, blockchainNetworks, currentAddress } from "./helpers/web3Helpers";
 import { StateContext } from './context/StateContext';
 import { MsgContext } from './context/msgcontext';
 import { LoadingBox, showLoading, hideLoading } from "./components/ui/loading";
-import { WalletBox } from './components/ui/walletmodal';
-import { MsgBox } from "./components/errorbox/errorbox";
-// import './styles/walletModal.css';
+import { Wallet } from 'ethers';
+// import WalletBox from './components/ui/walletmodal';
+// import MsgBox from "./components/msgbox/msgbox";
 
+const RandomGenerator = lazy(()=> import('./pages/generator'));
+const SelectCreateOption = lazy(()=> import('./pages/CreateOptions'));
+const SingleNft = lazy(()=> import('./pages/singleNFT'));
+const WelcomeBox = lazy(()=> import('./pages/home').then(home=>home));
+const WalletBox = lazy(()=> import('./components/ui/walletmodal').then( wallet=> wallet))
+const MsgBox = lazy(()=> import("./components/msgbox/msgbox") );
 let baseServerUri = ( window.location.host  === "localhost:3000" )?'api/':'https://yaadlabs.herokuapp.com/api/';
 const homeState = { state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null, baseServerUri, chainData: null, account: null };
 const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
@@ -106,8 +113,11 @@ const App = ()=>{
             <LoadingBox/>
             <MsgContext.Provider value={{ msgStacks, setMsgStacks }}>
                 <StateContext.Provider value={{ state, setState }}>
-                    <MsgBox subState={ state.currsubState } />
-                    {currentState}
+                    {/* catch delay betweeen component switch caused by the lazy load & show the loading svg*/}
+                    <Suspense fallback={<img src="./loading.svg" alt=""/>}>
+                        <MsgBox subState={ state.currsubState } />
+                        {currentState}
+                    </Suspense>
                 </StateContext.Provider>
             </MsgContext.Provider>
         </div>

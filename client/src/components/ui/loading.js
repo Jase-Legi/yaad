@@ -1,8 +1,8 @@
-
+import './loading.css'
 function LoadingBox({ data } ){
     // console.log(`loading data: ${JSON.stringify(data)}`)
     return(
-        <div id='loadingpopup' className='inactive'>
+        <div id='loadingpopup' className={(data?.state)?data.state:'inactive'}>
             <div id='loadingbttn' >
                 <img src="./loading.svg" alt=""/>
                 <div className='loadingbttn_text_box'>

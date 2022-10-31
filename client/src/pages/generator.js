@@ -11,9 +11,9 @@ import yaadcontract from '../contracts/yaad.json';
 import nftcontract from '../contracts/the_yaad.sol';
 import { DaInput, BoxTitle, Buttonz } from '../components/form/formcomps';
 import { LoadingBox, showLoading, hideLoading } from "../components/ui/loading";
-import { MsgBox } from '../components/errorbox/errorbox';
 import { MsgContext } from "../context/msgcontext";
 import { Link } from 'react-router-dom';
+import  './generator.css'
 
 function RandomGenerator (props){
     const pumpum = window.location.host;
@@ -812,7 +812,7 @@ function RandomGenerator (props){
                             <img src={imgsrc} alt=''/>
                             <div className='traitName'>
                                 <input className='traitNameBox' id={"traitName_"+indxx} placeholder={state.data.layers[props.obj.key].traits[indxx].trait_name} type="text" name='name' onClick={(e)=>{ e.target.value = state.data.layers[props.obj.key].traits[parseInt(e.target.getAttribute("id").split("_")[1])].trait_name}} onChange={setTrait} />
-                                <button className="edit-trait-img-svg" id={`delele_${indxx}`} onClick={delTrait} >X</button>
+                                <button className="del-trait" id={`delele_${indxx}`} onClick={delTrait} >X</button>
                             </div>
                         </div>
                     </div>)                             
@@ -1174,4 +1174,4 @@ function RandomGenerator (props){
     return( <div className='popupdark' id='popup'> <MainContainer/> </div> )
 };
 
-export { RandomGenerator };
+export default RandomGenerator;

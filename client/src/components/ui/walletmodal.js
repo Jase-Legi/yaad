@@ -78,4 +78,4 @@ const WalletBox = ( )=>{
     </div>)
 }
 
-export { WalletBox };
+export default WalletBox;

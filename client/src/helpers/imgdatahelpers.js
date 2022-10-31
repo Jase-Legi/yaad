@@ -16,7 +16,7 @@ const validateIMGtype = async ( demFiles, childClassName, parentIdName, wrongFil
     for ( let n = 0; n < demlen ; n++ ) {
         let dafile = demFiles[n];
         // eslint-disable-next-line no-loop-func
-        imgSignature(dafile, (fileSignature)=>{
+        imgSignature( dafile, (fileSignature)=>{
             console.log(`file sig: ${fileSignature}`);
             // check if signature matches the signatures of jpgs and png file
             if( signatures.includes(fileSignature) ){

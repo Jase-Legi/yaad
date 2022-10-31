@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { Header } from '../components/header/header';
+import Header from '../components/header/header';
 import { walletConnected, blockchainNetworks } from "../helpers/web3Helpers";
 import { showLoading, LoadingBox, hideLoading } from "../components/ui/loading";
 import { StateContext } from '../context/StateContext';
@@ -51,4 +51,4 @@ function WelcomeBox({ data }){
     );
 }
 
-export {WelcomeBox}
+export default WelcomeBox;

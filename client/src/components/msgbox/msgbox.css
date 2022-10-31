@@ -1,0 +1,80 @@
+.inactive{
+    display: none !important; visibility: hidden !important; 
+}
+
+.active{
+    display: none !important; visibility: hidden; opacity: 0; width: 0px; height: 0px !important; overflow: hidden !important;
+}
+
+.errorbox{
+    z-index: 1800 !important;
+    padding: 5px !important;
+    box-sizing: border-box;
+    width:fit-content;
+    position: absolute;
+    /* top: 20px; */
+    right: 20px !important;
+    max-width: 200px;
+    min-width: 150px;
+    height:fit-content;
+    user-select: none;
+    background-color: rgb(196, 27, 24);
+    border:none;
+    border-radius: 15px;
+}
+
+.errorbox:after {
+	bottom: 100%;
+	left: 25px;
+	border: solid transparent;
+	content: "";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+	border-color: rgba(196, 27, 24, 0);
+	border-bottom-color: rgb(196, 27, 24);
+	border-width: 10px;
+	margin-left: -10px;
+}
+
+.errorboxEle{
+    padding:5px;
+    height:fit-content;
+    width: calc( 100% - 20px ) ;
+    color:rgb(255, 255, 255);
+    display: block;
+    font-weight: 400;
+    /* word-wrap: break-word !important;
+    overflow-wrap: break-word !important; */
+    overflow-y: hidden;
+    box-sizing: border-box;
+    text-align: left;
+    /* float: right; */
+    font-size: 11px;
+    border-bottom: solid 0.5px rgb(113, 45, 45);
+    margin:0px auto 5px auto;
+}
+
+.errorboxEle > span{
+    width: 100%;
+}
+
+.error-box-closer{
+    height:25px;
+    width: 25px;
+    display: block;
+    margin:0px;
+    color: #fff;
+    font-weight: bold;
+    border:none;
+    background-color: rgb(10, 11, 11);
+    border-radius: 12.5px;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.error-box-closer:hover{
+    background-color: #fff;
+    color: rgb(10, 11, 11);
+}

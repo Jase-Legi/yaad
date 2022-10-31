@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { StateContext } from "../../context/StateContext";
+import './header.css';
 // import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
 const Header = ()=>{
@@ -44,4 +45,4 @@ const Header = ()=>{
     );
 }
 
-export {Header,};
+export default Header;

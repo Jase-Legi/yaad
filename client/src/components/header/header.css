@@ -1,0 +1,127 @@
+.header{
+    display: flex;
+    position: relative;
+    color: #FFF;
+    /* background-color: rgb(11, 11, 12); */
+    font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 80px !important;
+    left: 0px !important;
+    margin: 0px !important;
+    border: 0px !important;
+    text-decoration: none !important;
+    z-index:100 !important;
+}
+
+.headerElementlogo{
+	font-size: 30px;
+	font-family:'tahoma';
+	font-weight:bold;
+	overflow: hidden;
+    width: 60px;
+    height: 60px !important;
+    cursor: pointer;
+    padding: 10px;
+    margin: 0px;
+    left: 0px !important;
+    position: relative;
+    display:table;
+    display: block;
+    margin: 0px !important;
+    border: 0px !important;
+    text-decoration: none !important;
+    overflow: hidden;
+    border-radius: 40px;
+}
+
+.headerElementMenu{
+	width:50px;
+	z-index: 2000;
+	max-width: 50px !important;
+	line-height: 50px;
+	height: auto !important;
+    float: right;
+    right: 0px;
+    position: absolute;
+	padding: 25px 10px 25px 0px;
+	/* display: block; */
+	margin: 0px 0px 0px 0px !important;
+	border: 0px !important;
+	text-decoration: none !important;
+}
+
+.headerElementSearch{
+	border: none !important;
+	display: flex;
+	text-decoration: none !important;
+	border-radius: 19px;
+	position: relative;
+	-webkit-box-align: center;
+	align-items: center;
+}
+
+.cd-header{
+	width:30px;
+    height: 30px;
+    background-color: rgba( 255, 255, 0 );
+    border-radius: 20px;
+    padding: 5px;
+    margin: auto;
+	z-index:200;
+    cursor: pointer !important;
+}
+
+.cd-header:hover{
+    background-color: rgb( 255, 255, 255 );
+}
+
+@media (max-width: 399px){
+	.search-Header-Div{
+		margin: 0px auto;
+		position: relative;
+        color: black;
+        max-height:50px;
+        margin:21px auto;
+        width: auto;
+        font-size: 15px;
+        text-align: center;
+        font-weight: bold;
+        font-stretch: normal;
+        font-style: normal;
+	}
+
+	.headerElementSearch{
+		width: 30vw;
+		min-width: 40px;
+		height:38px;
+	}
+}
+
+@media (max-width: 600px) and (min-width:400px){
+	.headerElementSearch{
+		max-width: 400px !important;
+		width: 40vw;
+		height:38px;
+		margin: 1px;
+		min-width: 40px !important;
+	}
+
+	.search-Header-Div{
+		padding: 20px 5px;margin: 0px auto;
+	}
+}
+
+@media (min-width: 601px){
+	.headerElementSearch{
+		max-width: 400px !important;
+		width: 40vw;
+		height:38px;
+		margin: 1px;
+		min-width: 40px !important;
+	}
+	
+	.search-Header-Div{
+		padding: 20px 5px;margin: 0px auto;
+	}
+}

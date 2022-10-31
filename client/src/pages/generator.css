@@ -1,0 +1,864 @@
+.generatorRightPanelAddNewLayer {
+    cursor: pointer;
+    height: 60px;
+    box-sizing: border-box;
+    margin: 10px 0px 0px 0;
+    padding: 5px ;
+    transition: border .15s linear;
+    width: 100%;
+    display: table;
+    align-content: center;
+    border:rgb(255, 255, 0) 1px solid;
+    background-color: rgb(255, 255, 0, 0);
+    border-radius: 5px;
+    /* font */
+    font-size: 35px;
+    font-weight: 600;
+    line-height: 35px;
+    color: rgb( 255, 255, 0 );
+}
+
+.generatorRightPanelAddNewLayer:hover { background: yellow; border:none; color: #000 !important; }
+
+.delBG{
+    height:20px;
+    width: 20px;
+    float: right;
+    color: #444;
+    font-weight: bold;
+    border: rgb(10, 11, 11) solid 1px;
+    background-color: rgb(190, 190, 190);
+    border-radius: 10px;
+    font-size: 10px;
+    cursor: pointer;
+    user-select: none;
+    align-items: center;
+    align-content: center;
+    vertical-align: middle;
+    line-height: normal;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0px;
+    text-align: center;
+    text-shadow: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Main( generator ) Box Styles */
+.RandomGenerator{
+    display:flex;
+    flex-direction: column;
+    width: 95vw;
+    max-width: 1100px;
+    height:fit-content !important;
+    margin: 90px auto 0px auto;
+    padding: 1vw;
+    user-select: none;
+    text-align: center;
+    background-color: rgb( 10, 11, 11 );
+    box-sizing: border-box;
+    border: 0.5px solid rgb(52, 52, 52);
+    border-radius: 25px;
+}
+
+.LayerGenBox{
+    width: 93vw;
+    max-width: 1000px;
+    background-color: rgb(10, 11, 11, .8);
+    border-radius: 20px;
+    border: 0.5px solid rgb(52, 52, 52);
+    box-sizing: border-box;
+    padding: 30px;
+    margin: 20px auto;
+    height: fit-content;
+    height: -moz-fit-content;
+    min-height: fit-content;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Project Name & Symbol Box Style  */
+.coll_name_box{
+    width: 93vw;
+    max-width: 1000px;
+    /* background-color: rgb(10, 11, 11); */
+    padding: 10px 30px;
+    margin: 10px auto 0px auto;
+    box-sizing: border-box;
+    border-radius: 20px;
+}
+
+.contractName{
+    width: calc( 97% - 40px) !important;
+    border: none !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0px 3% 0px 0px !important;
+    padding: 0px 20px !important;
+    box-sizing: border-box;
+    max-width: calc( 97% - 40px) !important;
+    min-width: calc( 97% - 40px) !important;
+    height: 40px;
+    user-select: none;
+    text-align:left;
+    background-color: rgb(10, 11, 11);
+    border:solid 0.5px rgb(52, 52, 52) !important;
+    box-sizing: border-box !important;
+    color: #555;
+    font-size:14px;
+    font-weight: 500;
+    border-radius: 10px;
+}
+
+.contractNameContainer{
+    width: 50% !important;
+    border: none !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0px !important;
+    padding: 0px !important;
+    box-sizing: border-box;
+    min-width: 50%;
+    height: 40px;
+    border:none;
+    float: left;
+}
+
+.contractSymbol{
+    width: calc( 97% - 50px) !important;
+    border: none !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0px 0px 3% 0px !important;
+    padding: 0px 20px !important;
+    box-sizing: border-box;
+    max-width: calc( 97% - 50px) !important;
+    min-width: calc( 97% - 50px) !important;
+    height: 40px;
+    user-select: none;
+    text-align:left;
+    background-color: rgb(10, 11, 11);
+    border:solid 0.5px rgb(52, 52, 52) !important;
+    box-sizing: border-box !important;
+    color: rgb(83, 83, 83);
+    font-size:14px;
+    font-weight: 500;
+    border-radius: 10px;
+}
+
+.contractSymbolContainer{
+    width: 50% !important;
+    border: none !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0px !important;
+    padding: 0px !important;
+    box-sizing: border-box;
+    min-width: 48%;
+    height: 40px;
+    border:none;
+    float: left;
+}
+
+.contractNameText{
+    width: 40px;
+    height: 40px;
+    vertical-align: middle;
+    text-align: left;
+    margin: 0px;
+    box-sizing: border-box;
+    padding: 9.5px 0px;
+    float: left;
+    color: rgb(255, 255, 255);
+}
+
+.contractSymbolText{
+    width: 50px;
+    height: 40px;
+    vertical-align: middle;
+    text-align: left;
+    margin: 0px;
+    box-sizing: border-box;
+    padding: 9.5px 0px;
+    float: left;
+    color: rgb(255, 255, 255);
+}
+
+.contractNameText > span{
+    height: 18px;
+    margin-top: 12px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Contract section */
+.contract-container{
+    height: 100px;
+    overflow-y: hidden;
+}
+
+#contract-container>h2{
+    color: #fff;
+    border-bottom: solid 0.5px rgb(52, 52, 52);
+}
+
+#contract-container>span{
+    color: #888;
+}
+
+.contract-container-expanded{
+    height:fit-content;
+    overflow-y: hidden;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* layer section */
+.layer-box-content{
+    flex-grow: 2;
+    height: fit-content;
+    height:70px;
+}
+
+.layer-box{
+    background-color: var(--panel-color);
+    display: flex;
+    flex: 2;
+    flex-direction: column;
+    text-align: center;
+    position: relative;
+}
+
+.generatorRightPanelLayerBox{
+    cursor: default;
+    letter-spacing: 0;
+    margin: 0px 0px 10px 0px;
+    height: 60px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0px;
+    background-color: rgb(190, 190, 190);
+    color:#fff;
+    border-radius: 7.5px;
+    display: table;
+}
+
+.generatorRightPanelLayerBox-title{
+    width: fit-content;
+    max-width: 100%;
+    background: none !important;
+    clear: both;
+    overflow: hidden;
+    margin: 0px auto;
+    padding: 2.5px 0px; 
+}
+
+.generatorRightPanelLayerBox-title > span{
+    height: 17.2px;
+    background: none !important;
+    overflow: hidden;
+}
+
+.generatorRightPanelLayerBox-title-img{
+    background: none !important;
+}
+
+.generatorRightPanelLayerBox-title-img-div{
+    width: fit-content;
+    height:fit-content;
+    background: none !important;
+    max-width: 100%;
+    overflow: hidden;
+    margin: 0px auto;
+    padding: 2.5px 0px; 
+}
+
+.rotateExpander{
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+}
+
+.expander-box{
+    width: 25% !important;
+    height: 60px !important;
+    /* display: block; */
+    float: left;
+    cursor: pointer;
+    color: #444;
+    font-size: 10px;
+    border-bottom-left-radius: 7.5px;
+    border-top-left-radius: 7.5px;
+    background-color: rgb(190, 190, 190);
+    border-right:solid 2px rgb(48, 48, 48);
+    border-top:none;
+    border-bottom:none;
+    border-left:none;
+    overflow: hidden;
+    margin:0px;
+}
+
+.expander-box > span{
+    background: none;
+}
+
+.expander-box:hover{
+    background-color: rgb(129, 129, 129) !important;
+    border-right:solid 2px rgb(48, 48, 48) !important;
+    border-top:none !important;
+    border-bottom:none !important;
+    border-left:none !important;
+    color:#444;
+}
+
+.edit-trait-box{
+    width: 10% !important;
+    height: 50px !important;
+    width: 50px !important;
+    padding: 5px 0px;
+    /* display: block; */
+    float: right;
+    cursor: pointer;
+    border-left:solid 0.5px rgb(48, 48, 48);
+    overflow: hidden;
+    margin:0px;
+}
+
+.edit-trait-img-div{
+    height: 20px;
+    width: 20px;
+    padding: 15px;
+}
+
+.traitName{
+    width: 100% !important;
+    border: none !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    /* margin: 5px auto; */
+    /* padding: 0px 5px !important; */
+    box-sizing: border-box;
+    /* min-width: calc(100% - 25px); */
+    /* float:left; */
+    height: 20px;
+    user-select: none;
+    text-align:left;
+    background-color: rgb(190, 190, 190);
+    border:none;
+    color: rgb(240, 240, 240);
+    font-size:.75em;
+    font-weight: 700;
+    border-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.traitNameBox{
+    width: 70px !important;
+    border: none !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    /* margin: 5px auto; */
+    /* padding: 0px 5px !important; */
+    box-sizing: border-box;
+    /* min-width: calc(100% - 25px); */
+    float:left;
+    height: 20px;
+    user-select: none;
+    text-align:left;
+    background-color: rgb(190, 190, 190);
+    border:none;
+    color: #444;
+    font-size:.75em;
+    font-weight: 700;
+    border-radius: 10px;
+}
+
+.del-trait{
+    height:20px;
+    width: 20px;
+    float: right;
+    color: #444;
+    font-weight: bold;
+    border: rgb(129, 129, 129) solid 1px;
+    background-color: rgb(190, 190, 190);
+    border-radius: 10px;
+    font-size: 10px;
+    cursor: pointer;
+    user-select: none;
+    align-items: center;
+    align-content: center;
+    vertical-align: middle;
+    line-height: normal;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0px;
+    text-align: center;
+    text-shadow: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* sub state box styles */
+.LayerOptionsBox{
+    max-width: 460px;
+    width: 92vw;
+    background-color: rgb( 10, 11, 11 );
+    border-radius: 20px;
+    box-sizing: border-box;
+    padding: 30px;
+    border: 1px solid rgb( 52, 52, 52 );
+    margin: 80px auto auto auto;
+    height: fit-content;
+    min-height: 100px;
+    display: flexbox;
+    z-index: 10;
+}
+
+.LayerName{
+    width: 100% !important;
+    border: none !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 5px auto;
+    padding: 0px 20px !important;
+    box-sizing: border-box;
+    min-width: 100%;
+    height: 50px;
+    user-select: none;
+    text-align:left;
+    background-color: rgb(243, 242, 242);
+    border:none;
+    color: black;
+    font-size:1.25em;
+    font-weight: 700;
+    border-radius: 10px;
+}
+
+.generatorRightPanelTitle{
+    font-size: 16px;
+    height:fit-content;
+    line-height:normal;
+    vertical-align: middle;
+    text-align: center;
+    border-top:solid rgb(52, 52, 52) 1px;
+    position: relative;
+    padding: 10px 0px 0px 0px;
+    width: 100%;
+    display: flex;
+    color: whitesmoke;
+}
+
+.generatorRightPanelTitle > span{
+    color: #999;
+    font-size: 11px;
+    height:fit-content;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.generatorRightPanelTitle > h1 {
+    color: whitesmoke;
+    font-size: 24px;
+    height:fit-content;
+    margin: 0px;
+    vertical-align: middle;
+}
+
+.generatorRightPanelTitle > h2 {
+    color: whitesmoke;
+    font-size: 20px;
+    height:fit-content;
+    margin: 0px;
+    vertical-align: middle;
+}
+
+.generatorRightPanelTitle > h3 {
+    color: whitesmoke;
+    font-size: 18px;
+    height:fit-content;
+    margin: 0px;
+    vertical-align: middle;
+}
+
+.generatorRightPanelTitle > h4 {
+    color: whitesmoke;
+    font-size: 12px;
+    font-weight:600;
+    height:fit-content;
+    margin: 0px;
+    vertical-align: middle;
+}
+
+.LayerUpldBox{
+    display: flexbox;
+    height:fit-content;
+}
+
+.LayerUpldBoxTitle{
+    padding:20px 0px 5px 0px;
+    color:#444;
+    text-align: left;
+    font-weight: bold;
+    border-bottom: dotted 0.5px #555;
+    margin: 0px 0px 10px 0px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* edit layer section  */
+.editBoxTitle{
+    height:fit-content;
+    line-height:normal;
+    vertical-align: middle;
+    text-align: center;
+    position: relative;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+}
+
+.editBoxTitle > h2{
+    color: whitesmoke;
+    font-size: 22px;
+    font-weight: 600;
+    height:fit-content;
+    margin: 0px;
+    vertical-align: middle;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* contract deployed  */
+#pissingD{
+    padding: 10px 0px;
+    height:52px;
+    max-height: 70px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    overflow-x:auto;
+    overflow-y:hidden;
+    scrollbar-color: rgb(10, 11, 11) !important;
+    scrollbar-width: thin !important;
+}
+
+.contract-deployed-container{
+    height: fit-content !important;
+    border: 0.5px solid rgb(52, 52, 52);
+    box-sizing: border-box;
+    padding: 10px;
+    border-radius: 25px;
+    overflow-y: hidden;
+}
+
+.contract-box{
+    border: solid 0.5px rgb(52, 52, 52);
+    border-radius: 20px;
+    background-color: rgb(10, 11, 11);
+    width: 100%;
+    height: fit-content;
+    padding: 15px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+    word-break: break-all;
+    overflow-wrap: break-word;
+}
+
+.regularText{
+    font-size: 15px;
+    height:fit-content;
+    line-height:normal;
+    vertical-align: middle;
+    text-decoration: none;
+    text-align: center;
+    padding: 10px;
+    box-sizing: border-box;
+    position: relative;
+    margin: 10px 0px;
+    width: 100%;
+    display: flex;
+    color: whitesmoke;
+}
+
+.regularText > span{
+    color: rgb(181, 181, 181);
+    font-size: 12px;
+    height:fit-content;
+    text-align: left;
+    vertical-align: middle;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Background Box sections */
+.bg_title_box{
+    cursor: default;
+    letter-spacing: 3;
+    margin: 10px 0px 0px 0px;
+    box-sizing: border-box;
+    height: fit-content;
+    width: 100%;
+    padding: 5px;
+    background-color: rgb(129, 129, 129);
+    color:rgb(10, 11, 11);
+    border-radius: 15px;
+    display: table;
+    font-weight:600;
+}
+
+.BG_UpldContentBx{
+    box-sizing: border-box;
+    width: 50px;
+    height: 80px;
+    padding: 0px;
+    margin: 0px auto;
+    border-radius: 5px;
+    display: inline-block;
+    
+}
+
+.BG_UpldContent {
+    box-sizing: border-box;
+    width: 50px;
+    height: 50px;
+    padding: 5px;
+    margin: 5px auto;
+    border-radius: 5px;
+    float: left;
+}
+
+.BG_UpldContent > img {
+
+    box-sizing: border-box;
+    object-fit: cover; height: 100%; width: 100%;
+    border-radius: 5px;
+    background-color: rgb(190, 190, 190);
+
+}
+
+.BG_traitNameBox{
+    width: 100% !important;
+    border: none !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
+    float:left;
+    height: 20px;
+    user-select: none;
+    text-align:left;
+    background-color: rgb(190, 190, 190);
+    border:none;
+    color: #444;
+    font-size:.75em;
+    font-weight: 700;
+    border-radius: 5px;
+}
+
+.LayerbgContentadd{
+    box-sizing: border-box;
+    width: 40px;
+    height:40px;
+    padding: 0px;
+    margin: 5px auto 2.5px 4.25px;
+    border-radius: 5px;
+    border-bottom: 2px solid rgb(190, 190, 190);
+    display: table;
+    font-size: 28px;
+    font-weight: 800;
+    float: left;
+}
+
+.LayerbgContentadd > span{
+    display: table-cell;
+    width: 30px;
+    height: 30px;
+}
+
+.LayerbgAdd{
+    box-sizing: border-box;
+    width: 50px;
+    height: 65px;
+    padding: 0px;
+    margin: 10px 5px 5px 5px;
+    cursor:pointer;
+    color: rgb(190, 190, 190);
+    border-radius: 5px;
+    font-size: 8px;
+    font-weight: 500;
+    display: inline-block;
+    border: solid 1px rgb(190, 190, 190);
+    /* background-color: #2269cf; */
+}
+
+.LayerbgAdd:hover {
+    /* background-color: rgb(0, 3, 10); */
+    color: rgb(255, 255, 0);
+    border:solid 1px rgb(255, 255, 0);
+}
+
+.LayerbgAdd:hover, .LayerbgContentadd {
+    border-bottom: 2px solid rgb(255, 255, 0);
+}
+
+.LayerbgAdd>span{
+    float: left;
+    width: 100%;
+    margin: 0px auto;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Layer drag move styles */
+.sortable-handler{
+    position: absolute !important;
+    user-select: none !important;
+    -ms-user-select: none !important;
+    -moz-user-select: none !important;
+    -webkit-user-select: nonse !important;
+    background-color: rgba(97, 97, 97, 0.5) !important;
+}
+
+.betweenItem{
+    border-bottom: #fff solid 4px;
+}
+
+.betweenItem_two{
+    border-top: #fff solid 4px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
