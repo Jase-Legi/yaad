@@ -76,8 +76,8 @@ function SingleNft (props){
         const handlesingleCreate = async (e)=>{
             showLoading(e); 
             e.preventDefault();
-            if( !stringLengthRange( state.data?.name, 3, 50 ) || !isAplhaNumeric(state.data?.name) ){
-                setMsgStacks( (prev)=>({...prev, formdata:[{ id:"singleNFTName", value:"", msg:"Name must be at least 3 characters long!" }], substate:state.currsubState }));
+            if( !stringLengthRange( state.data?.name, 3, 50 ) || !isAplhaNumeric(state.data?.name) || ( stringLengthRange( state.data.description, 0, 200 ) ) || ( stringLengthRange( state.data.collection, 0, 50 ))){
+                setMsgStacks( (prev)=>({...prev, messages:[ "Name must be at least 3 characters long!" ], substate:state.currsubState }));
                 return hideLoading(e);
             }
             
