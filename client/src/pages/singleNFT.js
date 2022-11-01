@@ -116,7 +116,7 @@ function SingleNft (props){
                     <div className='popupBoxEleDetails' style={{padding:( state.data?.path )?'0px':'30px', boxSizing:'border-box'}}> <img src={( state.data?.path )? state.data?.path:'uploadimg.svg' } style={{objectFit:"cover", height: "100%", width:"100%"}} alt=""/> </div>
                 </label>
                 <input type="file" id='single_asset' name='single_asset' accept="image/*,video/*,audio/*,webgl/*,.glb,.gltf" style={{opacity:100, zIndex:1}} onChange={handlesingleUpload} hidden/>
-                <input className='popupBoxTextEle' placeholder={ ( state.data?.name )?state.data?.name:'Name' } type="text" name='name' id='singleNFTName' onChange={ handleTextInputChanges } onClick={(e)=>e.target.value = state.data.name} style={ {opacity:100, zIndex:1 } } />
+                <input className='popupBoxTextEle' placeholder={ ( state.data?.name )?state.data?.name:'Name' } type="text" name='name' id='singleNFTName' onChange={ handleTextInputChanges } onClick={(e)=>e.target.value = (!state.data.name)?"":state.data.name } style={ {opacity:100, zIndex:1 } } />
                 <DaInput data={{ typeId:'singleNFTDesc', typeClass:'popupBoxTextAreaEle', name:'desc', placeholder:( state.data?.description )?state.data?.description:'Description', type:'textarea', onChange:handleTextInputChanges } } />
                 <input className='popupBoxTextEle' placeholder={ ( state.data?.collection )?state.data?.collection:'Collection' } type="text" name='collection' id='singleNFTColl' onChange={ handleTextInputChanges }  style={{opacity:100, zIndex:1}} />
                 <div style={{ flexDirection:"row", maxWidth:'600px', width: '100%', margin: '0px auto' }}>
