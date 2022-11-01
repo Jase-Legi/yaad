@@ -6,9 +6,7 @@ const defaultErrorStack = { messages:[], formdata:[], substate:null };
 
 function MsgBox({ substate }){
     const { msgStacks, setMsgStacks } = useContext( MsgContext );
-    if( msgStacks.messages?.length > 0 ){
-        console.log(`messages: ${JSON.stringify(msgStacks)}`);
-        
+    if( msgStacks.messages?.length > 0 ){        
         let bbx = [];
         msgStacks.messages.forEach((element, i) => {
             let the_msg = msgStacks.messages[i];

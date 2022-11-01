@@ -242,7 +242,7 @@ const walletConnected = async ( chain )=>{
     }
 };
 
-const getGas = async (trans)=>{
+const getGas = async ( trans )=>{
     return (trans)?trans.estimateGas():false;
 };
 

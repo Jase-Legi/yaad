@@ -17,7 +17,7 @@ body{
 	height: 100% !important;
 	font-size:13px;
     background-color: rgb( 10, 11, 11 );
-	background: url("../public/yaadfavicon_bg.svg") no-repeat center center fixed;
+	background: url("../public/yaadfavicon_bg.svg") no-repeat center fixed;
     background-size: cover;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;

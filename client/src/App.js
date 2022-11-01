@@ -90,11 +90,14 @@ const App = ()=>{
         setMsgStacks( defaultErrorStack )
     }, [ state.state, state.currsubState])
     let currentState;
+    let bgimg = "url('./yaadfavicon_bg.svg') no-repeat center fixed";
     switch ( state.state ) {
         case 'connect':
             currentState = <WalletBox/>;
             break;
         case 'createnft':
+            
+            bgimg = "url('./yaadfavicon_bg_white.svg') no-repeat center fixed";
             currentState = <SingleNft/>;
             break;
         case 'RandomGenerator':
@@ -107,7 +110,8 @@ const App = ()=>{
             currentState =<div className='popupdark'> <WelcomeBox data={{message: "De-Fi"}} /> </div>;
             break;
     }
-
+    document.body.style.background = bgimg;
+    document.body.style.backgroundSize = "cover";
     return (
         <div className="App">
             <LoadingBox/>
