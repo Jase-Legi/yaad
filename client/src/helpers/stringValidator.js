@@ -1,6 +1,8 @@
 const isAplhaNumeric = (str, extraCharacters )=>{
+    if ( str === null || str === undefined )return false;
     const trimmedString = ( !str )?false:str.trim();
     const trimmedStringLength = trimmedString.length;
+    if ( trimmedString === "" ) return false;
 
     for ( let ind = 0; ind < trimmedStringLength; ind++) {
         let  get_code = str.charCodeAt(ind);

@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { StateContext } from '../context/StateContext';
 import { MsgContext } from '../context/msgcontext';
 // import { BigNumber } from "ethers";
-import { imgToBase64String, imgURLFromBase64String } from "../helpers/imgBLOBto64";
+import { imgToBase64String, imgURLFromBase64String, base64ToBlob } from "../helpers/imgBLOBto64";
 import { connectToChain, currentAddress, signer,  currentNetwork, oldNetwork, mintNFT, blockchainNetworks } from "../helpers/web3Helpers";
 import { validateIMGtype } from "../helpers/imgdatahelpers";
 import { imgSignature } from "../helpers/imgSignatures";
@@ -39,14 +39,46 @@ function SingleNft (props){
         });
         readr.readAsDataURL(file);
         // hideLoading();
-    }
+    };
+
+    const handleTextInputChanges = async (e)=>{
+        const ele = e.target;
+        const eleValue = ele.value;
+        if( eleValue === "" ) return;
+        switch ( e.target.getAttribute('name') ) {
+            case 'name':
+                state.data.name = ( stringLengthRange( eleValue, 0, 50 ) && isAplhaNumeric( eleValue, [ '.', '_', ' ' ]))?eleValue:state.data.name;
+                ele.value = state.data.name;
+                break;
+            case 'collection':
+                state.data.collection = ( stringLengthRange( eleValue, 0, 50 ) && isAplhaNumeric( eleValue, [ '.', '_', ' ' ]))?eleValue:state.data.collection;
+                ele.value = state.data.collection;
+                break;
+            case 'price':
+                state.data.price = ( isNumeric( eleValue ) )?eleValue:state.data.price;
+                ele.value = state.data.price;
+                break;
+            case 'royalties':
+                state.data.royalties = ( isNumeric( eleValue ) )?eleValue:state.data.royalties;
+                ele.value = state.data.royalties;
+                break;
+            case 'desc':
+                state.data.description = ( stringLengthRange( eleValue, 0, 200 ) )?eleValue:state.data.description;
+                ele.value = state.data.description;
+                break;
+            default:
+                break;
+        }
+        return;
+    };
 
     function SingleNFTDetailsForm (props){
         const handlesingleCreate = async (e)=>{
-            e.target.classList.add('inactive'); showLoading(); e.preventDefault();
-            if(!state.data?.name || state.data?.name === "" || state.data?.name === null || state.data?.name  === undefined || !state.data?.collection || state.data?.collection === null || state.data?.collection === "" || state.data?.collection === undefined){
-                hideLoading();
-                return setMsgStacks( (prev)=>({...prev, formdata:[{ id:"singleNFTName", value:"", msg:"Please enter a name & collection" }], substate:state.currsubState }));
+            showLoading(e); 
+            e.preventDefault();
+            if( !stringLengthRange( state.data?.name, 3, 50 ) || !isAplhaNumeric(state.data?.name) ){
+                setMsgStacks( (prev)=>({...prev, formdata:[{ id:"singleNFTName", value:"", msg:"Name must be at least 3 characters long!" }], substate:state.currsubState }));
+                return hideLoading(e);
             }
             
             let body = new FormData();
@@ -76,37 +108,7 @@ function SingleNft (props){
                 
                 e.target.classList.remove('inactive'); hideLoading();
             }
-        }
-
-        const handleTextInputChanges = async (e)=>{
-            const ele = e.target;
-            const eleValue = ele.value;
-            switch ( e.target.getAttribute('name') ) {
-                case 'name':
-                    state.data.name = ( stringLengthRange( eleValue, 0, 50 ) && isAplhaNumeric( eleValue, [ '.', '_', ' ' ]))?eleValue:state.data.name;
-                    ele.value = state.data.name;
-                    break;
-                case 'collection':
-                    state.data.collection = ( stringLengthRange( eleValue, 0, 50 ) && isAplhaNumeric( eleValue, [ '.', '_', ' ' ]))?eleValue:state.data.collection;
-                    ele.value = state.data.collection;
-                    break;
-                case 'price':
-                    state.data.price = ( isNumeric( eleValue ) )?eleValue:state.data.price;
-                    ele.value = state.data.price;
-                    break;
-                case 'royalties':
-                    state.data.royalties = ( isNumeric( eleValue ) )?eleValue:state.data.royalties;
-                    ele.value = state.data.royalties;
-                    break;
-                case 'desc':
-                    state.data.description = ( stringLengthRange( eleValue, 0, 200 ) )?eleValue:state.data.description;
-                    ele.value = state.data.description;
-                    break;
-                default:
-                    break;
-            }
-            return;
-        }
+        };
         
         return(
             <>
@@ -114,7 +116,7 @@ function SingleNft (props){
                     <div className='popupBoxEleDetails' style={{padding:( state.data?.path )?'0px':'30px', boxSizing:'border-box'}}> <img src={( state.data?.path )? state.data?.path:'uploadimg.svg' } style={{objectFit:"cover", height: "100%", width:"100%"}} alt=""/> </div>
                 </label>
                 <input type="file" id='single_asset' name='single_asset' accept="image/*,video/*,audio/*,webgl/*,.glb,.gltf" style={{opacity:100, zIndex:1}} onChange={handlesingleUpload} hidden/>
-                <input className='popupBoxTextEle' placeholder={ ( state.data?.name )?state.data?.name:'Name' } type="text" name='name' id='singleNFTName' onChange={ handleTextInputChanges } style={ {opacity:100, zIndex:1 } } />
+                <input className='popupBoxTextEle' placeholder={ ( state.data?.name )?state.data?.name:'Name' } type="text" name='name' id='singleNFTName' onChange={ handleTextInputChanges } onClick={(e)=>e.target.value = state.data.name} style={ {opacity:100, zIndex:1 } } />
                 <DaInput data={{ typeId:'singleNFTDesc', typeClass:'popupBoxTextAreaEle', name:'desc', placeholder:( state.data?.description )?state.data?.description:'Description', type:'textarea', onChange:handleTextInputChanges } } />
                 <input className='popupBoxTextEle' placeholder={ ( state.data?.collection )?state.data?.collection:'Collection' } type="text" name='collection' id='singleNFTColl' onChange={ handleTextInputChanges }  style={{opacity:100, zIndex:1}} />
                 <div style={{ flexDirection:"row", maxWidth:'600px', width: '100%', margin: '0px auto' }}>
