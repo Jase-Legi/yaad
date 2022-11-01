@@ -8,32 +8,31 @@ import '../../styles/walletModal.css';
 
 const WalletBox = ( )=>{
     const { state, setState } = useContext( StateContext );
-    const { msg, setMsg } = useContext( MsgContext );
+    const { msgStacks, setMsgStacks } = useContext( MsgContext );
     let bbx = [];
     let [ networkSelected, setNetworkSelected ] = useState( { status: false, index: null } );
     
     const setChain = async ( e, chosenNetwork, index )=>{
         showLoading();
-        console.log(`heyalll`);
+        
         const walletConnected = await connectToChain( chosenNetwork );
-        if ( walletConnected ){
+        if ( walletConnected === true ){
             setNetworkSelected((prev)=>({...prev, status:true, index, }));
             hideLoading();
             return setState((prev)=>({...prev, chainData:chosenNetwork}));
         }
-
+        
         hideLoading()
-        return setMsg((prev)=>({...prev, messages:["Please confirm wallet connection to continue!"]}) );
+        return setMsgStacks((prev)=>({...prev, messages:["Please confirm wallet connection to continue!"], substate:state.currsubState }) );
     }
     
     const connectWallet = async ( e )=>{
         showLoading(e)
         const account = await currentAddress();
         if( account.code ){
-
             console.log(`error ${JSON.stringify(account)}!`);
             hideLoading(e);
-            return setMsg((prev)=>({...prev, messages:( account.code === 4001 )?["You rejected connection, please confirm wallet connection to continue!"]:["An error occurred while attempting to connect wallet, please try again!"]}) );
+            return setMsgStacks((prev)=>({...prev, messages:( account.code === 4001 )?["You rejected connection, please confirm wallet connection to continue!"]:["An error occurred while attempting to connect wallet, please try again!"]}) );
         }
 
         hideLoading(e)

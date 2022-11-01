@@ -31,4 +31,10 @@ const imgURLFromBase64String = (dataURL)=>{
     return prestring+dataURL;
 };
 
-export { imgToBase64String, imgURLFromBase64String }
+const base64ToBlob = async( dataUrlString )=>{
+    const fetchBlob = await fetch( dataUrlString );
+    const newimgBlob = await fetchBlob.blob();
+    return newimgBlob;
+}
+
+export { imgToBase64String, imgURLFromBase64String, base64ToBlob }

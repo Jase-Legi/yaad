@@ -19,6 +19,28 @@ const isAplhaNumeric = (str, extraCharacters )=>{
     return true;
 };
 
+const isNumeric = ( str )=>{
+    const trimmedString = ( !str )?false:str.trim();
+    const trimmedStringLength = trimmedString.length;
+    let dotOccurrences = 0;
+
+    for ( let ind = 0; ind < trimmedStringLength; ind++) {
+        let  get_code = str.charCodeAt(ind);
+        //  /* numeric (0-9) = 48-57 */
+        if ( !( get_code > 47 && get_code < 58 ) ) {
+            if ( '.' === str[ind] ) {
+                if ( dotOccurrences === 1 ){
+                    return false;
+                }
+                dotOccurrences++;
+                continue;
+            }
+            return false;
+        }
+    }
+    
+    return true;
+};
 
 const stringLengthRange = ( str, min, max)=>{
     const trimmedString = ( !str )?false:str.trim();
@@ -34,4 +56,4 @@ const stringLengthRange = ( str, min, max)=>{
     return false;
 }
 
-export { isAplhaNumeric, stringLengthRange }
+export { isAplhaNumeric, stringLengthRange, isNumeric }

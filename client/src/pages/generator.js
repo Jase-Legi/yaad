@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useMemo } from 'react'
 import { StateContext } from '../context/StateContext';
-import { imgToBase64String, imgURLFromBase64String } from "../helpers/imgBLOBto64";
+import { imgToBase64String, imgURLFromBase64String, base64ToBlob } from "../helpers/imgBLOBto64";
 import { ContractFactory } from "ethers";
 import { connectToChain, signer,  currentNetwork, blockchainNetworks, currentAddress } from "../helpers/web3Helpers";
 import { validateIMGtype } from "../helpers/imgdatahelpers";
@@ -53,11 +53,11 @@ function RandomGenerator (props){
         showLoading(e);
         
         if(!state.data.coll_name || state.data.coll_name.trim() === ""){
-            return setMsgStacks( (prev)=>({...prev, formdata:[{id:"contractName", value: document.getElementById("contractName").value, msg: "Enter a project/NFT name!"}], substate:state.currsubState }) );
+            return setMsgStacks( (prev)=>({...prev, messages:[ "Enter a project/NFT name!" ], substate:state.currsubState }) );
         }
         
         if(!state.data.coll_symbol || state.data.coll_symbol.trim() === ""){
-            return setMsgStacks( (prev)=>({...prev, formdata:[{id:"contractSymbol", value: document.getElementById("contractSymbol").value, msg: "Enter a symbol!"}], substate:state.currsubState }) );
+            return setMsgStacks( (prev)=>({...prev, messages:[ "Enter a symbol!" ], substate:state.currsubState }) );
         }
 
         try {
@@ -264,25 +264,18 @@ function RandomGenerator (props){
     const prioritizeLayer = async (e)=>{
         const ele = e.target;
         if(state.temp_index){
-            
             console.log(`prioritizezd! \n temp index ${state.temp_index}, isPriority: ${JSON.stringify(state.data.layers[ state.temp_index ])}`);
             let isPriority = state.data.layers[ state.temp_index ].priority;
             console.log(`prioritizezd! \n temp index ${state.temp_index}, isPriority: ${isPriority}`);
             let priorityLayerBttn = document.getElementById("priorityLayerBttn");
             let priorityLayerOption = document.getElementById("makepriorityLayerOption");
             
-            state.data.layers[ state.temp_index ].priority = ( isPriority === true )?false:true;
+            state.data.layers[ state.temp_index ].priority = !state.data.layers[ state.temp_index ].priority;
             priorityLayerBttn.classList.toggle("disablepriorityLayerBttn");
             priorityLayerBttn.classList.toggle("makepriorityLayerBttn");
             priorityLayerOption.classList.toggle('ispriorityLayerOption');
             priorityLayerOption.classList.toggle('notpriorityLayerOption');
             priorityLayerOption.children[0].innerText = ( isPriority === true )?"NO":"YES";
-
-            // <button id="priorityLayerBttn" className={( state.data.layers[ state.temp_index ].priority === true )?'disablepriorityLayerBttn':'makepriorityLayerBttn'} onClick={(e)=>prioritizeLayer} >
-            //     <div id='makepriorityLayerOption' className={( state.data.layers[ state.temp_index ].priority === true )?'ispriorityLayerOption':'notpriorityLayerOption'}>
-            //         <span>{( state.data.layers[ state.temp_index ].priority === true )?"YES":"NO"}</span>
-            //     </div>
-            // </button>
         }
     };
 
@@ -349,8 +342,7 @@ function RandomGenerator (props){
                     };
                     let assetName = conntd+"__"+Date.now()+"."+layers[indx].traits[pin].ext;
                     let pin_body = new FormData();
-                    const fetchBlob = await fetch(imgURLFromBase64String(layers[indx].traits[pin].path));
-                    const newimgBlob = await fetchBlob.blob();
+                    const newimgBlob = await base64ToBlob(imgURLFromBase64String(layers[indx].traits[pin].path));
                     pin_body.append( 'img', newimgBlob, assetName );
                     pin_body.append( 'the_options', JSON.stringify(options) );
                     const pinnedItem = await fetch( `${state.baseServerUri}pinnit`, {method:'POST', body: pin_body} ).then((resp)=>resp.json()).then((pinned)=> pinned );
@@ -1022,7 +1014,7 @@ function RandomGenerator (props){
         return(
             <div style={{marginBottom:"20px"}}>
                 <input type="file" id={(contractZone)?'project_contract':'single_asset'} name={(contractZone)?'project_contract':'single_asset'} accept={(contractZone)?'*':"image/*"} multiple="multiple" style={{opacity:100, zIndex:1}} onChange={(contractZone)?handleSol:state.data.func} hidden/>
-                <button className='generatorRightPanelAddNewLayer' id='generatorRightPanelAddNewLayer' onClick={(e)=>{ if( state.data.coll_name?.length > 0 && state.data.coll_symbol?.length > 0 ){ state.temp_index = null; handleAddLayer(e); }else{ let formdata = []; if( !state.data.coll_symbol ){ formdata.push( {id:null, value: null, msg: "Enter a project/NFT name!"} ) } if( !state.data.coll_name ){ formdata.push( {id:null, value: null, msg: "Enter a project/NFT symbol!"} ) } if( formdata.length > 0 ){ return setMsgStacks( (prev)=>({...prev, formdata, substate:state.currsubState }) ) } } }} > + </button>
+                <button className='generatorRightPanelAddNewLayer' id='generatorRightPanelAddNewLayer' onClick={(e)=>{ if( state.data.coll_name?.length > 0 && state.data.coll_symbol?.length > 0 ){ state.temp_index = null; handleAddLayer(e); }else{ let messages = []; if( !state.data.coll_symbol ){ messages.push("Enter a project/NFT symbol!") } if( !state.data.coll_name ){ messages.push( "Enter a project/NFT name!" ) } if( messages.length > 0 ){ return setMsgStacks( (prev)=>({...prev, messages, substate:state.currsubState }) ) } } }} > + </button>
             </div>
         )
     }
