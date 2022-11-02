@@ -10,7 +10,7 @@ const imgToBase64String = async ( img, dataURL )=>{
         // console.log(`data url = ${dataURL}`);
         return dataURL;
     }
-    const ddataURL = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    const ddataURL = dataURL.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
     return ddataURL;
 };
 

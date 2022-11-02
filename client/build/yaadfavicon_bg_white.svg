@@ -10,10 +10,10 @@
 	.st4{display:none;}
 	.st5{display:inline;}
 	.st6{display:inline;fill:#FFFFFF;}
-	.st7{display:none;fill:url(#SVGID_2_);}
+	.st7{display:none;fill:url(#SVGID_1_);}
 	.st8{fill:#FFFF00;}
 </style>
-<pattern  y="2000" width="72" height="72" patternUnits="userSpaceOnUse" id="SVGID_1_" viewBox="72.3 -72 72 72" style="overflow:visible;">
+<pattern  y="2000" width="72" height="72" patternUnits="userSpaceOnUse" id="SVGID_2_" viewBox="72.3 -72 72 72" style="overflow:visible;">
 	<g>
 		<rect x="72.3" y="-72" class="st0" width="72" height="72"/>
 		<g>
@@ -23,28 +23,31 @@
 				<g>
 					<rect x="72.3" y="-72" class="st0" width="72" height="72"/>
 					<g>
-						<line class="st1" x1="144" y1="-66" x2="216.5" y2="-66"/>
-						<line class="st1" x1="144" y1="-42" x2="216.5" y2="-42"/>
-						<line class="st1" x1="144" y1="-18" x2="216.5" y2="-18"/>
-						<line class="st1" x1="144" y1="-54" x2="216.5" y2="-54"/>
-						<line class="st1" x1="144" y1="-30" x2="216.5" y2="-30"/>
-						<line class="st1" x1="144" y1="-6" x2="216.5" y2="-6"/>
-					</g>
-					<g>
-						<line class="st1" x1="72" y1="-66" x2="144.5" y2="-66"/>
-						<line class="st1" x1="72" y1="-42" x2="144.5" y2="-42"/>
-						<line class="st1" x1="72" y1="-18" x2="144.5" y2="-18"/>
-						<line class="st1" x1="72" y1="-54" x2="144.5" y2="-54"/>
-						<line class="st1" x1="72" y1="-30" x2="144.5" y2="-30"/>
-						<line class="st1" x1="72" y1="-6" x2="144.5" y2="-6"/>
-					</g>
-					<g>
-						<line class="st1" x1="0" y1="-66" x2="72.5" y2="-66"/>
-						<line class="st1" x1="0" y1="-42" x2="72.5" y2="-42"/>
-						<line class="st1" x1="0" y1="-18" x2="72.5" y2="-18"/>
-						<line class="st1" x1="0" y1="-54" x2="72.5" y2="-54"/>
-						<line class="st1" x1="0" y1="-30" x2="72.5" y2="-30"/>
-						<line class="st1" x1="0" y1="-6" x2="72.5" y2="-6"/>
+						<rect x="72.3" y="-72" class="st0" width="72" height="72"/>
+						<g>
+							<line class="st1" x1="144" y1="-6" x2="216.5" y2="-6"/>
+							<line class="st1" x1="144" y1="-30" x2="216.5" y2="-30"/>
+							<line class="st1" x1="144" y1="-54" x2="216.5" y2="-54"/>
+							<line class="st1" x1="144" y1="-18" x2="216.5" y2="-18"/>
+							<line class="st1" x1="144" y1="-42" x2="216.5" y2="-42"/>
+							<line class="st1" x1="144" y1="-66" x2="216.5" y2="-66"/>
+						</g>
+						<g>
+							<line class="st1" x1="72" y1="-6" x2="144.5" y2="-6"/>
+							<line class="st1" x1="72" y1="-30" x2="144.5" y2="-30"/>
+							<line class="st1" x1="72" y1="-54" x2="144.5" y2="-54"/>
+							<line class="st1" x1="72" y1="-18" x2="144.5" y2="-18"/>
+							<line class="st1" x1="72" y1="-42" x2="144.5" y2="-42"/>
+							<line class="st1" x1="72" y1="-66" x2="144.5" y2="-66"/>
+						</g>
+						<g>
+							<line class="st1" x1="0" y1="-6" x2="72.5" y2="-6"/>
+							<line class="st1" x1="0" y1="-30" x2="72.5" y2="-30"/>
+							<line class="st1" x1="0" y1="-54" x2="72.5" y2="-54"/>
+							<line class="st1" x1="0" y1="-18" x2="72.5" y2="-18"/>
+							<line class="st1" x1="0" y1="-42" x2="72.5" y2="-42"/>
+							<line class="st1" x1="0" y1="-66" x2="72.5" y2="-66"/>
+						</g>
 					</g>
 				</g>
 			</g>
@@ -66,7 +69,7 @@
 	<path class="st6" d="M2450,83.7l-726.1,1123.9c-15.1,23.4-23.2,50.7-23.2,78.5V1996h-407.9v-706.2c0-30.3-8.7-59.9-25-85.4
 		L550,83.7h474.3L1470,743.3c13.7,20.3,43.5,20.2,57.2,0l444.4-659.6L2450,83.7L2450,83.7z"/>
 </g>
-<pattern  id="SVGID_2_" xlink:href="#SVGID_1_" patternTransform="matrix(1 0 0 -1 79.1 -35128)">
+<pattern  id="SVGID_1_" xlink:href="#SVGID_2_" patternTransform="matrix(1 0 0 1 -61.2 35056)">
 </pattern>
 <polygon class="st7" points="1753.6,1112 1674.6,1302.2 1714.9,931.4 1893.7,1110.2 2083,100 2362,100 1962.2,1320.7 "/>
 <circle class="st4" cx="1500" cy="1000" r="1000"/>
@@ -189,7 +192,7 @@
 	<polygon class="st3" points="2124.2,1526.1 2859.7,1052.2 2879.4,1275 2168.6,2000 	"/>
 	<polygon class="st3" points="2168.6,2000 47.6,761.4 47.6,685.1 2124.2,1526.1 	"/>
 	<g>
-		<polygon class="st3" points="1309.4,1094.8 1309.4,1721.3 1524.9,1140.4 		"/>
+		<polyline class="st3" points="1309.4,1094.8 1309.4,1721.3 1487.5,1241.3 		"/>
 	</g>
 </g>
 <polygon class="st3" points="1070.2,1526.1 -156.9,730 -156.9,789.3 1108.1,1976.7 "/>

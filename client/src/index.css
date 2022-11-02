@@ -37,14 +37,18 @@ body{
 .scroller{
     scrollbar-color: rgb(10, 11, 11);
     scrollbar-width: thin;
+    padding: 2px;
 }
 
 ::-webkit-scrollbar{
     width: 7.5px;
+    padding: 2px;
 }
 
 ::-webkit-scrollbar-track{
     background-color: rgb(10, 11, 11);
+    padding: 2px;
+    
 }
 
 ::-webkit-scrollbar-thumb{
@@ -232,7 +236,7 @@ text {
     outline: none;
     border:none;
     display: table;
-    background:whitesmoke;
+    background:rgb(243, 242, 242);
     padding: 0px !important;
     cursor: pointer;
     align-items: center;
@@ -242,6 +246,10 @@ text {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
+}
+
+.popupBoxEleDetailsLabel:hover{
+    background-color: rgb(230, 230, 230);
 }
 
 .popupBoxEle{
