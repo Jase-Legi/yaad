@@ -31,7 +31,7 @@ function SingleNft (props){
             }
 
             dataURL = null;
-            setMsgStacks((prev)=>({...prev, messages:['File type not allowed!, \nSupported file types: png, jpg, jpeg, ico, gif, mp3, mp4, svg, mov, webp, webm, mpg, avi, ogg, wmv, bmp, tiff.']}));
+            setMsgStacks((prev)=>({...prev, messages:['File type not allowed!, \nSupported file types: png, jpg, jpeg, gif, mp3, mp4, svg, mov, webp, webm, mpg, avi, ogg, wmv, bmp, tiff.']}));
             return hideLoading(e);
         });
     };
@@ -87,12 +87,16 @@ function SingleNft (props){
             if(!stringLengthRange( state.data?.collection, 4, 50 )) messages.push("Collection name must be at least 4 characters long!");
         }
 
+        const conntd = await currentAddress();
+        if( conntd.code ){
+            messages.push( conntd.code );
+        }
+
         if( messages.length > 0 ){
             setMsgStacks((prev)=>({...prev, messages, substate:state.currsubState}));
             return hideLoading(e);
         }
 
-        const conntd = await currentAddress();
         console.log(conntd);
 
         const options = {

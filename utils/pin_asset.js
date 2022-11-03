@@ -1,7 +1,7 @@
 const { unlinkSync } = require("fs");
 require('dotenv').config();
 const pinataSDK = require('@pinata/sdk');
-const pinata = pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_API_SECRET);
+const pinata = new pinataSDK({pinataApiKey:process.env.PINATA_API_KEY, pinataSecretApiKey: process.env.PINATA_API_SECRET});
 pinata.testAuthentication().then((result)=>console.log(result)).catch((err) =>console.log(err));
 
 module.exports = {

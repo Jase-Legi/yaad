@@ -1,4 +1,4 @@
-import { imgSignature } from "./imgSignatures";
+import { imgSignature, getFileExtension } from "./imgSignatures";
 
 const validateIMGtype = async ( demFiles, childClassName, parentIdName, wrongFiles, callback) => {
     const parentEle = document.getElementById(parentIdName);
@@ -10,16 +10,11 @@ const validateIMGtype = async ( demFiles, childClassName, parentIdName, wrongFil
     }
     
     let loadedImgs = 0;
-
-    const signatures = ['89504e47'.toLowerCase(), 'FFD8FFE0'.toLowerCase(), 'FFD8FFE1'.toLowerCase(), 'FFD8FFE2'.toLowerCase(), 'FFD8FFE8'.toLowerCase(), 'FFD8FFDB'.toLowerCase(), 'FFD8FFEE'.toLowerCase() ];
-
     for ( let n = 0; n < demlen ; n++ ) {
         let dafile = demFiles[n];
         // eslint-disable-next-line no-loop-func
-        imgSignature( dafile, (fileSignature)=>{
-            console.log(`file sig: ${fileSignature}`);
-            // check if signature matches the signatures of jpgs and png file
-            if( signatures.includes(fileSignature) ){
+        getFileExtension( dafile, ( [ path, ext ] )=>{
+            if(ext.match(/^(jpg|png|gif)/)){
                 const img = document.createElement("img");
 
                 img.addEventListener( 'load', ()=>{
@@ -38,8 +33,7 @@ const validateIMGtype = async ( demFiles, childClassName, parentIdName, wrongFil
                         return callback([null, wrongFiles]);
                     }
                 });
-                
-                img.src = URL.createObjectURL(dafile);
+                img.src = path;
             }else{
                 wrongFiles.push(n);
                 if(demFiles.length === wrongFiles.length){
