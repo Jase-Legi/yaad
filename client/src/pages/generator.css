@@ -862,3 +862,33 @@
 
 
 
+/* Uplaod new image modal box style */
+
+.plusBttn{
+    box-sizing: border-box;
+    height: 60px !important;
+    width: 100% !important;
+    background-color: rgb(255, 255, 255);
+    border-radius: 7.5px;
+    border: none;
+    padding: 10px;
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+    margin: 10px 0px 20px 0px;
+    font-size: 35px !important;
+    font-weight: bold;
+}
+
+.submitBttn{
+    box-sizing: border-box;
+    height: 100px;
+    width: 100% !important;
+    display:table !important;
+    background-color: #fff;
+    border-radius: 7.5px;
+    border: none;
+    padding: 10px;
+    margin: 5px 0px;
+    font-size: 20px !important;
+    font-weight: bold;
+}

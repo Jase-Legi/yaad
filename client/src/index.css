@@ -363,6 +363,7 @@ text {
 #selectBG{
     height: 70px !important;
 }
+
 .inactiveLayerUpldBttn{
     box-sizing: border-box;
     height: 100px;
@@ -372,20 +373,6 @@ text {
     border-radius: 7.5px;
     border: none;
     padding: 20px;
-    margin: 5px 0px;
-    font-size: 1.4em;
-    font-weight: bold;
-}
-
-.LayerUpldBttn{
-    box-sizing: border-box;
-    height: 100px;
-    width: 100% !important;
-    display:table !important;
-    background-color: #fff;
-    border-radius: 7.5px;
-    border: none;
-    padding: 10px;
     margin: 5px 0px;
     font-size: 1.4em;
     font-weight: bold;

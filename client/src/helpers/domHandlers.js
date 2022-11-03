@@ -12,7 +12,7 @@ const expandABox  = ( e, expandee, expandedClass, contractedClass )=>{
         // If element contains contracted class instead then toggle it and replace it for expanded class
         expandee.classList.add( expandedClass );
         expandee.classList.remove( contractedClass );
-        ele.innerText = "..less.."
+        ele.innerText = "less"
     }
 };
 
