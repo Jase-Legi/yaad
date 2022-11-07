@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/static/css/main.8f873053.css",
-    "main.js": "/static/js/main.dd744eb3.js",
-    "static/css/972.1fceea91.chunk.css": "/static/css/972.1fceea91.chunk.css",
+    "main.js": "/static/js/main.91532b57.js",
+    "static/css/972.48b27c90.chunk.css": "/static/css/972.48b27c90.chunk.css",
     "static/js/972.336bf632.chunk.js": "/static/js/972.336bf632.chunk.js",
     "static/js/686.e1d27507.chunk.js": "/static/js/686.e1d27507.chunk.js",
     "static/js/716.6c73d880.chunk.js": "/static/js/716.6c73d880.chunk.js",
@@ -20,8 +20,8 @@
     "static/media/yaadfavicon_bg.svg": "/static/media/yaadfavicon_bg.a788326357fa98407e06.svg",
     "index.html": "/index.html",
     "main.8f873053.css.map": "/static/css/main.8f873053.css.map",
-    "main.dd744eb3.js.map": "/static/js/main.dd744eb3.js.map",
-    "972.1fceea91.chunk.css.map": "/static/css/972.1fceea91.chunk.css.map",
+    "main.91532b57.js.map": "/static/js/main.91532b57.js.map",
+    "972.48b27c90.chunk.css.map": "/static/css/972.48b27c90.chunk.css.map",
     "972.336bf632.chunk.js.map": "/static/js/972.336bf632.chunk.js.map",
     "686.e1d27507.chunk.js.map": "/static/js/686.e1d27507.chunk.js.map",
     "716.6c73d880.chunk.js.map": "/static/js/716.6c73d880.chunk.js.map",
@@ -36,6 +36,6 @@
   },
   "entrypoints": [
     "static/css/main.8f873053.css",
-    "static/js/main.dd744eb3.js"
+    "static/js/main.91532b57.js"
   ]
 }
