@@ -7,7 +7,7 @@ const expandABox  = ( e, expandee, expandedClass, contractedClass )=>{
     if ( expandee.classList.contains( expandedClass ) ) {
         expandee.classList.remove( expandedClass );
         expandee.classList.add( contractedClass ); // 'contract-container');
-        ele.innerText = "..expand.."
+        ele.innerText = "expand"
     }else{
         // If element contains contracted class instead then toggle it and replace it for expanded class
         expandee.classList.add( expandedClass );

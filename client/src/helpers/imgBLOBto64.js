@@ -17,7 +17,7 @@ const imgToBase64String = async ( img, dataURL )=>{
 const imgURLFromBase64String = (dataURL)=>{
     // let prestring = ('/' === dataURL[0])?"data:image/png;base64,":"data:image/png;base64,";
     let prestring;
-    switch (dataURL[0]) {
+    switch ( dataURL[0] ) {
         case '/':
             prestring = "data:image/jpg;base64,";
             break;

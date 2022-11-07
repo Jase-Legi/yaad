@@ -83,7 +83,7 @@
     border-radius: 20px;
     border: 0.5px solid rgb(52, 52, 52);
     box-sizing: border-box;
-    padding: 30px;
+    padding: 20px;
     margin: 20px auto;
     height: fit-content;
     height: -moz-fit-content;
@@ -242,7 +242,7 @@
     overflow-y: hidden;
 }
 
-#contract-container>h2{
+#contract-container>h2, h3, h4{
     color: #fff;
     border-bottom: solid 0.5px rgb(52, 52, 52);
 }
@@ -256,6 +256,61 @@
     overflow-y: hidden;
 }
 
+.editor {
+    flex-direction: row;
+    display: flex;
+    /* gap: 10px; */
+    font-family: monospace;
+    line-height: 21px;
+    background-color: transparent;
+    border: 1px solid rgb( 52, 52, 52 );
+    border-radius: 20px;
+    padding: 20px 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.lineNumbers {
+    width: 35px;
+    flex-direction: column;
+    margin: 0px;
+    line-height: 21px;
+    padding-right: 5px;
+    height: fit-content;
+    display: inline-block;
+    text-align: right;
+  }
+  
+  .lineNumbers span {
+    counter-increment: linenumber;
+  }
+  
+  .lineNumbers span::before {
+    content: counter(linenumber);
+    display: block;
+    color: #506882;
+  }
+
+.solidityEditor{
+    text-align: left;
+    width: calc( 100% - 35px) !important;
+    display: inline-block;
+    padding: 10px;
+    min-height: 500px;
+    white-space: nowrap;
+    word-wrap: none;
+    height: fit-content;
+    margin: 0px 0px 0px auto;
+    border-radius: 10px;
+    overflow-x: scroll;
+    line-height: 21px;
+    overflow-y: hidden;
+    padding: 0;
+    border: 0;
+    outline: none;
+    min-width: 500px;
+    resize: none;
+}
 
 
 
@@ -284,7 +339,7 @@
     position: relative;
 }
 
-.generatorRightPanelLayerBox{
+.layerBox {
     cursor: default;
     letter-spacing: 0;
     margin: 0px 0px 10px 0px;
@@ -298,27 +353,30 @@
     display: table;
 }
 
-.generatorRightPanelLayerBox-title{
+.layer-name{
     width: fit-content;
     max-width: 100%;
     background: none !important;
     clear: both;
     overflow: hidden;
     margin: 0px auto;
+    
     padding: 2.5px 0px; 
 }
 
-.generatorRightPanelLayerBox-title > span{
+.layer-name > span{
     height: 17.2px;
     background: none !important;
     overflow: hidden;
 }
 
-.generatorRightPanelLayerBox-title-img{
+.triangle-icon{
     background: none !important;
+    height:12px;
+    width:12px;
 }
 
-.generatorRightPanelLayerBox-title-img-div{
+.triangle-icon-container{
     width: fit-content;
     height:fit-content;
     background: none !important;
@@ -366,7 +424,7 @@
     color:#444;
 }
 
-.edit-trait-box{
+.edit-layer-box{
     width: 10% !important;
     height: 50px !important;
     width: 50px !important;
@@ -379,10 +437,78 @@
     margin:0px;
 }
 
-.edit-trait-img-div{
+.edit-layer-icon-div{
     height: 20px;
     width: 20px;
     padding: 15px;
+}
+
+.layer-images-box{
+    height: fit-content;
+    min-height: 200px;
+    width: 100%;
+    max-width: 1000px;
+    clear: both;
+    padding: 20px;
+    position:relative;
+    border-radius: 8px;
+    box-sizing: border-box;
+    z-index: 9999;
+    display: flexbox;
+    align-content: flex-start;
+    background-color: rgb( 129, 129, 129, 0.98 );
+}
+
+.add-Layer-imgs{
+    box-sizing: border-box;
+    width: 100% !important;
+    min-width: 100% !important;
+    height: fit-content;
+    font-size: 30px;
+    font-weight: 500;
+    border: none;
+    line-height: normal;
+    color: rgb(129, 129, 129);
+    padding: 0px;
+    background:rgb( 10, 11, 11);;
+    clear: both;
+    margin: 0px auto 10px auto;
+    cursor: pointer;
+    border-radius: 7px;
+    display:flexbox;
+}
+
+.add-Layer-imgs:hover{
+    background-color:rgb(73, 73, 73);
+    color: rgb(129, 129, 129);
+}
+
+.layer-image-container{
+    box-sizing: border-box;
+    width: 100px;
+    height: fit-content;
+    padding: 5px;
+    clear: both;
+    margin: 0px auto;
+    border-radius: 5px;
+    display: inline-block;
+    flex-direction: column;
+}
+
+.img-box{
+    box-sizing: border-box;
+    width: 100% !important;
+    padding: 0px;
+    margin: 0px;
+    aspect-ratio: 1/1 !important;
+    border-radius: 5px;
+}
+
+.img-box > img{
+    border-radius: 5px;
+    background-color: rgb(190, 190, 190);
+    box-sizing: border-box;
+    object-fit: cover; height: 100%; width: 100%;
 }
 
 .traitName{
@@ -391,68 +517,47 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    /* margin: 5px auto; */
-    /* padding: 0px 5px !important; */
     box-sizing: border-box;
-    /* min-width: calc(100% - 25px); */
-    /* float:left; */
-    height: 20px;
+    height: 22px;
+    flex-direction: row;
     user-select: none;
-    text-align:left;
+    overflow: hidden;
     background-color: rgb(190, 190, 190);
-    border:none;
-    color: rgb(240, 240, 240);
-    font-size:.75em;
-    font-weight: 700;
-    border-radius: 10px;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
+    border-radius: 11px;
 }
 
 .traitNameBox{
-    width: 70px !important;
+    width: 68px !important;
     border: none !important;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    /* margin: 5px auto; */
-    /* padding: 0px 5px !important; */
-    box-sizing: border-box;
-    /* min-width: calc(100% - 25px); */
-    float:left;
-    height: 20px;
+    box-sizing: border-box !important;
+    height: 100% !important;
     user-select: none;
+    padding: 0px 0px 0px 3px;
+    margin: auto 0px;
     text-align:left;
     background-color: rgb(190, 190, 190);
-    border:none;
     color: #444;
-    font-size:.75em;
-    font-weight: 700;
-    border-radius: 10px;
+    font-size:8px;
+    border-radius: 11px;
 }
 
 .del-trait{
-    height:20px;
-    width: 20px;
-    float: right;
+    height:22px;
+    width: 22px;
     color: #444;
     font-weight: bold;
     border: rgb(129, 129, 129) solid 1px;
     background-color: rgb(190, 190, 190);
-    border-radius: 10px;
+    border-radius: 11px;
     font-size: 10px;
     cursor: pointer;
-    user-select: none;
     align-items: center;
     align-content: center;
     vertical-align: middle;
     line-height: normal;
-    letter-spacing: normal;
-    word-spacing: normal;
-    text-transform: none;
-    text-indent: 0px;
-    text-align: center;
-    text-shadow: none;
 }
 
 
@@ -506,7 +611,7 @@
     border-radius: 10px;
 }
 
-.generatorRightPanelTitle{
+.optionsTitle{
     font-size: 16px;
     height:fit-content;
     line-height:normal;
@@ -520,7 +625,7 @@
     color: whitesmoke;
 }
 
-.generatorRightPanelTitle > span{
+.optionsTitle > span{
     color: #999;
     font-size: 11px;
     height:fit-content;
@@ -528,7 +633,7 @@
     vertical-align: middle;
 }
 
-.generatorRightPanelTitle > h1 {
+.optionsTitle > h1 {
     color: whitesmoke;
     font-size: 24px;
     height:fit-content;
@@ -536,7 +641,7 @@
     vertical-align: middle;
 }
 
-.generatorRightPanelTitle > h2 {
+.optionsTitle > h2 {
     color: whitesmoke;
     font-size: 20px;
     height:fit-content;
@@ -544,7 +649,7 @@
     vertical-align: middle;
 }
 
-.generatorRightPanelTitle > h3 {
+.optionsTitle > h3 {
     color: whitesmoke;
     font-size: 18px;
     height:fit-content;
@@ -552,7 +657,7 @@
     vertical-align: middle;
 }
 
-.generatorRightPanelTitle > h4 {
+.optionsTitle > h4 {
     color: whitesmoke;
     font-size: 12px;
     font-weight:600;
@@ -646,6 +751,10 @@
     padding: 10px;
     border-radius: 25px;
     overflow-y: hidden;
+}
+
+.contractTitle {
+    color: rgb( 255, 255, 255 );
 }
 
 .contract-box{
@@ -887,6 +996,7 @@
     background-color: #fff;
     border-radius: 7.5px;
     border: none;
+    cursor: pointer;
     padding: 10px;
     margin: 5px 0px;
     font-size: 20px !important;

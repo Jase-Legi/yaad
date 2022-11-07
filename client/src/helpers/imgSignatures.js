@@ -5,24 +5,13 @@ const getFileExtension = ( BLOBfile, callback )=>{
 
     readr.addEventListener( "load", ()=>{
         fileLoaded++;
-        const dataURLpath = readr.result;
-        // console.log(dataURLpath);
-        const strLen = dataURLpath.length;
-        let pre64String = ""
-        for (let r = 0; r < strLen; r++) {
-            const char = dataURLpath[r];
-            if ( char !== ";"){
-                pre64String += char;
-            }else{
-                break;
-            }       
-        }
-
+        const dataURLpath = readr.result.split(','), fullePre64String = dataURLpath[0];
+        let pre64String = dataURLpath[0].split(';')[0];
         const dataURLtype = pre64String.split('/')[0];
-        console.log(`pre64String:: ${ pre64String }`);
+        // console.log(`pre64String:: ${ pre64String }`);
 
-        imgSignature( BLOBfile, ( signature )=>{
-            console.log(`BLOBfile signature: ${ signature }`);
+        imgSignature( dataURLpath, ( signature )=>{
+            console.log(`BLOBfile signature: ${ fullePre64String }`);
             let ext = null;
             switch ( signature ) {
                 case 'ffd8ffe0':
@@ -146,6 +135,9 @@ const getFileExtension = ( BLOBfile, callback )=>{
                 case '89504e47':
                     ext = 'png';
                     break;
+                case '0010':
+                    ext = 'ico';
+                    break;
                 case '00014':
                 case '033db':
                     ext = 'mov';
@@ -244,7 +236,7 @@ const getFileExtension = ( BLOBfile, callback )=>{
 
             if ( fileLoaded === 1 ){
                 console.log(`BLOBfile ext: ${ext}`);
-                return callback( [ dataURLpath, ext ] );
+                return callback( [ dataURLpath[1], ext ] );
             }
         });
     });
@@ -252,20 +244,32 @@ const getFileExtension = ( BLOBfile, callback )=>{
     readr.readAsDataURL( BLOBfile );
 }
 
-const imgSignature = async ( BLOBfile, callback )=>{
-    let readr = new FileReader();
-    // Read BLOBfile as array buffer
-    readr.readAsArrayBuffer(BLOBfile);
+const imgSignature = ( urlparts, callback )=>{
+    // const urlparts = dataURL.split(',');
+    let mime = urlparts[0], binaryString = atob(urlparts[1]), u8arrayLength = binaryString.length, u8rray = new Uint8Array(u8arrayLength);
+    while (u8arrayLength--) {
+        u8rray[ u8arrayLength ] = binaryString.charCodeAt( u8arrayLength );
+    }
+    const sigArray = u8rray.subarray( 0, 4 );
+    let fileSignature = "";
+    for( let m = 0; m < sigArray.length; m++ ){ fileSignature += sigArray[m].toString(16); }
+    return callback( fileSignature );
+};
 
-    // after buffer loads
-    readr.addEventListener( 'loadend', ()=>{
-        // convert BLOBfile buffer array to  bit array and splice the first 4 elements of this array
-        let buffArray = ( new Uint8Array( readr.result )).subarray( 0, 4 ),
-        fileSignature = "";
-        // convert first 4 elements to hexadecimal string and contact them together to create BLOBfile signature
-        for( let m = 0; m < buffArray.length; m++ ){ fileSignature += buffArray[m].toString(16); }
-        return callback(fileSignature);
-    })
-}
+// const imgSignature = async ( BLOBfile, callback )=>{
+//     let readr = new FileReader();
+//     // Read BLOBfile as array buffer
+//     readr.readAsArrayBuffer(BLOBfile);
+
+//     // after buffer loads
+//     readr.addEventListener( 'loadend', ()=>{
+//         // convert BLOBfile buffer array to  bit array and splice the first 4 elements of this array
+//         let buffArray = ( new Uint8Array( readr.result )).subarray( 0, 4 ),
+//         fileSignature = "";
+//         // convert first 4 elements to hexadecimal string and contact them together to create BLOBfile signature
+//         for( let m = 0; m < buffArray.length; m++ ){ fileSignature += buffArray[m].toString(16); }
+//         return callback(fileSignature);
+//     })
+// }
 
 export { imgSignature, getFileExtension }
