@@ -12,7 +12,7 @@ function WelcomeBox({ data }){
         <Header/>
         <div className='welcomeContainer'>
         <div className='headerTitle'>
-            <h1 style={{}}>Blockchain made easy.</h1>
+            <h1 style={{}}>The Blockchain made easy.</h1>
             <span>Yaad labs is a web3 platform designed to Simplify Blockchain procedures. Generating entire NFT projects using a few layers, deploy contracts, create decentralized bets, <span style={{color:"rgb(255, 255, 0)"}}>buy, sell & send crypto </span>+ more</span>
         </div>
         <div className='welcomeBox'>

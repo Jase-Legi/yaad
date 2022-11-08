@@ -872,9 +872,59 @@ const possblCombos = ( arrays )=>{
         </div>)
     }
 
-    let currentSubState, LayerUpldBoxTitle, mainBox, submitButton, addLayer, coll_Name_Box;
+    const setNumbers = async ( e, inputText )=>{
+        document.getElementById("solidityEditor").value = inputText;
+        let numberOfLines = inputText.split('\n').length;
+        let newlen;
 
-    switch (state.currsubState) {
+        if ( numberOfLines > document.getElementById('lineNumbers')?.childElementCount && document.getElementById('lineNumbers')?.childElementCount !== 0 ){
+            newlen = document.getElementById('lineNumbers')?.childElementCount;
+            for ( newlen; newlen < numberOfLines; newlen++ ) {
+                document.getElementById('lineNumbers').innerHTML += `<span></span>`;
+            }
+        }
+
+        if( numberOfLines < document.getElementById('lineNumbers')?.childElementCount ){
+            newlen = document.getElementById('lineNumbers')?.childElementCount - numberOfLines;
+            // for ( numberOfLines; numberOfLines < newlen; numberOfLines++ ) {
+            let indx = 0;
+            while ( indx < newlen ) {
+                document.getElementById('lineNumbers').childNodes[numberOfLines].remove();
+                indx++;
+            }
+        }
+
+        if ( document.getElementById('lineNumbers')?.childElementCount === 0 ){
+            let indx = 0;
+            while ( indx < numberOfLines ) {
+                document.getElementById('lineNumbers').innerHTML += `<span></span>`;
+                indx++;
+            }
+        }
+
+        document.getElementById("solidityEditor").style.height = (document.getElementById('lineNumbers').clientHeight+20)+"px";
+        return hideLoading();
+    }
+
+    let currentSubState, LayerUpldBoxTitle, mainBox, submitButton, addLayer, coll_Name_Box;
+    useEffect( ()=>{
+        if ( state.currsubState === "RandomGenerator-LayerOptions-Write-Contract" ){
+            document.getElementById('solidityEditor').value = state.formVals.contract;
+            setNumbers( null, state.formVals.contract );
+            return hideLoading();
+        }
+    },[ state.currsubState ])
+
+    useEffect( ()=>{
+        if ( document.getElementById('lineNumbers')?.childElementCount !==  document.getElementById('solidityEditor')?.value.split('\n').length  ){
+            setNumbers( null, document.getElementById('solidityEditor')?.value );
+        }
+    },[ document.getElementById('solidityEditor')?.value ])
+    document.addEventListener(['paste','cut'], (e)=>{
+
+        console.log(`pisshshhshs:dlkdjdlkdjdlkj`)
+    })
+    switch ( state.currsubState ) {
         case "RandomGenerator-ContractDeployed":
             mainBox = <div className='contract-box' id='LayerGenBoxx'> 
                 <div className='contract-deployed-container'>
@@ -955,23 +1005,23 @@ const possblCombos = ( arrays )=>{
             </div>
             break;
         case "RandomGenerator-LayerOptions-Write-Contract":
-            // showLoading();
-            const setNumbers = (e, inputText )=>{
-                // console.log(`inner height: ${document.querySelector('.lineNumbers').clientHeight}`);
-                document.getElementById("solidityEditor").value = inputText;
-                const numberOfLines = inputText.split('\n').length;
-                document.getElementById('lineNumbers').innerHTML = Array(numberOfLines).fill('<span></span>').join(''); 
-                document.getElementById("solidityEditor").style.height = (document.getElementById('lineNumbers').clientHeight+20)+"px";
-                return hideLoading();
+            showLoading();
+            
+            const newlineLen = state.formVals.contract.split('\n').length;
+            let boxxcont = [];
+            for ( let indx = 0; indx < newlineLen; indx++ ){
+                boxxcont.push(<span key={indx}></span>);
+                indx++;
             }
             
+
+            let numberSideBar = <div className="lineNumbers" id="lineNumbers" >{boxxcont}</div>
             currentSubState = <div className='LayerUpldBox' style={{padding:"20px"}}>
                 <BoxTitle data={{divClass:"optionsTitle", textType:'h2', text:'Edit or paste contract.'}}/>
                 <BoxTitle data={{divClass:"optionsTitle", textType:'span', text:'Changing contract may affect NFT contract deploy.'}}/>
-                <div className="editor" id="editor" onLoad={(e)=> setNumbers( e, state.formVals.contract )} >
-                    <div className="lineNumbers" id="lineNumbers" >
-                    </div>
-                    <textarea className='solidityEditor' id='solidityEditor' placeholder={state.formVals.contract} onCopy={(e)=>setNumbers( e, e.target.value )} onPaste={(e)=>setNumbers( e, e.target.value )} onCut={(e)=>setNumbers( e, e.target.value )} onClick={(e)=>{ e.target.value = state.formVals.contract; return setNumbers( e, e.target.value ); } } onKeyUp={(e)=>{ if( e.key === "Enter" || e.key === "Backspace" || e.key === "Delete" ){ return setNumbers( e, e.target.value ) }}} onChange={(e)=>state.formVals.contract = e.target.value } />
+                <div className="editor" id="editor" >
+                    {numberSideBar}
+                    <textarea className='solidityEditor' id='solidityEditor' onKeyUp={(e)=>{ if( e.key === "Enter" || e.key === "Backspace" || e.key === "Delete" ){ return setNumbers( e, e.target.value ) }}} onChange={(e)=>state.formVals.contract = e.target.value } />
                 </div>
                 <Buttonz data={{class:"nodelLayerBttn", id:'', value:'SUBMIT', func: ()=>{return false}}} />
             </div>
@@ -979,13 +1029,13 @@ const possblCombos = ( arrays )=>{
         default:
             currentSubState = null;
             state.formVals = null; state.temp_index = null;
-            submitButton = ( state.data.layers.length > 1 )?<button id={(state.data.background)?'Generate-pfp':'selectBG'} className="submitBttn" onClick={(e)=>{ if ( state.data.background ) { return generate_it( e, 400 ) }else{ return setState((prev)=>({...prev, currsubState:"RandomGenerator-LayerOptions-BG-Upld" })); } }} >{ (state.data.background)?'GENERATE':'Choose Backgrounds' }</button>:'';
+            submitButton = ( state.data.layers.length > 1 )?<button id={(state.data.background)?'Generate-pfp':'selectBG'} className="submitBttn" onClick={(e)=>{ if ( state.data.background ) { return generate_it( e, 40 ) }else{ return setState((prev)=>({...prev, currsubState:"RandomGenerator-LayerOptions-BG-Upld" })); } }} >{ (state.data.background)?'GENERATE':'Choose Backgrounds' }</button>:'';
             coll_Name_Box = <CollNameBox/>; addLayer = <AddLayer/>;
             mainBox = <> <div id='LayerGenBoxx'><GenLayers/></div><TheBGs/>{submitButton}</>;
             LayerUpldBoxTitle = <><BoxTitle data={{divClass:'optionsTitle', textType:'h2', text:'LAYERS'}}/> <BoxTitle data={{divClass:'optionsTitle', textType:'span', text:`Click the "+" icon to create new layer`}}/></>;
             break;
     }
-    
+
     function MainContainer (){
         if(!currentSubState){
             return(
@@ -1002,7 +1052,7 @@ const possblCombos = ( arrays )=>{
         }else{
             return(
                 <div className={( state.currsubState === 'RandomGenerator-LayerOptions-Write-Contract')?'RandomGenerator':'LayerOptionsBox'} >
-                    <Buttonz data={{class:'closeBox', id:'', value:'X', func: closeLayerOptionsBox}} />
+                    <button className='closeBox' onClick={closeLayerOptionsBox} >X</button>
                     {currentSubState}
                 </div>
             )
