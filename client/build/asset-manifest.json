@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/static/css/main.83139fc1.css",
+    "main.css": "/static/css/main.32337428.css",
     "main.js": "/static/js/main.3fabab52.js",
     "static/css/972.48b27c90.chunk.css": "/static/css/972.48b27c90.chunk.css",
     "static/js/972.336bf632.chunk.js": "/static/js/972.336bf632.chunk.js",
@@ -19,7 +19,7 @@
     "static/media/the_yaad.sol": "/static/media/the_yaad.c13f9a26e2810a5b1bd1.sol",
     "static/media/yaadfavicon_bg.svg": "/static/media/yaadfavicon_bg.a788326357fa98407e06.svg",
     "index.html": "/index.html",
-    "main.83139fc1.css.map": "/static/css/main.83139fc1.css.map",
+    "main.32337428.css.map": "/static/css/main.32337428.css.map",
     "main.3fabab52.js.map": "/static/js/main.3fabab52.js.map",
     "972.48b27c90.chunk.css.map": "/static/css/972.48b27c90.chunk.css.map",
     "972.336bf632.chunk.js.map": "/static/js/972.336bf632.chunk.js.map",
@@ -35,7 +35,7 @@
     "588.0d25a6db.chunk.js.map": "/static/js/588.0d25a6db.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.83139fc1.css",
+    "static/css/main.32337428.css",
     "static/js/main.3fabab52.js"
   ]
 }
