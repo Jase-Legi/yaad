@@ -3,10 +3,10 @@
 
 @font-face{ font-family:'Galyon'; src:url('../fonts/Galyon-Bold.otf') format('truetype'); font-weight:bold; }
 
-code { font-family: 'Galyon'; }
+code { font-family:Verdana, Geneva, Tahoma, sans-serif; }
 
 body{
-	font-family: 'Galyon';
+	font-family:Verdana, Geneva, Tahoma, sans-serif;
 	width: 100% !important;
 	max-width: 100% !important;
 	margin: 0px !important;
@@ -89,7 +89,7 @@ img, div, a {
 }
 
 text { 
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .inactive{

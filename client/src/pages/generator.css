@@ -266,10 +266,11 @@
 
 .contractEditorTitle > h2 {
     color: whitesmoke;
-    padding-bottom: 15px;
+    padding: 0px 20px 20px 20px;
     font-size: 24px;
     border-bottom:solid rgb(52, 52, 52) 1px;
     width: 100%;
+    text-align: center;
     height:fit-content;
     margin: 0px;
     vertical-align: middle;
@@ -279,13 +280,14 @@
     flex-direction: row;
     display: flex;
     /* gap: 10px; */
-    font-family:'Galyon';
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
     line-height: 21px;
     background-color: transparent;
     border: 1px solid rgb( 52, 52, 52 );
     border-radius: 20px;
     padding: 20px 1%;
     width: 100%;
+    margin: 0px 0px 20px 0px;
     box-sizing: border-box;
 }
 
@@ -293,6 +295,7 @@
     width: fit-content;
     flex-direction: column;
     margin: 0px;
+    font-size: 9px !important;
     line-height: 21px;
     padding-right: 5px;
     height: fit-content;
@@ -317,7 +320,7 @@
     padding: 10px;
     min-height: 500px;
     white-space: nowrap;
-    word-wrap: none;
+    font-size: 9px !important;
     height: fit-content;
     margin: 0px 0px 0px auto;
     border-radius: 10px;
@@ -827,7 +830,7 @@
     color:rgb(10, 11, 11);
     border-radius: 15px;
     display: table;
-    font-weight:600;
+    font-weight:bold;
 }
 
 .BG_UpldContentBx{
@@ -908,8 +911,8 @@
     cursor:pointer;
     color: rgb(190, 190, 190);
     border-radius: 5px;
-    font-size: 8px;
-    font-weight: 500;
+    font-size: 7px;
+    font-weight:normal;
     display: inline-block;
     border: solid 1px rgb(190, 190, 190);
     /* background-color: #2269cf; */

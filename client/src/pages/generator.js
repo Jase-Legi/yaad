@@ -873,10 +873,10 @@ const possblCombos = ( arrays )=>{
     function CollNameBox(){
         return(<div className='coll_name_box'>
             <div className='contractNameContainer'>
-                <input type='text' id='contractName' className='contractName' placeholder={(state.data.coll_name)?state.data.coll_name:"Name: "} onChange={formDataHandler} onClick={(e)=> (state.data.coll_name)? e.target.value = state.data.coll_name:false} />
+                <input type='text' id='contractName' className='contractName' placeholder={(state.data.coll_name)?`Name: ${state.data.coll_name}`:"Name: "} onChange={formDataHandler} onClick={(e)=> (state.data.coll_name)? e.target.value = state.data.coll_name:false} />
             </div>
             <div className='contractSymbolContainer'>
-                <input type='text' id='contractSymbol' className='contractSymbol' placeholder={(state.data.coll_symbol)?state.data.coll_symbol:"Symbol: "} onChange={formDataHandler} onClick={(e)=> (state.data.coll_symbol)? e.target.value = state.data.coll_symbol:false } />
+                <input type='text' id='contractSymbol' className='contractSymbol' placeholder={(state.data.coll_symbol)?`Symbol: ${state.data.coll_symbol}`:"Symbol: "} onChange={formDataHandler} onClick={(e)=> (state.data.coll_symbol)? e.target.value = state.data.coll_symbol:false } />
             </div>
         </div>)
     }
@@ -946,7 +946,7 @@ const possblCombos = ( arrays )=>{
         case "RandomGenerator-RandomGenerated":
             coll_Name_Box = <CollNameBox/> ;
             mainBox = <div id='LayerGenBoxx'>
-                <BoxTitle data={{divClass:'contractTitle', textType:'h2', text:'Deploy contract.'}}/>
+                <BoxTitle data={{divClass:'contractTitle', textType:'h2', text:'Deploy Contract'}}/>
                 <ContractBox/>
                 <ThaSamples/>
                 <Buttonz data={{class:"submitBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />;
@@ -956,7 +956,7 @@ const possblCombos = ( arrays )=>{
         case "RandomGenerator-LayerOptions-BG-Upld":
             let addLayerIMG = state.currsubState === 'RandomGenerator-LayerOptions-AddLayer';
             let layerImg_tmpIndx = ( addLayerIMG && state.temp_index === null )
-            let pissoffbox = ( layerImg_tmpIndx )?<input className='LayerName' id='LayerName' name='name' type='text' placeholder={(state.formVals !== null)?state.formVals:'Enter layer name.'} onChange={formDataHandler} onClick={(e)=> e.target.value = state.formVals}/>:<BoxTitle data={{ divClass:"editBoxTitle", textType:'h2', text:`Upload ${( addLayerIMG )?'':"background"} images.`}}/>;
+            let pissoffbox = ( layerImg_tmpIndx )?<input className='LayerName' id='LayerName' name='name' type='text' placeholder={(state.formVals !== null)?state.formVals:'Enter layer name.'} onChange={formDataHandler} onClick={(e)=> e.target.value = state.formVals}/>:<BoxTitle data={{ divClass:"editBoxTitle", textType:'h2', text:`Upload images.`}}/>;
             currentSubState = <div className='LayerUpldBox'>
                 { pissoffbox }
                 <BoxTitle data={{ divClass:"optionsTitle", textType:'span', text:( addLayerIMG )?(`Click the "+" to upload layer images${( state.temp_index !== null)?" for: "+state.data.layers[ state.temp_index ]?.name:""}.`):`Click the "+" to upload background images.`}}/>
@@ -974,11 +974,11 @@ const possblCombos = ( arrays )=>{
             currentSubState = <div className='LayerUpldBox'>
                 <BoxTitle data={{divClass:"editBoxTitle", textType:'h2', text:`Edit '${state.data.layers[ state.temp_index ]?.name}' layer.`}}/>
                 <div style={{ padding:"0px 10px 10px 10px"}}>
-                    <BoxTitle data={{divClass:"optionsTitle", textType:'h4', text:`Rename layer.`}}/>
+                    <BoxTitle data={{divClass:"optionsTitle", textType:'span', text:`Rename layer.`}}/>
                     <Buttonz data={{class:'renameLayerBttn', id:'bg_upld', value:'Rename', func: renameLayer}} />
                 </div>
                 <div style={{ padding: "0px 10px 10px 10px", width: "30%", boxSizing: "border-box", display: "inline-block"}}>
-                    <BoxTitle data={{divClass:"optionsTitle", textType:'h4', text:`Prioritized.`}}/>
+                    <BoxTitle data={{divClass:"optionsTitle", textType:'span', text:`Prioritized.`}}/>
                     <button id="priorityLayerBttn" className={( state.data.layers[ state.temp_index ].priority === true )?'disablepriorityLayerBttn':'makepriorityLayerBttn'} onClick={(e)=>{ prioritizeLayer(e) }}>
                         <div id='makepriorityLayerOption' className={( state.data.layers[ state.temp_index ].priority === true )?'ispriorityLayerOption':'notpriorityLayerOption'}>
                             <span id='makepriorityLayerOptionSpan'>{( state.data.layers[ state.temp_index ].priority === true )?"YES":"NO"}</span>
@@ -986,7 +986,7 @@ const possblCombos = ( arrays )=>{
                     </button>
                 </div>
                 <div style={{ padding: "0px 10px 10px 10px", width: "70%", boxSizing: "border-box", display: "inline-block", float:"right"}}>
-                    <BoxTitle data={{divClass:"optionsTitle", textType:'h4', text:`Delete layer.`}}/>
+                    <BoxTitle data={{divClass:"optionsTitle", textType:'span', text:`Delete layer.`}}/>
                     <Buttonz data={{class:"delLayerBttn", id:'bg_upld', value: 'DELETE', func: delLayer}} />
                 </div>
             </div>
@@ -1014,7 +1014,7 @@ const possblCombos = ( arrays )=>{
             
             let numberSideBar = <div className="lineNumbers" id="lineNumbers" >{boxxcont}</div>
             currentSubState = <div className='LayerUpldBox' style={{padding:"20px"}}>
-                <BoxTitle data={{divClass:"contractEditorTitle", textType:'h2', text:'Edit or paste contract.'}}/>
+                <BoxTitle data={{divClass:"contractEditorTitle", textType:'h2', text:'Edit or paste contract'}}/>
                 <BoxTitle data={{divClass:"contractEditorTitle", textType:'span', text:'Changing contract may affect NFT contract deploy.'}}/>
                 <div className="editor" id="editor" >
                     {numberSideBar}
