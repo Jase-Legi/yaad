@@ -110,8 +110,15 @@
         margin: 0px 0px 30px 0px;
     }
 
-    .headerTitle{
+    .headerTitle > h1 {
+        font-size: 35px;
+        line-height: 50px;
+        word-wrap: break-word;
+    }
+
+    .headerTitle > span {
         font-size: 14px;
+        line-height: 20px;
     }
 
     .welcomeBox{
