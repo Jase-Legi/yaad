@@ -107,36 +107,16 @@
 
 /* Project Name & Symbol Box Style  */
 .coll_name_box{
-    width: 93vw;
-    max-width: 1000px;
-    /* background-color: rgb(10, 11, 11); */
-    padding: 10px 30px;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 10px 20px;
     margin: 10px auto 0px auto;
     box-sizing: border-box;
-    border-radius: 20px;
-}
-
-.contractName{
-    width: calc( 97% - 40px) !important;
-    border: none !important;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    margin: 0px 3% 0px 0px !important;
-    padding: 0px 20px !important;
-    box-sizing: border-box;
-    max-width: calc( 97% - 40px) !important;
-    min-width: calc( 97% - 40px) !important;
-    height: 40px;
-    user-select: none;
-    text-align:left;
-    background-color: rgb(10, 11, 11);
-    border:solid 0.5px rgb(52, 52, 52) !important;
-    box-sizing: border-box !important;
-    color: #555;
-    font-size:14px;
+    text-align: left;
     font-weight: 500;
-    border-radius: 10px;
+    border-radius: 20px;
+    display: flex;
+    align-content: flex-start;
 }
 
 .contractNameContainer{
@@ -151,30 +131,25 @@
     min-width: 50%;
     height: 40px;
     border:none;
-    float: left;
+    display: flex;
 }
 
-.contractSymbol{
-    width: calc( 97% - 50px) !important;
+.contractName{
+    width: 99% !important;
     border: none !important;
+    margin: 0px 0.5% !important;
+    padding: 0px 20px !important;
+    box-sizing: border-box !important;
+    height: 40px;
+    font-size:14px !important;
+    color: rgb(192, 192, 192) !important;
+    background-color: rgb(10, 11, 11);
+    border:solid 0.5px rgb(52, 52, 52) !important;
+    border-radius: 10px;
+    user-select: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    margin: 0px 0px 3% 0px !important;
-    padding: 0px 20px !important;
-    box-sizing: border-box;
-    max-width: calc( 97% - 50px) !important;
-    min-width: calc( 97% - 50px) !important;
-    height: 40px;
-    user-select: none;
-    text-align:left;
-    background-color: rgb(10, 11, 11);
-    border:solid 0.5px rgb(52, 52, 52) !important;
-    box-sizing: border-box !important;
-    color: rgb(83, 83, 83);
-    font-size:14px;
-    font-weight: 500;
-    border-radius: 10px;
 }
 
 .contractSymbolContainer{
@@ -186,39 +161,28 @@
     margin: 0px !important;
     padding: 0px !important;
     box-sizing: border-box;
-    min-width: 48%;
+    min-width: 50%;
     height: 40px;
     border:none;
-    float: left;
+    display: flex;
 }
 
-.contractNameText{
-    width: 40px;
+.contractSymbol{
+    width: 99% !important;
+    border: none !important;
+    margin: 0px 0.5% !important;
+    padding: 0px 20px !important;
+    box-sizing: border-box !important;
     height: 40px;
-    vertical-align: middle;
-    text-align: left;
-    margin: 0px;
-    box-sizing: border-box;
-    padding: 9.5px 0px;
-    float: left;
-    color: rgb(255, 255, 255);
-}
-
-.contractSymbolText{
-    width: 50px;
-    height: 40px;
-    vertical-align: middle;
-    text-align: left;
-    margin: 0px;
-    box-sizing: border-box;
-    padding: 9.5px 0px;
-    float: left;
-    color: rgb(255, 255, 255);
-}
-
-.contractNameText > span{
-    height: 18px;
-    margin-top: 12px;
+    font-size:14px !important;
+    color: rgb(192, 192, 192) !important;
+    background-color: rgb(10, 11, 11);
+    border:solid 0.5px rgb(52, 52, 52) !important;
+    border-radius: 10px;
+    user-select: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 
@@ -261,7 +225,6 @@
 
 .contracted-container>h2, h3, h4{
     color: #fff;
-    border-bottom: solid 0.5px rgb(52, 52, 52);
 }
 
 #contracted-container>span{
@@ -316,7 +279,7 @@
     flex-direction: row;
     display: flex;
     /* gap: 10px; */
-    font-family: monospace;
+    font-family:'Galyon';
     line-height: 21px;
     background-color: transparent;
     border: 1px solid rgb( 52, 52, 52 );

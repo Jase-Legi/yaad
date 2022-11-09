@@ -127,11 +127,7 @@ const possblCombos = ( arrays )=>{
         
         if( e.target.getAttribute('type') === 'file' && ( e.target.getAttribute('name') === 'multi_asset' || e.target.getAttribute('name') === 'bg_asset' ) ){
             let currentFiles;
-            if ( e.target.files.length < 1 && state.data.tempFiles !== null ){
-                return hideLoading(e);
-            }else{
-                currentFiles = e.target.files;
-            }
+            if ( e.target.files.length < 1 && state.data.tempFiles !== null ){ return hideLoading(e); }else{ currentFiles = e.target.files; }
             if ( currentFiles.length < 1 ) { e.target.classList.remove('inactive'); return hideLoading(e); }
 
             await validateIMGtype( currentFiles, 'LayerUpldContentBox', 'layerContentBox', [], ([ err, wrongfiles, imgfiles ])=>{
@@ -150,7 +146,6 @@ const possblCombos = ( arrays )=>{
         }
         
         if( e.target.getAttribute("id") !== "bg_upld" ){
-            // state.data.layers[ state.temp_index ]?.name
             layerName = ( state.temp_index === null )? state.formVals:state.data.layers[ state.temp_index ]?.name;//document.getElementById("LayerName").value.trim();
             let msgs = [];
             console.log(`indx: ${ layerindex }`)
@@ -161,7 +156,7 @@ const possblCombos = ( arrays )=>{
                     }
                 })
             }
-            // console.log(`indexxxx: ${layerindex}`)
+
             if ( !layerName ){ msgs.push( "Enter a layer name!" ) }
             if ( !state.data.tempFiles ){ msgs.push( "Click the '+' to upload files!" ) }
             if ( msgs?.length > 0 ) { hideLoading(e); return setMsgStacks((prev)=>({...prev, substate: state.currsubState, messages:msgs, } ) ) }
@@ -878,12 +873,10 @@ const possblCombos = ( arrays )=>{
     function CollNameBox(){
         return(<div className='coll_name_box'>
             <div className='contractNameContainer'>
-                <BoxTitle data={{divClass:'contractNameText', textType:'span', text:'Name:'}}/>
-                <DaInput data={{ type:'text', typeId:'contractName', typeClass:'contractName', placeholder:(state.data.coll_name)?state.data.coll_name:"Enter your project name.", onChange:formDataHandler, onClick:(e)=>{e.target.value = state.data.coll_name}}}/>
+                <input type='text' id='contractName' className='contractName' placeholder={(state.data.coll_name)?state.data.coll_name:"Name: "} onChange={formDataHandler} onClick={(e)=> (state.data.coll_name)? e.target.value = state.data.coll_name:false} />
             </div>
             <div className='contractSymbolContainer'>
-                <BoxTitle data={{divClass:'contractSymbolText', textType:'span', text:'Symbol:'}}/>
-                <DaInput data={{ type:'text', typeId:'contractSymbol', typeClass:'contractSymbol', placeholder:(state.data.coll_symbol)?state.data.coll_symbol:"Enter project symbol.", onChange:formDataHandler}}/>
+                <input type='text' id='contractSymbol' className='contractSymbol' placeholder={(state.data.coll_symbol)?state.data.coll_symbol:"Symbol: "} onChange={formDataHandler} onClick={(e)=> (state.data.coll_symbol)? e.target.value = state.data.coll_symbol:false } />
             </div>
         </div>)
     }

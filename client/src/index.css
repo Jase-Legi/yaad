@@ -1,12 +1,12 @@
 /* Import fonts for usage */
-@font-face{ font-family:'tahoma'; src:url('../fonts/tahoma.ttf'); }
+@font-face{ font-family:'Galyon'; src:url('../fonts/Galyon-Book.otf'); }
 
-@font-face{ font-family:'tahoma'; src:url('../fonts/tahomabd.ttf') format('truetype'); font-weight:bold; }
+@font-face{ font-family:'Galyon'; src:url('../fonts/Galyon-Bold.otf') format('truetype'); font-weight:bold; }
 
-code { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+code { font-family: 'Galyon'; }
 
 body{
-	font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;    
+	font-family: 'Galyon';
 	width: 100% !important;
 	max-width: 100% !important;
 	margin: 0px !important;

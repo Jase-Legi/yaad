@@ -154,7 +154,7 @@ function SingleNft (props){
         return(
             <>
                 <label className='popupBoxEleDetailsLabel' id='createSingleBoxPreview' htmlFor="createSingleAssetUpld" onClick={ ()=>{ document.querySelector('#single_asset').click() } }>
-                    <div className='popupBoxEleDetails' style={{padding:( state.data?.path )?'0px':'30px', boxSizing:'border-box'}}> <img src={( state.data?.path )? state.data?.path:'uploadimg.svg' } style={{objectFit:"cover", height: "100%", width:"100%"}} alt=""/> </div>
+                    <div className='popupBoxEleDetails' style={{padding:( state.data?.path )?'0px':'30px', boxSizing:'border-box'}}> <img src={( state.data?.path )? `data:image/${state.data?.ext};base64,${state.data?.path}`:'uploadimg.svg' } style={{objectFit:"cover", height: "100%", width:"100%"}} alt=""/> </div>
                 </label>
                 <input type="file" id='single_asset' name='single_asset' style={{opacity:100, zIndex:1}} onChange={handlesingleUpload} hidden/>
                 <input className='popupBoxTextEle' placeholder={ ( state.data?.name )?state.data?.name:'Name' } type="text" name='name' id='singleNFTName' onChange={ handleTextInputChanges } onClick={(e)=>e.target.value = (!state.data.name)?"":state.data.name } style={ {opacity:100, zIndex:1 } } />
