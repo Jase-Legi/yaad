@@ -548,7 +548,7 @@ text {
 .expander-div{
     width: 100%;
     background-color:rgb(10, 11, 11);
-    height: 30px;
+    height: 40px;
     border-bottom-left-radius: 7.5px;
     border-bottom-right-radius: 7.5px;
     cursor: pointer;
@@ -559,7 +559,7 @@ text {
     border-bottom: none;
     border-right: none;
     border-left: none;
-    margin: -10px 0px 10px 0px;
+    margin: -20px 0px 10px 0px;
 }
 
 .expander-div:hover{
@@ -573,7 +573,7 @@ text {
     border: 0.5px solid rgb(52, 52, 52);
     box-sizing: border-box;
     padding: 10px;
-    border-radius: 10px;
+    border-radius: 20px;
     overflow-y: hidden;
 }
 
@@ -582,7 +582,7 @@ text {
     border: 0.5px solid rgb(52, 52, 52);
     box-sizing: border-box;
     padding: 10px;
-    border-radius: 10px;
+    border-radius: 20px;
 }
 
 .sampleImage{

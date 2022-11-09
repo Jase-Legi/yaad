@@ -803,7 +803,13 @@ const possblCombos = ( arrays )=>{
                 sampleLen++;
             }
             
-            return(boxcont)
+            return(<div className='contracted-box'>
+                <div id='nftSamples-container' className='contracted-container'>
+                    <h3>Generated Samples</h3>
+                    { boxcont }
+                </div>
+                <button className="expander-div" onClick={(e)=>{ expandABox( e, document.getElementById( 'nftSamples-container' ), 'nftSamples-expanded-container', 'nftSamples-contracted-container' ); }} >expand</button>
+            </div>)
         }
 
         // showLoading();
@@ -845,7 +851,16 @@ const possblCombos = ( arrays )=>{
             //     sampleLen++;
             // }
             
-            let contractDetailsBox = <div className='contract-box'> <div style={{ height:'20px', width:'20px', margin:'0px 0px -30px auto', cursor:'pointer'}} onClick={(e)=>fetch(nftcontract).then( r=>r.text()).then( async (contract)=>{ return setState((prev)=>({...prev, formVals:{contract}, currsubState:"RandomGenerator-LayerOptions-Write-Contract" })); })}><img src='./edit icon.svg' alt=''/></div> <div id='contract-container' className='contract-container'><h3>{state.data.contracts[0]?.name}.sol</h3><span>{state.data.contracts[0]?.contract}</span></div> <button className="expander-div" onClick={(e)=>expandABox( e, document.getElementById('contract-container'), 'contract-container-expanded', 'contract-container') } >expand</button></div>;
+            let contractDetailsBox = <div className='contracted-box'>
+                <div style={{ height:'20px', width:'20px', margin:'0px 0px -30px auto', cursor:'pointer'}} onClick={(e)=>fetch(nftcontract).then( r=>r.text()).then( async (contract)=>{ return setState((prev)=>({...prev, formVals:{contract}, currsubState:"RandomGenerator-LayerOptions-Write-Contract" })); })}>
+                    <img src='./edit icon.svg' alt=''/>
+                </div>
+                <div id='contracted-container' className='contracted-container'>
+                    <h3>{state.data.contracts[0]?.name}.sol</h3>
+                    <span>{state.data.contracts[0]?.contract}</span>
+                </div>
+                <button className="expander-div" onClick={(e)=>expandABox( e, document.getElementById('contracted-container'), 'contracted-container-expanded', 'contracted-container') } >expand</button>
+            </div>;
             return( <> {/* <div id="pissingD"> {boxxcont} </div> */} {contractDetailsBox} </> )
         }
     }
@@ -915,45 +930,33 @@ const possblCombos = ( arrays )=>{
         }
     },[ state.currsubState ])
 
-    useEffect( ()=>{
-        if ( document.getElementById('lineNumbers')?.childElementCount !==  document.getElementById('solidityEditor')?.value.split('\n').length  ){
-            setNumbers( null, document.getElementById('solidityEditor')?.value );
-        }
-    },[ document.getElementById('solidityEditor')?.value ])
-    document.addEventListener(['paste','cut'], (e)=>{
-
-        console.log(`pisshshhshs:dlkdjdlkdjdlkj`)
-    })
+    // useEffect( ()=>{
+    //     if ( document.getElementById('lineNumbers')?.childElementCount !==  document.getElementById('solidityEditor')?.value.split('\n').length  ){
+    //         setNumbers( null, document.getElementById('solidityEditor')?.value );
+    //     }
+    // },[ state.formVals.contract ])
+    
     switch ( state.currsubState ) {
         case "RandomGenerator-ContractDeployed":
-            mainBox = <div className='contract-box' id='LayerGenBoxx'> 
+        // case "RandomGenerator-RandomGenerated":
+            let contractDeployed = state.currsubState === "RandomGenerator-ContractDeployed";
+            coll_Name_Box = ( !contractDeployed )?<CollNameBox/>:"";
+            mainBox = <div className='contracted-box' id='LayerGenBoxx'> 
                 <div className='contract-deployed-container'>
                     <BoxTitle data={{divClass:'optionsTitle', textType:'h2', text:'Contract Deployed.'}}/>
                     <a href={state.data.contract_link} target="_blank" rel="noreferrer"><BoxTitle data={{divClass:'regularText', textType:'span', text:`Contract address: ${state.data.contract_address}`}}/></a>
                 </div>
-                <div className="nftSamples-contracted-container" id='nftSamples-container' style={{marginTop:"20px", maxHeight:"400px",  overflowY:"hidden", marginBottom:"20px" }}>
-                    <BoxTitle data={{ divClass:'optionsTitle', textType:'h4', text:'Generated Samples.'}}/>
-                    <ThaSamples/>
-                    <button className="expander-div" onClick={(e)=>{ expandABox( e, document.getElementById( 'nftSamples-container' ), 'nftSamples-expanded-container', 'nftSamples-contracted-container' ); }} >expand</button>
-                </div>
+                <ThaSamples/>
             </div>;
             break;
         case "RandomGenerator-RandomGenerated":
             coll_Name_Box = <CollNameBox/> ;
-            mainBox = <> <div className='contract-deployed-container' >
+            mainBox = <div id='LayerGenBoxx'>
                 <BoxTitle data={{divClass:'contractTitle', textType:'h2', text:'Deploy contract.'}}/>
                 <ContractBox/>
-                <div id='LayerGenBoxx'>
-                    <div id='nftSamples-container' className='nftSamples-contracted-container' >
-                        <BoxTitle data={{divClass:'optionsTitle', textType:'h4', text:'Generated Samples.'}}/>
-                        <ThaSamples/>
-                    </div>
-                    <button  className="expander-div" onClick={(e)=>{ expandABox(e, document.getElementById( 'nftSamples-container' ), 'nftSamples-expanded-container', 'nftSamples-contracted-container' ); }} >expand</button>
-                </div>
-            </div>
-            <Buttonz data={{class:"submitBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />;
-            </>;
-            // LayerUpldBoxTitle = <div> <BoxTitle data={{divClass:'optionsTitle', textType:'h1', text:'Contract.'}}/><BoxTitle data={{divClass:'optionsTitle', textType:'span', text:`Click the "${(activeContract)?state.data["contracts"][activeContract]?.name:state.data["contracts"][0]?.name}" button to view the NFT contract. \nIf you already have a contract, click "Already have a contract" to link your contract.` }}/></div>
+                <ThaSamples/>
+                <Buttonz data={{class:"submitBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />;
+            </div>;
             break;
         case "RandomGenerator-LayerOptions-AddLayer":
         case "RandomGenerator-LayerOptions-BG-Upld":
@@ -1014,14 +1017,13 @@ const possblCombos = ( arrays )=>{
                 indx++;
             }
             
-
             let numberSideBar = <div className="lineNumbers" id="lineNumbers" >{boxxcont}</div>
             currentSubState = <div className='LayerUpldBox' style={{padding:"20px"}}>
-                <BoxTitle data={{divClass:"optionsTitle", textType:'h2', text:'Edit or paste contract.'}}/>
-                <BoxTitle data={{divClass:"optionsTitle", textType:'span', text:'Changing contract may affect NFT contract deploy.'}}/>
+                <BoxTitle data={{divClass:"contractEditorTitle", textType:'h2', text:'Edit or paste contract.'}}/>
+                <BoxTitle data={{divClass:"contractEditorTitle", textType:'span', text:'Changing contract may affect NFT contract deploy.'}}/>
                 <div className="editor" id="editor" >
                     {numberSideBar}
-                    <textarea className='solidityEditor' id='solidityEditor' onKeyUp={(e)=>{ if( e.key === "Enter" || e.key === "Backspace" || e.key === "Delete" ){ return setNumbers( e, e.target.value ) }}} onChange={(e)=>state.formVals.contract = e.target.value } />
+                    <textarea className='solidityEditor' id='solidityEditor' onKeyUp={(e)=>{ if( e.key === "Enter" || e.key === "Backspace" || e.key === "Delete" || e.ctrlKey ){ return setNumbers( e, e.target.value ) }}} onChange={(e)=>state.formVals.contract = e.target.value } />
                 </div>
                 <Buttonz data={{class:"nodelLayerBttn", id:'', value:'SUBMIT', func: ()=>{return false}}} />
             </div>

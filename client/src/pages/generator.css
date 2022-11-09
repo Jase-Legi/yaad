@@ -237,23 +237,79 @@
 
 
 /* Contract section */
-.contract-container{
-    height: 100px;
+.contracted-box{
+    border: solid 0.5px rgb(52, 52, 52);
+    border-radius: 20px;
+    background-color: rgb(10, 11, 11);
+    width: 100%;
+    height: fit-content;
+    padding: 15px;
+    box-sizing: border-box;
+    margin-bottom: 25px;
+    word-wrap: break-word;
+    word-break: break-all;
+    overflow-wrap: break-word;
+}
+
+.contracted-container{
+    height: 200px;
+    box-sizing: border-box;
+    width: 100%;
+    overflow-x:hidden ;
     overflow-y: hidden;
 }
 
-#contract-container>h2, h3, h4{
+.contracted-container>h2, h3, h4{
     color: #fff;
     border-bottom: solid 0.5px rgb(52, 52, 52);
 }
 
-#contract-container>span{
+#contracted-container>span{
     color: #888;
+    width: 100%;
+    word-wrap: break-word;
+    box-sizing: border-box;
 }
 
-.contract-container-expanded{
+.contracted-container-expanded{
+    box-sizing: border-box;
+    width: 100%;
+    overflow-x:hidden ;
     height:fit-content;
     overflow-y: hidden;
+}
+
+.contractEditorTitle{
+    font-size: 17px;
+    height:fit-content;
+    line-height:normal;
+    vertical-align: middle;
+    text-align: center;
+    position: relative;
+    padding: 0px;
+    width: 100%;
+    display: flex;
+    color: whitesmoke;
+}
+
+.contractEditorTitle > span{
+    color: rgb(255, 255, 0);
+    font-size: 11px;
+    height:fit-content;
+    text-align: left;
+    padding: 15px;
+    vertical-align: middle;
+}
+
+.contractEditorTitle > h2 {
+    color: whitesmoke;
+    padding-bottom: 15px;
+    font-size: 24px;
+    border-bottom:solid rgb(52, 52, 52) 1px;
+    width: 100%;
+    height:fit-content;
+    margin: 0px;
+    vertical-align: middle;
 }
 
 .editor {
@@ -265,13 +321,13 @@
     background-color: transparent;
     border: 1px solid rgb( 52, 52, 52 );
     border-radius: 20px;
-    padding: 20px 10px;
+    padding: 20px 1%;
     width: 100%;
     box-sizing: border-box;
 }
 
 .lineNumbers {
-    width: 35px;
+    width: fit-content;
     flex-direction: column;
     margin: 0px;
     line-height: 21px;
@@ -302,7 +358,7 @@
     height: fit-content;
     margin: 0px 0px 0px auto;
     border-radius: 10px;
-    overflow-x: scroll;
+    overflow-x: auto;
     line-height: 21px;
     overflow-y: hidden;
     padding: 0;
@@ -755,20 +811,6 @@
 
 .contractTitle {
     color: rgb( 255, 255, 255 );
-}
-
-.contract-box{
-    border: solid 0.5px rgb(52, 52, 52);
-    border-radius: 20px;
-    background-color: rgb(10, 11, 11);
-    width: 100%;
-    height: fit-content;
-    padding: 15px;
-    box-sizing: border-box;
-    margin-bottom: 10px;
-    word-wrap: break-word;
-    word-break: break-all;
-    overflow-wrap: break-word;
 }
 
 .regularText{
