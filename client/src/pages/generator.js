@@ -150,7 +150,8 @@ const possblCombos = ( arrays )=>{
         }
         
         if( e.target.getAttribute("id") !== "bg_upld" ){
-            layerName = ( state.temp_index === null )? state.formVals:document.getElementById("LayerName").value.trim();
+            // state.data.layers[ state.temp_index ]?.name
+            layerName = ( state.temp_index === null )? state.formVals:state.data.layers[ state.temp_index ]?.name;//document.getElementById("LayerName").value.trim();
             let msgs = [];
             console.log(`indx: ${ layerindex }`)
             if( layerindex === null ){
@@ -961,7 +962,8 @@ const possblCombos = ( arrays )=>{
         case "RandomGenerator-LayerOptions-AddLayer":
         case "RandomGenerator-LayerOptions-BG-Upld":
             let addLayerIMG = state.currsubState === 'RandomGenerator-LayerOptions-AddLayer';
-            let pissoffbox = ( addLayerIMG && state.temp_index === null )?<DaInput data={( state.temp_index !== null )? { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', hidden:true, value:state.data.layers[ state.temp_index ]?.name } : { typeClass:'LayerName', typeId:'LayerName', name:'name', type:'text', placeholder:(state.formVals !== null)?state.formVals:'Enter layer name.', onChange:formDataHandler, onClick:(e)=>{ e.target.value = state.formVals;} } }/>:<BoxTitle data={{ divClass:"editBoxTitle", textType:'h2', text:`Upload ${( addLayerIMG )?'':"background"} images.`}}/>;
+            let layerImg_tmpIndx = ( addLayerIMG && state.temp_index === null )
+            let pissoffbox = ( layerImg_tmpIndx )?<input className='LayerName' id='LayerName' name='name' type='text' placeholder={(state.formVals !== null)?state.formVals:'Enter layer name.'} onChange={formDataHandler} onClick={(e)=> e.target.value = state.formVals}/>:<BoxTitle data={{ divClass:"editBoxTitle", textType:'h2', text:`Upload ${( addLayerIMG )?'':"background"} images.`}}/>;
             currentSubState = <div className='LayerUpldBox'>
                 { pissoffbox }
                 <BoxTitle data={{ divClass:"optionsTitle", textType:'span', text:( addLayerIMG )?(`Click the "+" to upload layer images${( state.temp_index !== null)?" for: "+state.data.layers[ state.temp_index ]?.name:""}.`):`Click the "+" to upload background images.`}}/>
