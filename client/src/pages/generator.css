@@ -2,7 +2,7 @@
     cursor: pointer;
     height: 60px;
     box-sizing: border-box;
-    margin: 10px 0px 0px 0;
+    margin: 10px 0px 20px 0;
     padding: 5px ;
     transition: border .15s linear;
     width: 100%;
@@ -24,7 +24,7 @@
     height:20px;
     width: 20px;
     float: right;
-    color: #444;
+    color: rgb( 52, 52, 52 );
     font-weight: bold;
     border: rgb(10, 11, 11) solid 1px;
     background-color: rgb(190, 190, 190);
@@ -137,7 +137,7 @@
 .contractName{
     width: 99% !important;
     border: none !important;
-    margin: 0px 0.5% !important;
+    margin: 0px 1% 0px 0px !important;
     padding: 0px 20px !important;
     box-sizing: border-box !important;
     height: 40px;
@@ -170,7 +170,7 @@
 .contractSymbol{
     width: 99% !important;
     border: none !important;
-    margin: 0px 0.5% !important;
+    margin: 0px 0px 0px 1% !important;
     padding: 0px 20px !important;
     box-sizing: border-box !important;
     height: 40px;
@@ -219,6 +219,7 @@
     height: 200px;
     box-sizing: border-box;
     width: 100%;
+    text-align: left;
     overflow-x:hidden ;
     overflow-y: hidden;
 }
@@ -230,7 +231,7 @@
 #contracted-container>span{
     color: #888;
     width: 100%;
-    word-wrap: break-word;
+    word-break:keep-all;
     box-sizing: border-box;
 }
 
@@ -274,6 +275,92 @@
     height:fit-content;
     margin: 0px;
     vertical-align: middle;
+}
+
+.contractEditorToolBar{
+    width:100% !important;
+    background-color: transparent !important;
+    box-sizing: border-box !important;
+    height:fit-content !important;
+    padding: 0px;
+    margin: 0px 0px 20px 0px !important;
+    border-radius: 20px !important;
+    display: flex !important;
+    flex-direction: row;
+}
+
+.toolBarElement{
+    color: #fff;
+    width: fit-content !important;
+    height: 40px !important;
+    border: 1px solid rgb( 52, 52, 52 ) !important;
+    box-sizing: border-box;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 0px 1% 0px 0px;
+    display: flex;
+    flex-direction: row;
+    padding: 9px !important;
+    vertical-align: middle;
+}
+
+.toolBarElement:hover{
+    background-color: transparent !important;
+    color: #fff !important;
+    /* border: 3px solid rgb( 52, 52, 52 ); */
+    outline: 2px solid rgb( 52, 52, 52 );
+}
+
+.toolBarElement > img {
+    height: 20px !important;
+    padding: 0px;
+}
+
+.toolBarElement > span {
+    font-size: 13px;
+    line-height: 18px;
+    text-align: left;
+    height: 18px;
+    margin: auto auto auto 7.5px;
+}
+
+.toolBarElement > h2 {
+    font-size: 18px;
+    font-weight:800;
+    color: yellow;
+    line-height: 18px;
+    text-align: left;
+    height: 20px;
+    margin: 0px;
+}
+
+.solTabsWrapper{
+    height: 30px;
+    width: calc( 100% - 40px );
+    /* background-color: #555; */
+    margin: 0px;
+    padding: 0px 20px;
+    display: flex;
+    flex-direction: row;
+}
+
+.solTabs{
+    height: 30px;
+    border-top: 1px solid rgb( 52, 52, 52 );
+    border-left: 1px solid rgb( 52, 52, 52 );
+    border-right: 1px solid rgb( 52, 52, 52 );
+    width: 10%;
+    padding: auto 0px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 8px;
+    padding: 9px 0px;
+    overflow: hidden;
+    box-sizing: border-box;
+    display: inline-block;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 5px;
+    margin-right: 5px;
 }
 
 .editor {
@@ -372,7 +459,8 @@
     background-color: rgb(190, 190, 190);
     color:#fff;
     border-radius: 7.5px;
-    display: table;
+    display:flex;
+    flex-direction: row;
 }
 
 .layer-name{
@@ -382,7 +470,6 @@
     clear: both;
     overflow: hidden;
     margin: 0px auto;
-    
     padding: 2.5px 0px; 
 }
 
@@ -417,15 +504,13 @@
 .expander-box{
     width: 25% !important;
     height: 60px !important;
-    /* display: block; */
-    float: left;
     cursor: pointer;
-    color: #444;
+    color: rgb( 52, 52, 52 );
     font-size: 10px;
     border-bottom-left-radius: 7.5px;
     border-top-left-radius: 7.5px;
     background-color: rgb(190, 190, 190);
-    border-right:solid 2px rgb(48, 48, 48);
+    border-right:solid 2px rgb( 52, 52, 52 );
     border-top:none;
     border-bottom:none;
     border-left:none;
@@ -439,11 +524,11 @@
 
 .expander-box:hover{
     background-color: rgb(129, 129, 129) !important;
-    border-right:solid 2px rgb(48, 48, 48) !important;
+    border-right:solid 2px rgb( 52, 52, 52 ) !important;
     border-top:none !important;
     border-bottom:none !important;
     border-left:none !important;
-    color:#444;
+    color:rgb( 52, 52, 52 );
 }
 
 .edit-layer-box{
@@ -451,10 +536,9 @@
     height: 50px !important;
     width: 50px !important;
     padding: 5px 0px;
-    /* display: block; */
-    float: right;
+    margin: 0px 0px 0px auto !important;
     cursor: pointer;
-    border-left:solid 0.5px rgb(48, 48, 48);
+    border-left:solid 0.5px rgb( 52, 52, 52 );
     overflow: hidden;
     margin:0px;
 }
@@ -561,7 +645,7 @@
     margin: auto 0px;
     text-align:left;
     background-color: rgb(190, 190, 190);
-    color: #444;
+    color: rgb( 52, 52, 52 );
     font-size:8px;
     border-radius: 11px;
 }
@@ -569,7 +653,7 @@
 .del-trait{
     height:22px;
     width: 22px;
-    color: #444;
+    color: rgb( 52, 52, 52 );
     font-weight: bold;
     border: rgb(129, 129, 129) solid 1px;
     background-color: rgb(190, 190, 190);
@@ -652,6 +736,7 @@
     font-size: 11px;
     height:fit-content;
     text-align: left;
+    margin: 0px 0px 10px 0px;
     vertical-align: middle;
 }
 
@@ -667,7 +752,7 @@
     color: whitesmoke;
     font-size: 20px;
     height:fit-content;
-    margin: 0px;
+    margin: 0px 10px 0px 0px;
     vertical-align: middle;
 }
 
@@ -695,7 +780,7 @@
 
 .LayerUpldBoxTitle{
     padding:20px 0px 5px 0px;
-    color:#444;
+    color:rgb( 52, 52, 52 );
     text-align: left;
     font-weight: bold;
     border-bottom: dotted 0.5px #555;
@@ -876,7 +961,7 @@
     text-align:left;
     background-color: rgb(190, 190, 190);
     border:none;
-    color: #444;
+    color: rgb( 52, 52, 52 );
     font-size:.75em;
     font-weight: 700;
     border-radius: 5px;

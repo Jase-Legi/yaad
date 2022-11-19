@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useMemo } from 'react'
+import React, { useContext, useEffect, lazy, Suspense } from 'react'
 import { StateContext } from '../context/StateContext';
 import { imgToBase64String, imgURLFromBase64String, base64ToBlob } from "../helpers/imgBLOBto64";
 import { ContractFactory } from "ethers";
@@ -14,6 +14,11 @@ import { LoadingBox, showLoading, hideLoading } from "../components/ui/loading";
 import { MsgContext } from "../context/msgcontext";
 import { Link } from 'react-router-dom';
 import  './generator.css'
+import { select } from 'async';
+// import CodeEditor from '../components/codeEditor/codeEditor';
+const CodeEditor = lazy(()=> import('../components/codeEditor/codeEditor'));
+// const SelectCreateOption = lazy(()=> import('./pages/CreateOptions'));
+// const SingleNft = lazy(()=> import('./pages/singleNFT'));
 
 function RandomGenerator (props){
     const pumpum = window.location.host;
@@ -76,7 +81,6 @@ const possblCombos = ( arrays )=>{
 
         try {
             fetch(nftcontract).then( r=>r.text()).then( async (contract)=>{
-                // console.log(`contract: ${text}`)
                 let contractOptions = {
                     language: "Solidity", 
                     sources: {
@@ -474,9 +478,11 @@ const possblCombos = ( arrays )=>{
                                             // payload.append('samples', JSON.stringify(thesamples));
                                             // let saveCollection = await fetch(`${state.baseServerUri}/savenftcollection`, {method:'POST', body:payload}).then((response)=>response.json()).then((ress)=>ress);
                                             payload = null;
-                                            let newcontract = JSON.parse(JSON.stringify(yaadcontract));
-                                            newcontract.name = state.data.coll_name.split(" ").join("_");
-                                            return setState((prev)=>({...prev, data: {...prev.data, coll_name: prev.data.coll_name, coll_symbol: prev.data.coll_symbol, samples: thesamples, possibleCombos, contracts: [newcontract] }, currsubState: "RandomGenerator-RandomGenerated" }));
+                                            fetch(nftcontract).then( r=>r.text()).then( async (contract)=>{
+                                                // let newcontract = JSON.parse(JSON.stringify(yaadcontract));
+                                                // newcontract.name = state.data.coll_name.split(" ").join("_");
+                                                return setState((prev)=>({...prev, data: {...prev.data, coll_name: prev.data.coll_name, coll_symbol: prev.data.coll_symbol, samples: thesamples, possibleCombos, contracts: [{name:"main", contract,}] }, currsubState: "RandomGenerator-RandomGenerated" }));    
+                                            });
                                         };
                                         if( v === (cap_it-1) ){
                                             await updateDB(state.data, state.data.coll_name, conntd, sampleArray, pinnedCombo);
@@ -827,28 +833,27 @@ const possblCombos = ( arrays )=>{
     function ContractBox(){
         let boxxcont = [];
         if(state.data.contracts?.length > 0 && state.currsubState !== "RandomGenerator-ContractDeployed"){
-            const the_contracts = state.data.contracts; let contractLen = the_contracts.length;
+            const the_contracts = state.data.contracts;
+            let contractLen = the_contracts.length;
             
-            // const showContract = ( e, daindex )=>{
-            //     showLoading(); e.preventDefault();
-            //     state.data.activeContract = daindex;
-            //     setState((prev)=>({...prev}));
-            //     hideLoading();
-            // };
+            const showContract = ( e, daindex )=>{
+                showLoading(); e.preventDefault();
+                state.data.activeContract = daindex;
+                setState((prev)=>({...prev}));
+                hideLoading();
+            };
             
-            // for ( let sampleLen = 0; sampleLen < contractLen; sampleLen++ ){
-            //     boxxcont.push(
-            //         <button key={sampleLen} onClick={ (e)=>showContract( e, sampleLen ) } className={"contractBox"} >
-            //             <img src='./solidity_icon.svg' id={"contractBoxImg_"+sampleLen} alt=''/>
-            //             <span id={"contractBoxSpan_"+sampleLen}>{ the_contracts[sampleLen].name }</span>
-            //         </button>
-            //     );
-                
-            //     sampleLen++;
-            // }
+            for ( let sampleLen = 0; sampleLen < contractLen; sampleLen++ ){
+                boxxcont.push(
+                    <button key={sampleLen} onClick={ (e)=>showContract( e, sampleLen ) } className={"contractBox"} >
+                        <img src='./solidity_icon.svg' id={"contractBoxImg_"+sampleLen} alt=''/>
+                        <span id={"contractBoxSpan_"+sampleLen} >{ the_contracts[sampleLen].name }</span>
+                    </button>
+                );
+            }
             
             let contractDetailsBox = <div className='contracted-box'>
-                <div style={{ height:'20px', width:'20px', margin:'0px 0px -30px auto', cursor:'pointer'}} onClick={(e)=>fetch(nftcontract).then( r=>r.text()).then( async (contract)=>{ return setState((prev)=>({...prev, formVals:{contract}, currsubState:"RandomGenerator-LayerOptions-Write-Contract" })); })}>
+                <div style={{ height:'20px', width:'20px', margin:'0px 0px -30px auto', cursor:'pointer'}} onClick={(e)=>{ showLoading(); return setState((prev)=>({...prev, formVals:{activeContractIndex:0, contract:state.data.contracts}, currsubState:"RandomGenerator-LayerOptions-Write-Contract" })); } }>
                     <img src='./edit icon.svg' alt=''/>
                 </div>
                 <div id='contracted-container' className='contracted-container'>
@@ -857,17 +862,16 @@ const possblCombos = ( arrays )=>{
                 </div>
                 <button className="expander-div" onClick={(e)=>expandABox( e, document.getElementById('contracted-container'), 'contracted-container-expanded', 'contracted-container') } >expand</button>
             </div>;
-            return( <> {/* <div id="pissingD"> {boxxcont} </div> */} {contractDetailsBox} </> )
+            return( <> <BoxTitle data={{divClass:'contractTitle', textType:'h2', text:'Deploy Contract'}}/>{ <div id="pissingD"> {boxxcont} </div> } {contractDetailsBox} </> )
+        }else{
+            return(<>
+                <BoxTitle data={{divClass:'optionsTitle', textType:'h2', text:'Contract Deployed.'}}/>
+                <a href={state.data.contract_link} target="_blank" rel="noreferrer">
+                    <BoxTitle data={{divClass:'regularText', textType:'span', text:`Contract address: ${state.data.contract_address}`}}/>
+                </a>
+            </>
+            )
         }
-    }
-
-    function AddLayer(){
-        return(
-            <div style={{marginBottom:"20px"}}>
-                <input type="file" id={(contractZone)?'project_contract':'single_asset'} name={(contractZone)?'project_contract':'single_asset'} accept={(contractZone)?'*':"image/*"} multiple="multiple" style={{opacity:100, zIndex:1}} onChange={(contractZone)?handleSol:state.data.func} hidden/>
-                <button className='generatorRightPanelAddNewLayer' id='generatorRightPanelAddNewLayer' onClick={(e)=>{ if( state.data.coll_name?.length > 0 && state.data.coll_symbol?.length > 0 ){ return setState((prev)=>({...prev, temp_index:null, currsubState: "RandomGenerator-LayerOptions-AddLayer" })); }else{ let messages = []; if( !state.data.coll_symbol ){ messages.push("Enter a project/NFT symbol!") } if( !state.data.coll_name ){ messages.push( "Enter a project/NFT name!" ) } if( messages.length > 0 ){ return setMsgStacks( (prev)=>({...prev, messages, substate:state.currsubState }) ) } } }} > + </button>
-            </div>
-        )
     }
 
     function CollNameBox(){
@@ -881,75 +885,15 @@ const possblCombos = ( arrays )=>{
         </div>)
     }
 
-    const setNumbers = async ( e, inputText )=>{
-        document.getElementById("solidityEditor").value = inputText;
-        let numberOfLines = inputText.split('\n').length;
-        let newlen;
+    let currentSubState, mainBox, submitButton, coll_Name_Box;
 
-        if ( numberOfLines > document.getElementById('lineNumbers')?.childElementCount && document.getElementById('lineNumbers')?.childElementCount !== 0 ){
-            newlen = document.getElementById('lineNumbers')?.childElementCount;
-            for ( newlen; newlen < numberOfLines; newlen++ ) {
-                document.getElementById('lineNumbers').innerHTML += `<span></span>`;
-            }
-        }
-
-        if( numberOfLines < document.getElementById('lineNumbers')?.childElementCount ){
-            newlen = document.getElementById('lineNumbers')?.childElementCount - numberOfLines;
-            // for ( numberOfLines; numberOfLines < newlen; numberOfLines++ ) {
-            let indx = 0;
-            while ( indx < newlen ) {
-                document.getElementById('lineNumbers').childNodes[numberOfLines].remove();
-                indx++;
-            }
-        }
-
-        if ( document.getElementById('lineNumbers')?.childElementCount === 0 ){
-            let indx = 0;
-            while ( indx < numberOfLines ) {
-                document.getElementById('lineNumbers').innerHTML += `<span></span>`;
-                indx++;
-            }
-        }
-
-        document.getElementById("solidityEditor").style.height = (document.getElementById('lineNumbers').clientHeight+20)+"px";
-        return hideLoading();
-    }
-
-    let currentSubState, LayerUpldBoxTitle, mainBox, submitButton, addLayer, coll_Name_Box;
-    useEffect( ()=>{
-        if ( state.currsubState === "RandomGenerator-LayerOptions-Write-Contract" ){
-            document.getElementById('solidityEditor').value = state.formVals.contract;
-            setNumbers( null, state.formVals.contract );
-            return hideLoading();
-        }
-    },[ state.currsubState ])
-
-    // useEffect( ()=>{
-    //     if ( document.getElementById('lineNumbers')?.childElementCount !==  document.getElementById('solidityEditor')?.value.split('\n').length  ){
-    //         setNumbers( null, document.getElementById('solidityEditor')?.value );
-    //     }
-    // },[ state.formVals.contract ])
-    
     switch ( state.currsubState ) {
         case "RandomGenerator-ContractDeployed":
-        // case "RandomGenerator-RandomGenerated":
-            let contractDeployed = state.currsubState === "RandomGenerator-ContractDeployed";
-            coll_Name_Box = ( !contractDeployed )?<CollNameBox/>:"";
-            mainBox = <div className='contracted-box' id='LayerGenBoxx'> 
-                <div className='contract-deployed-container'>
-                    <BoxTitle data={{divClass:'optionsTitle', textType:'h2', text:'Contract Deployed.'}}/>
-                    <a href={state.data.contract_link} target="_blank" rel="noreferrer"><BoxTitle data={{divClass:'regularText', textType:'span', text:`Contract address: ${state.data.contract_address}`}}/></a>
-                </div>
-                <ThaSamples/>
-            </div>;
-            break;
         case "RandomGenerator-RandomGenerated":
-            coll_Name_Box = <CollNameBox/> ;
-            mainBox = <div id='LayerGenBoxx'>
-                <BoxTitle data={{divClass:'contractTitle', textType:'h2', text:'Deploy Contract'}}/>
+            mainBox = <div id='LayerGenBoxx'> 
                 <ContractBox/>
                 <ThaSamples/>
-                <Buttonz data={{class:"submitBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />;
+                <Buttonz data={{class:"submitBttn", id:'Generate-pfp', value: 'Deploy Contract', func: deployContract}} />
             </div>;
             break;
         case "RandomGenerator-LayerOptions-AddLayer":
@@ -962,7 +906,6 @@ const possblCombos = ( arrays )=>{
                 <BoxTitle data={{ divClass:"optionsTitle", textType:'span', text:( addLayerIMG )?(`Click the "+" to upload layer images${( state.temp_index !== null)?" for: "+state.data.layers[ state.temp_index ]?.name:""}.`):`Click the "+" to upload background images.`}}/>
                 <button className='plusBttn' id='LayerUpldLabel' htmlFor='multi_asset' style={{ fontSize: '50px !important'}} onClick={( addLayerIMG )?(e)=>{ showLoading(e); let ele_val = state.formVals; if( !ele_val && state.temp_index === null ) { e.preventDefault(); setMsgStacks((prev)=>( {...prev, messages:[ "Enter a layer name!" ], substate:state.currsubState } )); return hideLoading(e); } document.getElementById('multi_asset').click(); return hideLoading(e); }:(e)=>{ showLoading(e); document.getElementById('multi_asset').click(); return hideLoading(e);}} >+
                     <input type={'file'} id='multi_asset' name={( addLayerIMG )?'multi_asset':'bg_asset'} multiple='multiple' onChange={ (e)=>handleAddLayerUpld( e, state.temp_index ) } hidden/>
-                    {/* <DaInput data={{hidden:true, type:'file', typeId:'multi_asset', class:'inactive', name:( addLayerIMG )?'multi_asset':'bg_asset', multiple:'multiple', accept:'image/*', onChange:handleAddLayerUpld}}/> */}
                 </button>
                 <div id='layerContentBox'></div>
                 <button className="submitBttn" id={( addLayerIMG )?'addLayerImages':'bg_upld'} onClick={ (e)=>handleAddLayerUpld( e, state.temp_index ) } >
@@ -1003,33 +946,20 @@ const possblCombos = ( arrays )=>{
             </div>
             break;
         case "RandomGenerator-LayerOptions-Write-Contract":
-            showLoading();
-            
-            const newlineLen = state.formVals.contract.split('\n').length;
-            let boxxcont = [];
-            for ( let indx = 0; indx < newlineLen; indx++ ){
-                boxxcont.push(<span key={indx}></span>);
-                indx++;
-            }
-            
-            let numberSideBar = <div className="lineNumbers" id="lineNumbers" >{boxxcont}</div>
-            currentSubState = <div className='LayerUpldBox' style={{padding:"20px"}}>
-                <BoxTitle data={{divClass:"contractEditorTitle", textType:'h2', text:'Edit or paste contract'}}/>
-                <BoxTitle data={{divClass:"contractEditorTitle", textType:'span', text:'Changing contract may affect NFT contract deploy.'}}/>
-                <div className="editor" id="editor" >
-                    {numberSideBar}
-                    <textarea className='solidityEditor' id='solidityEditor' onKeyUp={(e)=>{ if( e.key === "Enter" || e.key === "Backspace" || e.key === "Delete" || e.ctrlKey ){ return setNumbers( e, e.target.value ) }}} onChange={(e)=>state.formVals.contract = e.target.value } />
-                </div>
-                <Buttonz data={{class:"nodelLayerBttn", id:'', value:'SUBMIT', func: ()=>{return false}}} />
-            </div>
+            currentSubState = <CodeEditor/>
             break;
         default:
-            currentSubState = null;
-            state.formVals = null; state.temp_index = null;
+            currentSubState = null; state.formVals = null; state.temp_index = null;
             submitButton = ( state.data.layers.length > 1 )?<button id={(state.data.background)?'Generate-pfp':'selectBG'} className="submitBttn" onClick={(e)=>{ if ( state.data.background ) { return generate_it( e, 40 ) }else{ return setState((prev)=>({...prev, currsubState:"RandomGenerator-LayerOptions-BG-Upld" })); } }} >{ (state.data.background)?'GENERATE':'Choose Backgrounds' }</button>:'';
-            coll_Name_Box = <CollNameBox/>; addLayer = <AddLayer/>;
-            mainBox = <> <div id='LayerGenBoxx'><GenLayers/></div><TheBGs/>{submitButton}</>;
-            LayerUpldBoxTitle = <><BoxTitle data={{divClass:'optionsTitle', textType:'h2', text:'LAYERS'}}/> <BoxTitle data={{divClass:'optionsTitle', textType:'span', text:`Click the "+" icon to create new layer`}}/></>;
+            coll_Name_Box = <CollNameBox/>;
+            mainBox = <>
+                <button className='generatorRightPanelAddNewLayer' id='generatorRightPanelAddNewLayer' onClick={(e)=>{ if( state.data.coll_name?.length > 0 && state.data.coll_symbol?.length > 0 ){ return setState((prev)=>({...prev, temp_index:null, currsubState: "RandomGenerator-LayerOptions-AddLayer" })); }else{ let messages = []; if( !state.data.coll_symbol ){ messages.push("Enter a project/NFT symbol!") } if( !state.data.coll_name ){ messages.push( "Enter a project/NFT name!" ) } if( messages.length > 0 ){ return setMsgStacks( (prev)=>({...prev, messages, substate:state.currsubState }) ) } } }} > + </button>
+                <BoxTitle data={{divClass:'optionsTitle', textType:'h2', text:'LAYERS'}}/>
+                <BoxTitle data={{divClass:'optionsTitle', textType:'span', text:`Click the "+" icon to create new layer`}}/>
+                <div id='LayerGenBoxx'> <GenLayers/> </div>
+                <TheBGs/>
+                {submitButton}
+            </>;
             break;
     }
 
@@ -1040,8 +970,6 @@ const possblCombos = ( arrays )=>{
                     <button className='closeBox' onClick={()=> setState( (prev)=>({...prev, state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null }) ) }>X</button>
                     {coll_Name_Box}
                     <div className='LayerGenBox'>
-                        { LayerUpldBoxTitle }
-                        { addLayer }
                         { mainBox }
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { imgSignature, getFileExtension } from "./imgSignatures";
+import { getFileExtension } from "./imgSignatures";
 
 const validateIMGtype = async ( demFiles, childClassName, parentIdName, wrongFiles, callback) => {
     const parentEle = document.getElementById(parentIdName);

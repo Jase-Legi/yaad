@@ -87,7 +87,8 @@ const App = ()=>{
     }, [ state ]);
 
     useEffect(()=>{
-        setMsgStacks( defaultErrorStack )
+        setMsgStacks( defaultErrorStack );
+        // setMsgStacks( (prev)=>({...prev, }) );
     }, [ state.state, state.currsubState])
     let currentState;
     let bgimg = "url('./yaadfavicon_bg.svg') no-repeat center fixed";
@@ -96,7 +97,6 @@ const App = ()=>{
             currentState = <WalletBox/>;
             break;
         case 'createnft':
-            
             bgimg = "url('./yaadfavicon_bg_white.svg') no-repeat center fixed";
             currentState = <SingleNft/>;
             break;

@@ -32,4 +32,13 @@ const get_all_possible_array_combos =  async ( input, output, n, da_path )=>{
     }
 };
 
-export { shuffle, get_all_possible_array_combos };
+const checkJsonParse = (str)=>{
+    try {
+        JSON.parse(str);
+        return true;
+    } catch (error) {
+        return false;
+    }
+};
+
+export { shuffle, get_all_possible_array_combos, checkJsonParse };

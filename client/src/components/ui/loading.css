@@ -1,14 +1,3 @@
-#loadingbttn{
-    z-index: 2100 !important;
-    position:absolute;
-    height:170px;
-    width: 120px;
-    top: calc(50vh - 60px);
-    left: calc(50vw - 60px);
-    background-color: rgb(10, 11, 11);
-    border-radius: 10px;
-}
-
 #loadingpopup{
     -webkit-box-align: center !important;
     /* padding: 40px !important; */
@@ -30,6 +19,17 @@
     scrollbar-width: thin;
     backdrop-filter: blur(5px);
 
+}
+
+#loadingbttn{
+    z-index: 2100 !important;
+    position:absolute;
+    height:170px;
+    width: 120px;
+    top: calc(50vh - 60px);
+    left: calc(50vw - 60px);
+    background-color: rgb(10, 11, 11);
+    border-radius: 10px;
 }
 
 .loadingbttn_text_box{

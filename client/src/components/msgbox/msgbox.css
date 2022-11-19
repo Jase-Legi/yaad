@@ -78,3 +78,47 @@
     background-color: #fff;
     color: rgb(10, 11, 11);
 }
+
+#modalpopup{
+    -webkit-box-align: center !important;
+    z-index: 999999 !important;
+    padding: 20px 0px;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    position:absolute;
+    left: 0px;
+    top: 0px;
+    min-width: 100% !important;
+    min-height: 100vh !important;
+    box-sizing: border-box !important;
+    height: 100% !important;
+    background-color:rgba(255, 255, 255, .3);
+    inset: 0px !important;
+    display: flex !important;
+    scrollbar-color: rgb(10, 11, 11);
+    scrollbar-width: thin;
+    backdrop-filter: blur(5px);
+}
+
+#modalBox{
+    z-index: 2100 !important;
+    height:fit-content !important;
+    width: 50vw !important;
+    margin: 100px auto 0px auto !important;
+    padding: 30px !important;
+    color: white;
+    /* top: calc(50vh - 60px);
+    left: calc(50vw - 60px); */
+    background-color: rgb(10, 11, 11);
+    border-radius: 20px;
+}
+
+.modalSuubmit{
+    width:100% !important;
+    height: 50px !important;
+    border-radius: 10px;
+    font-weight: 800 !important;
+    font-size: 20px !important;
+    margin: 10px 0px 0px 0px !important;
+    cursor: pointer;
+}

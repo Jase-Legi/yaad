@@ -1,4 +1,6 @@
+// import React, { useContext} from 'react';
 import './loading.css'
+
 function LoadingBox({ data } ){
     // console.log(`loading data: ${JSON.stringify(data)}`)
     return(
@@ -23,7 +25,6 @@ const showLoading = (e)=>{
 }
 
 const hideLoading = (e)=>{
-
     document.getElementById('loadingpopup')?.classList.add('inactive');
     if ( e ) {
         if ( e.target?.classList.contains('inactive') ){

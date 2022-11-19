@@ -242,6 +242,8 @@ const getFileExtension = ( BLOBfile, callback )=>{
     });
 
     readr.readAsDataURL( BLOBfile );
+    // const urlpath = URL.createObjectURL
+    // console.log(`url path:${urlpath}`)
 }
 
 const imgSignature = ( urlparts, callback )=>{
