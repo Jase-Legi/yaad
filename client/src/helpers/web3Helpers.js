@@ -1,8 +1,8 @@
-import { providers, Contract, utils, BigNumber, ContractFactory } from 'ethers';
+import { providers, Contract, utils, BigNumber, ContractFactory, getDefaultProvider } from 'ethers';
 
 let provider = null, signer = null, currentNetwork = null, oldNetwork = null;
 
-// Chec for web 3 injected global variable 
+// Check for web 3 injected global variable 
 if ( typeof window.ethereum !== 'undefined' ) {
     provider = new providers.Web3Provider( window.ethereum, 'any' );
     // Wait for network connection
@@ -17,16 +17,16 @@ if ( typeof window.ethereum !== 'undefined' ) {
             // window.location = '/';
         }
     });
-
+    
     window.ethereum.on('accountsChanged', function (accounts) {
         // Time to reload your interface with accounts[0]!
         //handle user switching accounts here, reload metamask interface or connect to new interface
-        console.log(`accounts: ${JSON.stringify(accounts)}`);
+        // console.log(`accounts: ${JSON.stringify(accounts)}`);
+        // provider.////
     })
 
     signer = provider.getSigner();
 }
-
 
 const blockchainNetworks = [
     {
@@ -46,7 +46,7 @@ const blockchainNetworks = [
         logo:'solidity_icon.svg'
     },
     {
-        name: 'Binance',
+        name: 'BNB',
         chainType: 'EVM',
         networkParameters: {
             chainId: '0x38',
@@ -164,14 +164,16 @@ const connectToChain = async ( chain )=>{
         try {
             const switchChain = await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [ { chainId: chain.networkParameters.chainId } ]});
             if ( switchChain === null ){
-                return true;
+                const chainID = await window.ethereum.request({ method: 'eth_chainId' });
+                return chainID;
             }
         } catch ( switcherror ) {
             if ( switcherror.code === 4902 ) {
                 try {
                     const switchChain = await window.ethereum.request({ method:'wallet_addEthereumChain', params:[ chain.networkParameters ] });
                     if ( switchChain === null ) {
-                        return true;
+                        const chainID = await window.ethereum.request({ method: 'eth_chainId' });
+                        return chainID;
                     }
                 } catch ( addAccountError ) {
                     
@@ -201,44 +203,44 @@ const currentAddress = async ()=>{
 };
 
 const walletConnected = async ( chain )=>{
-    if(window.ethereum){
-        try {
-            console.log(`chain: ${JSON.stringify(chain)}`);
-            const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
-            // Switch to selected EVM chain
-            const switchChain = await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [ { chainId: chain.networkParameters.chainId } ]});
-            console.log(`switched!: ${switchChain}`);
-            return accounts[0];
-        } catch ( switcherror ) {
-            // Error code 4902 occurs when selected chain isn't present in seelcted wallet 
-            if( switcherror.code === 4902 ){
-                try {
-                    const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
-                    // If chain not added, then add the chain
-                    const switchChain = await window.ethereum.request({ method:'wallet_addEthereumChain', params:[ chain.networkParameters ] });
-                    return accounts[0];
-                } catch ( addAccountError ) {
-
-                    // handle user rejection error
-                    if ( addAccountError.code === 4001 ) {
-                        
-                    }
-
-                    // Handle all other errors
-                    return addAccountError;
-                }
-            }
-
-            // handle user rejection error
-            if ( switcherror.code === 4001 ) {
-
-            }
-
-            // Handle all other errors
-            return switcherror;
-        }
-    }else{
+    if(!window.ethereum){
         return window.location = 'https://metamask.app.link/send/pay-https://www.yaadlabs.com?value=1e17';
+    }
+    
+    try {
+        console.log(`chain: ${JSON.stringify(chain)}`);
+        const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
+        // Switch to selected EVM chain
+        const switchChain = await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [ { chainId: chain.networkParameters.chainId } ]});
+        console.log(`switched!: ${switchChain}`);
+        return accounts[0];
+    } catch ( switcherror ) {
+        // Error code 4902 occurs when selected chain isn't present in selcted wallet 
+        if( switcherror.code === 4902 ){
+            try {
+                const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
+                // If chain not added, then add the chain
+                const switchChain = await window.ethereum.request({ method:'wallet_addEthereumChain', params:[ chain.networkParameters ] });
+                return accounts[0];
+            } catch ( addAccountError ) {
+
+                // handle user rejection error
+                if ( addAccountError.code === 4001 ) {
+                    
+                }
+
+                // Handle all other errors
+                return addAccountError;
+            }
+        }
+
+        // handle user rejection error
+        if ( switcherror.code === 4001 ) {
+
+        }
+
+        // Handle all other errors
+        return switcherror;
     }
 };
 
@@ -275,4 +277,4 @@ const mintNFT = async (uri, tokenAddress, tokenAbi, signer )=>{
     return isconnected;
 }
 
-export { currentAddress, signer, currentNetwork, oldNetwork, mintNFT, blockchainNetworks, connectToChain }
+export { currentAddress, signer, provider, currentNetwork, oldNetwork, mintNFT, blockchainNetworks, connectToChain }

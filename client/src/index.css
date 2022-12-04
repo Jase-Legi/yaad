@@ -261,16 +261,16 @@ text {
 }
 
 .popupBoxEle{
-    margin: 5px auto;
+    margin: 20px auto;
     max-width: 600px;
     min-width: 150px;
-    height: 200px;
+    height: 150px;
     text-align: center;
     background-color: rgba( 255, 255, 255 );
     color: #000000;
     font-size:1.5em;
     font-weight: 700;
-    border-radius: 25px;
+    border-radius: 20px;
     outline: none;
     border: solid 1px rgb( 52, 52, 52 );
     box-sizing: border-box;

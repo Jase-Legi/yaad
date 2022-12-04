@@ -1,33 +1,32 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, lazy, Suspense, useMemo } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-
-// import { WelcomeBox } from './pages/home';
-// import { SelectCreateOption } from './pages/CreateOptions';
-// import { RandomGenerator } from './pages/generator';
-// import { SingleNft } from './pages/singleNFT';
-import { connectToChain, signer,  currentNetwork, blockchainNetworks, currentAddress } from "./helpers/web3Helpers";
+import { providers, Contract, utils, BigNumber, ContractFactory, getDefaultProvider } from 'ethers';
+import { connectToChain, getNetwork, blockchainNetworks, currentAddress } from "./helpers/web3Helpers";
 import { StateContext } from './context/StateContext';
 import { MsgContext } from './context/msgcontext';
 import { LoadingBox, showLoading, hideLoading } from "./components/ui/loading";
-import { Wallet } from 'ethers';
-// import WalletBox from './components/ui/walletmodal';
-// import MsgBox from "./components/msgbox/msgbox";
 
 const RandomGenerator = lazy(()=> import('./pages/generator'));
 const SelectCreateOption = lazy(()=> import('./pages/CreateOptions'));
 const SingleNft = lazy(()=> import('./pages/singleNFT'));
 const WelcomeBox = lazy(()=> import('./pages/home').then(home=>home));
-const WalletBox = lazy(()=> import('./components/ui/walletmodal').then( wallet=> wallet))
+const WalletBox = lazy(()=> import('./components/ui/walletmodal').then( wallet=> wallet));
+const SideBar = lazy(()=> import('./components/ui/sideBar'));
+const CodeEditor = lazy(()=> import('./components/codeEditor/codeEditor'));
 const MsgBox = lazy(()=> import("./components/msgbox/msgbox") );
+const Header = lazy(()=> import("./components/header/header") );
+
 let baseServerUri = ( window.location.host  === "localhost:3000" )?'api/':'https://yaadlabs.herokuapp.com/api/';
-const homeState = { state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null, baseServerUri, chainData: null, account: null };
+const homeState = { state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null, baseServerUri, chainData: null, chainID: null, account: null, sideBar:false };
 const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
+const { log } = console;
+let provider = null, signer = null, currentNetwork = null, oldNetwork = null;
+
 const App = ()=>{
     const [ state, setState ] = useState( homeState );
 
-    let [ msgStacks, setMsgStacks ] = useState(defaultErrorStack);
-    
-    let activeStatus = 'inactive';
+    const [ msgStacks, setMsgStacks ] = useState( defaultErrorStack );
+
     useEffect(()=>{
         showLoading();
         if( window.sessionStorage.getItem( "state" ) ){
@@ -58,7 +57,66 @@ const App = ()=>{
                 }
             };
         }
+        // log(`ethereum type: ${typeof window.ethereum}`)
+        if( typeof window.ethereum === 'undefined' ){
+            return;
+        }
 
+        provider = new providers.Web3Provider( window.ethereum, 'any' );
+        provider.on( 'network', async ( newNetwork, old_Network )=>{
+            try {
+                let chain_id = await window.ethereum.request({ method: 'eth_chainId' });
+                
+                console.log(`chain id:::: ${chain_id}`)
+                
+            } catch (error) {
+                log(`error getting chain ID, error: ${error}`);
+            }
+        });
+
+        signer = provider.getSigner();
+
+        window.ethereum.on('connect', ( connectData )=>{
+            log(`connected: ${ JSON.stringify(connectData) }`);
+        });
+        
+        window.ethereum.on('disconnect', ( disconnectedData )=>{
+            log(`disconnected: ${JSON.stringify(disconnectedData)}`);
+        });
+
+        window.ethereum.on('accountsChanged', async (accounts)=> {
+            // Time to reload your interface with accounts[0]!
+            //handle user switching accounts here, reload metamask interface or connect to new interface
+            console.log(`accounts changed. Account: ${JSON.stringify(accounts[0])}`);
+            let chainID = await window.ethereum.request({ method: 'eth_chainId' });
+
+            if( accounts[0] === undefined ){
+                // state.account = null;
+                // console.log(`chain id:::: ${chain_id}`)
+                return setState((prev)=>({...prev, account: null, chainID: null }));
+            }else{
+                const balance = await provider.getBalance( accounts[0] );
+                const balanceInEth = utils.formatEther(balance);
+                // state.account = accounts[0];
+                return setState((prev)=>({...prev, account: accounts[0], chainID, ethBalance: balanceInEth }));
+            }
+        });
+
+        window.ethereum.on('chainChanged', async (chainid)=>{
+
+            log(`chain changed, chain id: ${chainid}`);
+            const chainID = await window.ethereum.request({ method: 'eth_chainId' });
+            const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
+            const balance = await provider.getBalance( accounts[0] );
+            const balanceInEth = utils.formatEther(balance);
+            return setState((prev)=>({...prev, account: accounts[0], chainID, ethBalance: balanceInEth }));
+        });
+
+        // window.ethereum.on('message', (chainid)=>{
+
+        // });
+
+        return;
     }, []);
 
     useEffect(()=>{
@@ -84,8 +142,9 @@ const App = ()=>{
                 hideLoading();
             }
         };
-    }, [ state ]);
 
+    }, [ state ]);
+    
     useEffect(()=>{
         setMsgStacks( defaultErrorStack );
         // setMsgStacks( (prev)=>({...prev, }) );
@@ -106,6 +165,9 @@ const App = ()=>{
         case 'SelectCreateOption':
             currentState = <div className='popupdark'> <SelectCreateOption /> </div>;
             break;
+        case 'create_std_token':
+            currentState = <div className='popupdark'> <CodeEditor/> </div>;
+            break;
         default:
             currentState =<div className='popupdark'> <WelcomeBox data={{message: "De-Fi"}} /> </div>;
             break;
@@ -120,6 +182,8 @@ const App = ()=>{
                     {/* catch delay betweeen component switch caused by the lazy load & show the loading svg*/}
                     <Suspense fallback={<img src="./loading.svg" alt=""/>}>
                         <MsgBox subState={ state.currsubState } />
+                        <SideBar/>
+                        <Header/>
                         {currentState}
                     </Suspense>
                 </StateContext.Provider>

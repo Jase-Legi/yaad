@@ -3,6 +3,7 @@ import { hideLoading, showLoading } from "../ui/loading";
 import { BoxTitle } from '../form/formcomps';
 import { MsgContext } from "../../context/msgcontext";
 import { StateContext } from '../../context/StateContext';
+import "./codeEditor.css";
 
 
 const defaultErrorStack = { messages:[], formdata:[], substate:null };
@@ -83,15 +84,40 @@ function CodeEditor({ data, substate }){
     let boxxcont = [], bbx = [];
     
     for ( let indx = 0; indx < newlineLen; indx++){
-        if( newline[ indx ].includes('contract ') && newline[ indx ].split('contract ')[0].trim() === ""  ){
-            console.log(`------- ${indx}) line: '${newline[ indx ]}'`)
+        if( newline[ indx ].includes('contract ') && newline[ indx ].split('contract ')[0].trim() === ""  && state.formVals.activeContractIndex === 0 ){
+            console.log(`contract name: ${newline[ indx ].split('contract ')[1].trim().split(" ")[0]}`);
         }
 
         boxxcont.push(<span key={indx}></span>);
     }
 
-    state.formVals.contract.forEach((element, ind) => {
-        bbx.push(<div key={ind} className='solTabs' onClick={(e)=>setState((prev)=>({...prev, formVals:{...prev.formVals, activeContractIndex: ind}}))}>{element.name}</div>)
+    const delContract =  (e, ind)=>{
+        showLoading();
+        state.formVals.contract.splice(ind, 1);
+        const mainContractLineSplit = state.formVals.contract[ 0 ]?.contract?.split('\n');
+        const mainContractLineSplitLen = mainContractLineSplit?.length;
+        let indx = 0;
+
+        while ( indx < mainContractLineSplitLen ){
+            if( mainContractLineSplit[ indx ].includes(`import "./import_${ind}.sol";`) ){
+                mainContractLineSplit.splice( (indx), 1 );
+                break;
+            }
+
+            if( mainContractLineSplit[ indx ].includes('contract ') ){
+                break;
+            }
+
+            indx++
+        }
+
+        state.formVals.contract[ 0 ].contract = mainContractLineSplit.join('\n');
+        return setState((prev)=>({...prev, formVals:{...prev.formVals, activeContractIndex: 0}}));
+    };
+
+    state.formVals?.contract?.forEach((element, ind) => {
+        let delbttn = (ind !== 0)?<button style={{ backgroundColor:"white", fontSize:"10px", height:"20px", width:"20px", borderRadius:"10px", padding:"2px", zIndex:"5", fontWeight:"700", cursor:"pointer", margin:"0px 0px auto -20px" }} onClick={(e)=>delContract(e, ind) } >X</button>:"";
+        bbx.push(<><div key={ind} className='solTabs' style={{padding:"9px 0px", backgroundColor:( ind === state.formVals.activeContractIndex )?"rgb(24, 24, 25)":"transparent"}} onClick={(e)=>setState((prev)=>({...prev, formVals:{...prev.formVals, activeContractIndex: ind}}))}><span>{element.name}</span></div>{delbttn}</>)
     });
     
     const handleContractUpload = (e)=>{
@@ -153,10 +179,58 @@ function CodeEditor({ data, substate }){
                 activeindex = state.formVals.contract.length;
                 contract = state.formVals.contract;
                 contract.push({name: `import_${activeindex}`, contract:ee.target.result});
+
+                const mainContractLineSplit = state.formVals.contract[ 0 ]?.contract?.split('\n');
+                const mainContractLineSplitLen = mainContractLineSplit?.length;
+                let indx = 0;
+
+                while ( indx < mainContractLineSplitLen ){
+                    if( mainContractLineSplit[ indx ].includes('pragma solidity ') ){
+                        // console.log(`------- ${indx}) line: '${newline[ indx ]}'`);
+                        mainContractLineSplit.splice( (indx+1), 0, `import "./import_${activeindex}.sol";` );
+                        break;
+                    }
+                    indx++
+                }
+                // mainContractLineSplit.join('\r\n');
+                state.formVals.contract[ 0 ].contract = mainContractLineSplit.join('\n');
                 return setState((prev)=>({...prev, modal:null, formVals:{...prev.formVals, contract, activeContractIndex: activeindex, addContract:null }}));
             }
+
+            const mainContractLineSplit = text.split('\n');
+            const mainContractLineSplitLen = mainContractLineSplit?.length;
+
+            if( state.formVals.activeContractIndex === 0 ) {
+                
+                let indx = 0, pragma = false, pragmaIndex = null, existingImports = [], existingImportsLength = state.formVals.contract.length;
+                if ( existingImportsLength > 1 ){
+                    for(let daind = 1; daind < existingImportsLength; daind++ ){
+                        existingImports.push(`import "./import_${daind}.sol";`)
+                    }
+                }
+    
+                while ( indx < mainContractLineSplitLen ){
+                    if ( mainContractLineSplit[ indx ].includes('import ') && mainContractLineSplit[ indx ].split('import ')[0].trim() === ""){
+                        mainContractLineSplit.splice( (indx), 1 );
+                    }
+
+                    if( pragma === true && !mainContractLineSplit[ indx ].includes('import ') && mainContractLineSplit[ indx ].trim()[0] !== "/" && mainContractLineSplit[ indx ].trim()[0] !== undefined ){
+                        mainContractLineSplit.splice((pragmaIndex+1), 0, ...existingImports )
+                        break;
+                    }
+
+                    if( mainContractLineSplit[ indx ].includes('pragma ') && mainContractLineSplit[ indx ].split('pragma ')[0].trim() === ""){
+                        pragma = true;
+                        pragmaIndex = indx;
+                    }
+
+                    indx++
+                }
+            }
+
+            
             contract = state.formVals.contract;
-            contract[state.formVals.activeContractIndex].contract = text;
+            contract[state.formVals.activeContractIndex].contract = (state.formVals.activeContractIndex === 0)?mainContractLineSplit.join('\n'):text;
             setState((prev)=>({...prev, modal:null, formVals:{...prev.formVals, contract, addContract:{...prev.formVals.addContract, active:false } }}));
             return hideLoading();
         });

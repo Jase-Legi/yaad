@@ -657,8 +657,9 @@ index.post('/compileContract', multer().none(), (req, res, next)=>{
     const contractJSON = req.body.contractJSON;
 
     const compiledContract = JSON.parse(solc.compile(contractJSON));
-    const abi = compiledContract.contracts['yaad.sol']['Yaad'].abi;
-    const bytecode = compiledContract.contracts['yaad.sol']['Yaad'].evm.bytecode.object;
+    const contractName = req.body.contractName;
+    const abi = compiledContract.contracts['main.sol'][contractName].abi;
+    const bytecode = compiledContract.contracts['main.sol'][contractName].evm.bytecode.object;
     res.json({abi, bytecode,})
 });
 

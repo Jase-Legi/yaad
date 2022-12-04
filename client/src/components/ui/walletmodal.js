@@ -16,14 +16,14 @@ const WalletBox = ( )=>{
         showLoading();
         
         const walletConnected = await connectToChain( chosenNetwork );
-        if ( walletConnected === true ){
-            setNetworkSelected((prev)=>({...prev, status:true, index, }));
+        if ( walletConnected.code ){
             hideLoading();
-            return setState((prev)=>({...prev, chainData:chosenNetwork}));
+            return setMsgStacks((prev)=>({...prev, messages:["Please confirm wallet connection to continue!"], substate:state.currsubState }) );
         }
-        
-        hideLoading()
-        return setMsgStacks((prev)=>({...prev, messages:["Please confirm wallet connection to continue!"], substate:state.currsubState }) );
+
+        setNetworkSelected((prev)=>({...prev, status:true, index, }));
+        hideLoading();
+        return setState((prev)=>({...prev, chainData:chosenNetwork}));
     }
     
     const connectWallet = async ( e )=>{
@@ -64,14 +64,14 @@ const WalletBox = ( )=>{
                     <img src='./metamask.svg' alt='' style={{ height:'35px', width:'35px', borderRadius:'7.5px' }}/>
                     <span>Metamask Wallet</span>
                 </div>
-                <div className='walletElement'>
+                {/* <div className='walletElement'>
                     <img src='./bravelogo.svg' alt='' style={{ height:'35px', width:'35px', borderRadius:'7.5px' }}/>
                     <span>Brave Browser</span>
                 </div>
                 <div className='walletElement'>
                     <img src='./walletconnect.svg' alt='' style={{ height:'35px', width:'35px', borderRadius:'7.5px' }}/>
                     <span>Wallet Connect</span>
-                </div>
+                </div> */}
             </div>
         </div>
     </div>)

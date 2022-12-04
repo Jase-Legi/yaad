@@ -15,10 +15,9 @@ import { MsgContext } from "../context/msgcontext";
 import { Link } from 'react-router-dom';
 import  './generator.css'
 import { select } from 'async';
-// import CodeEditor from '../components/codeEditor/codeEditor';
 const CodeEditor = lazy(()=> import('../components/codeEditor/codeEditor'));
-// const SelectCreateOption = lazy(()=> import('./pages/CreateOptions'));
-// const SingleNft = lazy(()=> import('./pages/singleNFT'));
+// const solc = require('solc');
+
 
 function RandomGenerator (props){
     const pumpum = window.location.host;
@@ -80,14 +79,26 @@ const possblCombos = ( arrays )=>{
         }
 
         try {
-            fetch(nftcontract).then( r=>r.text()).then( async (contract)=>{
+            // fetch(nftcontract).then( r=>r.text()).then( async (contract)=>{
+                // state.data.contracts
+                // let contractOptions = {
+                //     language: "Solidity", 
+                //     sources: {
+                //     'yaad.sol': {
+                //         content: contract
+                //     }
+                //     },
+                //     settings:{
+                //     outputSelection:{
+                //         '*': {
+                //         '*':['*']
+                //         }
+                //     }
+                //     }
+                // };
                 let contractOptions = {
                     language: "Solidity", 
-                    sources: {
-                    'yaad.sol': {
-                        content: contract
-                    }
-                    },
+                    sources: { },
                     settings:{
                     outputSelection:{
                         '*': {
@@ -96,12 +107,33 @@ const possblCombos = ( arrays )=>{
                     }
                     }
                 };
+
+                const newline = state.data.contracts[0].contract.split('\n');
+                const newlineLen = newline?.length;
+                let myContractName;
+                for ( let indx = 0; indx < newlineLen; indx++){
+                    if( newline[ indx ].includes('contract ') && newline[ indx ].split('contract ')[0].trim() === "" ){
+                        console.log(`contract name: ${newline[ indx ].split('contract ')[1].trim().split(" ")[0]}`);
+                        myContractName = newline[ indx ].split('contract ')[1].trim().split(" ")[0];
+                    }
+                }
+
+                state.data.contracts.forEach( ( val, ind )=>{
+                    contractOptions.sources[`${val.name}.sol`] = {
+                        content: val.contract
+                    }
+                });
+
                 console.log(`chain data: ${JSON.stringify(state.chainData)}`);
                 const connected = await connectToChain( blockchainNetworks[6] );
                 let contractData = new FormData();
                 if( connected === false ) { hideLoading(); return false; }
                 contractData.append('contractJSON', JSON.stringify(contractOptions));
+
+                contractData.append('contractName', myContractName);
+                
                 const compiledContract = await fetch( state.baseServerUri+"compileContract", { method:'POST',body: contractData} ).then((theresponse)=>theresponse.json()).then((compiled)=>compiled);
+                
                 const abi = compiledContract.abi;
                 const bytecode = compiledContract.bytecode;
                 const factory = new ContractFactory(abi, bytecode, signer);
@@ -118,7 +150,7 @@ const possblCombos = ( arrays )=>{
                     hideLoading(e);
                     return setState( (prev)=>( { ...prev, currsubState: "RandomGenerator-ContractDeployed", data:{...prev.data, contract_address: nftToken.address, contract_link: `https://${currentNetwork.name}.etherscan.io/address/${nftToken.address}`} } ));
                 }
-            });
+            // });
         } catch (error) {
             console.log(`error: ${error}`)
             return error;
@@ -280,7 +312,9 @@ const possblCombos = ( arrays )=>{
             return setMsgStacks((prev)=>({...prev, messages: [ `Add more images to existing layers or create more layers. Your current layers only generate ${psblecmbz} possible unique images.` ], substate: state.currentSubState}));
         }
         let conntd = await connectToChain( blockchainNetworks[6] );
-        if( conntd === false ){ return false; }
+        if( conntd.code ){
+            return setMsgStacks((prev)=>({...prev, messages: [ `web3 wallet connection error occured` ], substate: state.currentSubState}));
+        }
         
         state.data.account = conntd;
 

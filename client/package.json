@@ -12,7 +12,6 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.3",
     "react-scripts": "^5.0.1",
-    "solc": "^0.8.17",
     "web-vitals": "^3.0.2"
   },
   "proxy": "http://localhost:5000/",

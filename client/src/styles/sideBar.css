@@ -1,0 +1,268 @@
+#sideBarpopup{
+    -webkit-box-align: center !important;
+    z-index: 9999 !important;
+    padding: 40px 0px;
+    overflow-y: hidden !important;
+    overflow-x: hidden !important;
+    position:absolute;
+    left: 0px;
+    top: 0px;
+    min-width: 100% !important;
+    min-height: 100vh !important;
+    box-sizing: border-box !important;
+    height: 100% !important;
+    background-color:rgba(255, 255, 255, .3);
+    inset: 0px !important;
+    display: flex !important;
+    scrollbar-color: rgb(10, 11, 11);
+    scrollbar-width: thin;
+    backdrop-filter: blur(5px);
+}
+
+.sideBar{
+    position: absolute;
+    width: 33%;
+    min-width: 250px;
+    padding: 20px;
+    box-sizing: border-box;
+    max-width: 400px;
+    height: 100% !important;
+    /* height: calc( 100% - 50px ) !important; */
+    right:0px;
+    top: 0px;
+    background-color: rgb( 10, 10, 11 );
+    z-index: 50000;
+    overflow-y: scroll;
+}
+
+.closeSideBar{
+    position: relative;
+    display: block;
+    width: 50px;
+    height: 50px;
+    font-size: 2em;
+    margin-bottom: 10px;
+    font-weight:800;
+    user-select: none;
+    align-items: center;
+    align-content: center;
+    line-height:normal;
+    background-color: rgb( 10, 11, 11 );
+    color: rgb(255, 255, 255);
+    border-radius: 50px;
+    box-sizing: border-box;
+    border: 0.5px solid rgb( 52, 52, 52 ) !important;
+    outline: none;
+    border:none;
+    padding: 0px !important;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.walletOptions{
+    display: flexbox;
+    width: 100% !important;
+    padding: 10px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.currentChain{
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    vertical-align: middle;
+    box-sizing: border-box;
+    border:solid rgb(52, 52, 52) 0.5px;
+    border-radius: 10px;
+    margin: 7.5px auto;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    vertical-align: middle;
+    /* align-content: flex-start; */
+    clear: both;
+}
+
+.currentChain:hover{
+    background-color: rgb(52, 52, 52);
+}
+
+.currentChain > img{
+    /* display:inline-flex; */
+    margin: 0px 15px 0px 0px;
+}
+
+.currentChain > span {
+    color:whitesmoke;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 18px;
+    text-align: left;
+    height: 18px;
+    margin: auto auto auto 0px;
+}
+
+.inactiveNetworks{
+    width: 100%;
+    height: 0px;
+    overflow-y:hidden;
+    visibility: hidden;
+    padding: 0px;
+    box-sizing: border-box;
+    /* font-size: ; */
+}
+
+.expandedInactiveNetworks{
+    width: 100%;
+    height:fit-content;
+    padding: 10px;
+    border: .5px solid rgb(52, 52, 52);
+    border-radius: 10px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    /* font-size: ; */
+}
+
+.inactiveChains{
+    width: 100%;
+    max-width: 400px;
+    padding: 5px;
+    vertical-align: middle;
+    box-sizing: border-box;
+    border:solid rgb(52, 52, 52) 0.5px;
+    border-radius: 10px;
+    margin: 7.5px auto;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    vertical-align: middle;
+    filter: grayscale(100%) !important;
+    -webkit-filter: grayscale(100%) !important;
+    /* align-content: flex-start; */
+    clear: both;
+}
+
+.inactiveChains > img {
+    height: 25px;
+    width: 25px;
+    margin: 0px 10px 0px 0px;
+    border-radius: 30px !important;
+}
+
+.inactiveChains > span{
+    font-size: 12px;
+    line-height: 12px;
+    height: 12px;
+    color: whitesmoke;
+    text-align: left;
+    margin: auto auto auto 0px;
+}
+
+.currentNetwork{
+    display: flexbox;
+    width: 100% !important;
+    text-align: left;
+    color: white;
+    box-sizing: border-box;
+    position: relative;
+    /* border:solid rgb(52, 52, 52) 0.5px; */
+}
+
+.currentNetwork > span{
+    padding: 0px 10px;
+    margin: 0px 0px 10px 0px ;
+}
+
+.networkElements{
+    width: 100%;
+    max-width: 400px;
+    height: fit-content;
+    padding: 10px;
+    vertical-align: middle;
+    box-sizing: border-box;
+    /* overflow-x: scroll; */
+    border:solid rgb(52, 52, 52) 0.5px;
+    border-radius: 10px;
+    margin: 5px auto;
+    /* flex-direction:; */
+    vertical-align: middle;
+    clear: both;
+}
+
+.networkElement{
+    width: 84px;
+    height: 90 !important;
+    padding: 10px;
+    vertical-align: middle;
+    box-sizing: border-box;
+    border:solid rgb(52, 52, 52) 0.5px;
+    border-radius: 10px;
+    margin: 5px;
+    display: inline-block;
+    flex-direction: column;
+    cursor: pointer;
+    clear: both;
+    overflow: hidden;
+}
+
+.walletOptions {
+    display: flexbox;
+    width: 100% !important;
+    padding: 10px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+
+
+
+
+
+    .currentChain > span {
+        color:whitesmoke;
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 13px;
+        height: 13px;
+        text-align: left;
+        padding: auto 0px;
+        margin: auto auto auto 0px;
+    }
+
+    .networkElement > span {
+        font-size: 9px !important;
+        line-height: 9px !important;
+        height: 9px !important;
+        width: 100% !important;
+        min-width: 43px !important;
+        display: block;
+        /* margin: 0px !important; */
+    }
+
+    .networkElement {
+        flex-direction: column !important;
+        padding: 10px 4px;
+        width: calc( 50% - 10px ) !important;
+    }
+
+    .networkElement > img {
+        display: block;
+        height:30px !important;
+        width: 30px !important;
+    }
+
