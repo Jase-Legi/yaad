@@ -5,12 +5,12 @@ import { showLoading, hideLoading } from '../ui/loading';
 import { connectToChain, blockchainNetworks, currentAddress } from '../../helpers/web3Helpers';
 import { expandABox } from '../../helpers/domHandlers';
 import '../../styles/sideBar.css';
+const {log} = console;
 
 const WalletBox = ( )=>{
     const { state, setState } = useContext( StateContext );
     const { msgStacks, setMsgStacks } = useContext( MsgContext );
     let activeChain, inactiveChain = [];
-    let [ networkSelected, setNetworkSelected ] = useState( { status: false, index: null } );
     let daBalance = state.ethBalance, activNetwrkIndx = null;
     
     const setChain = async ( e, chosenNetwork, index )=>{
@@ -21,23 +21,8 @@ const WalletBox = ( )=>{
             hideLoading();
             return setMsgStacks((prev)=>({...prev, messages:["Please confirm wallet connection to continue!"], substate:state.currsubState }) );
         }
-
-        setNetworkSelected((prev)=>({...prev, status:true, index, }));
-        hideLoading();
-        return setState((prev)=>({...prev, chainData:chosenNetwork, }));
-    }
-    
-    const connectWallet = async ( e )=>{
-        showLoading(e)
-        const account = await currentAddress();
-        if( account.code ){
-            console.log(`error ${JSON.stringify(account)}!`);
-            hideLoading(e);
-            return setMsgStacks((prev)=>({...prev, messages:( account.code === 4001 )?["You rejected connection, please confirm wallet connection to continue!"]:["An error occurred while attempting to connect wallet, please try again!"]}) );
-        }
-
-        hideLoading(e)
-        return setState((prev)=>({...prev, state:( state.newState )?prev.newState:"home", newState:null, oldState:null, account, }));
+        
+        return hideLoading();
     }
 
     blockchainNetworks.forEach( ( element, i ) => {
@@ -50,7 +35,7 @@ const WalletBox = ( )=>{
             </div>
         }else{
             inactiveChain.push(
-                <div className='inactiveChains' key={i} onClick={ (e)=>{ if( networkSelected.index === i ){ return setNetworkSelected((prev)=>( {...prev, status:false, index:null } )); } return setChain( e, blockchainNetworks[i], i ); } } >
+                <div className='inactiveChains' key={i} onClick={ (e)=>{ return setChain( e, blockchainNetworks[i], i ); } } >
                     <img src={(blockchainNetworks[i].logo)?blockchainNetworks[i].logo:'solidity_icon.svg'} alt='' />
                     <span> { blockchainNetworks[i].name } </span>
                 </div>

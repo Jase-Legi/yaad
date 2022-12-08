@@ -67,7 +67,7 @@ const App = ()=>{
             try {
                 let chain_id = await window.ethereum.request({ method: 'eth_chainId' });
                 
-                console.log(`chain id:::: ${chain_id}`)
+                // console.log(`chain id:::: ${chain_id}`)
                 
             } catch (error) {
                 log(`error getting chain ID, error: ${error}`);
@@ -92,13 +92,19 @@ const App = ()=>{
 
             if( accounts[0] === undefined ){
                 // state.account = null;
-                // console.log(`chain id:::: ${chain_id}`)
-                return setState((prev)=>({...prev, account: null, chainID: null }));
+                return setState((prev)=>({...prev, account: null, chainID: null, chainData:null }));
             }else{
+                // console.log(`chain id:::: ${chain_id}`)
                 const balance = await provider.getBalance( accounts[0] );
                 const balanceInEth = utils.formatEther(balance);
-                // state.account = accounts[0];
-                return setState((prev)=>({...prev, account: accounts[0], chainID, ethBalance: balanceInEth }));
+                let chainData;
+                blockchainNetworks.forEach((val, i)=>{
+                    if( val.networkParameters.chainId === chainID ){
+                        chainData = val;
+                    }
+                })
+
+                return setState((prev)=>({...prev, account: accounts[0], chainID, ethBalance: balanceInEth, chainData, }));
             }
         });
 
@@ -106,10 +112,17 @@ const App = ()=>{
 
             log(`chain changed, chain id: ${chainid}`);
             const chainID = await window.ethereum.request({ method: 'eth_chainId' });
+            let chainData;
+            blockchainNetworks.forEach((val, i)=>{
+                if( val.networkParameters.chainId === chainID ){
+                    chainData = val;
+                }
+            })
+            
             const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
             const balance = await provider.getBalance( accounts[0] );
             const balanceInEth = utils.formatEther(balance);
-            return setState((prev)=>({...prev, account: accounts[0], chainID, ethBalance: balanceInEth }));
+            return setState((prev)=>({...prev, account: accounts[0], chainID, ethBalance: balanceInEth, chainData, }));
         });
 
         // window.ethereum.on('message', (chainid)=>{
@@ -153,25 +166,26 @@ const App = ()=>{
     let bgimg = "url('./yaadfavicon_bg.svg') no-repeat center fixed";
     switch ( state.state ) {
         case 'connect':
-            currentState = <WalletBox/>;
+            currentState = <div className='popupdark'> <Header/> <WalletBox/> </div>;
             break;
         case 'createnft':
             bgimg = "url('./yaadfavicon_bg_white.svg') no-repeat center fixed";
-            currentState = <SingleNft/>;
+            currentState = <div className='popupdark'> <Header/> <SingleNft/> </div>;
             break;
         case 'RandomGenerator':
-            currentState = <RandomGenerator/>
+            currentState = <div className='popupdark' id='popup'> <Header/> <RandomGenerator/> </div>
             break;
         case 'SelectCreateOption':
-            currentState = <div className='popupdark'> <SelectCreateOption /> </div>;
+            currentState = <div className='popupdark'> <Header/> <SelectCreateOption /> </div>;
             break;
         case 'create_std_token':
-            currentState = <div className='popupdark'> <CodeEditor/> </div>;
+            currentState = <div className='popupdark'> <Header/> <CodeEditor/> </div>;
             break;
         default:
-            currentState =<div className='popupdark'> <WelcomeBox data={{message: "De-Fi"}} /> </div>;
+            currentState = <div className='popupdark'> <Header/> <WelcomeBox data={{message: "De-Fi"}} /> </div>;
             break;
     }
+
     document.body.style.background = bgimg;
     document.body.style.backgroundSize = "cover";
     return (
@@ -183,7 +197,6 @@ const App = ()=>{
                     <Suspense fallback={<img src="./loading.svg" alt=""/>}>
                         <MsgBox subState={ state.currsubState } />
                         <SideBar/>
-                        <Header/>
                         {currentState}
                     </Suspense>
                 </StateContext.Provider>

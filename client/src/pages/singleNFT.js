@@ -172,12 +172,10 @@ function SingleNft (props){
 
     // let singleNFTDetailsForm = (state.currsubState === "SingleNFTDetailsForm")?<SingleNFTDetailsForm/>:"";
     return (
-        <div className='popupdark'>
             <div className='popupBox'> 
                 <button className='closeBoxWhite' onClick={()=> setState((prev)=>({...prev, state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null })) } >X</button>
                 <SingleNFTDetailsForm/>
             </div>
-        </div>
     )
 }
 

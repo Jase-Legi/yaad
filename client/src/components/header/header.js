@@ -22,7 +22,7 @@ const Header = ()=>{
 
     function SearchBar(){ return ( <div className='search-Header-Div'> <button className="headerElementSearch" type='button'> </button> </div> ) };
     
-    function ConnectButton(props) {    
+    function ConnectButton(props) {   
         return(
             <div className='headerElementMenu' onClick={()=>{ if( state.account !== null ) { return setState((prev)=>({...prev, sideBar:!state.sideBar })) }else{ return setState( (prev)=>( {...prev, state:"connect", newState:( !state.state )?"home":state.state, oldState:null } ) ) } } } >
                 <div className="cd-header" style={{backgroundColor:( state.account === null )?'rgb(255,255,0)':'rgb(255,255,255)'}}>

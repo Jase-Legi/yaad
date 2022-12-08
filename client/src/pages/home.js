@@ -1,5 +1,4 @@
 import { useContext } from 'react';
-// import Header from '../components/header/header';
 import { walletConnected, blockchainNetworks } from "../helpers/web3Helpers";
 import { showLoading, LoadingBox, hideLoading } from "../components/ui/loading";
 import { StateContext } from '../context/StateContext';
@@ -11,7 +10,7 @@ function WelcomeBox({ data }){
         <>
         <div className='welcomeContainer'>
         <div className='headerTitle'>
-            <h1 style={{}}>Simplifying the Blockchain.</h1>
+            <h1>Simplifying the Blockchain.</h1>
             <span>Yaad labs is a web3 platform designed to Simplify Blockchain procedures. Generating entire NFT projects using a few layers, deploy contracts, create decentralized bets, <span style={{color:"rgb(255, 255, 0)"}}>buy, sell & send crypto </span>+ more</span>
         </div>
         <div className='welcomeBox'>

@@ -125,9 +125,9 @@ const possblCombos = ( arrays )=>{
                 });
 
                 console.log(`chain data: ${JSON.stringify(state.chainData)}`);
-                const connected = await connectToChain( blockchainNetworks[6] );
+                const connected = await currentAddress();
                 let contractData = new FormData();
-                if( connected === false ) { hideLoading(); return false; }
+                if( connected.code ) { hideLoading(); return false; }
                 contractData.append('contractJSON', JSON.stringify(contractOptions));
 
                 contractData.append('contractName', myContractName);
@@ -311,7 +311,13 @@ const possblCombos = ( arrays )=>{
             hideLoading(e)
             return setMsgStacks((prev)=>({...prev, messages: [ `Add more images to existing layers or create more layers. Your current layers only generate ${psblecmbz} possible unique images.` ], substate: state.currentSubState}));
         }
-        let conntd = await connectToChain( blockchainNetworks[6] );
+        if( state.chainData === null ){
+            const connectwllt = await currentAddress();
+            if( connectwllt.code )
+                return setMsgStacks((prev)=>({...prev, messages: [ `web3 wallet connection error occured` ], substate: state.currentSubState}));
+        }
+
+        let conntd = await connectToChain( state.chainData );
         if( conntd.code ){
             return setMsgStacks((prev)=>({...prev, messages: [ `web3 wallet connection error occured` ], substate: state.currentSubState}));
         }
@@ -1018,7 +1024,7 @@ const possblCombos = ( arrays )=>{
         }
     }
     
-    return( <div className='popupdark' id='popup'> <MainContainer/> </div> )
+    return( <MainContainer/> )
 };
 
 export default RandomGenerator;
