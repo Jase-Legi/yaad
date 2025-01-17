@@ -45,11 +45,24 @@ const setNumbers = async ( e, inputText )=>{
 function CodeEditor({ data, substate }){
     const { msgStacks, setMsgStacks } = useContext( MsgContext );
     const { state, setState } = useContext( StateContext );
+    console.log(`state: ${JSON.stringify(state)}`)
     let activecontract;
-    
+
+
+    // ************************************************************************************************************************
+    // if( !state.formVals ){
+    //     setState((prev)=>({...prev, formVals: {...prev.formVals, contract:"", addContract:{...prev.formVals.addContract, active:false }}}))
+    // }
+    // ************************************************************************************************************************
+
     useEffect( ()=>{
         if ( state.currsubState === "RandomGenerator-LayerOptions-Write-Contract" ){
             showLoading();
+            
+            if( !state.formVals ){
+                setState((prev)=>({...prev, formVals: {...prev.formVals, contract:"", addContract: { active:true, overwrite:true } }}))
+            }
+
             document.addEventListener('paste', (e)=>{
                 if ( !state.formVals.pasteDisclaimer ) {
                     if ( e.target.getAttribute("class") === "solidityEditor" ){
@@ -227,7 +240,6 @@ function CodeEditor({ data, substate }){
                     indx++
                 }
             }
-
             
             contract = state.formVals.contract;
             contract[state.formVals.activeContractIndex].contract = (state.formVals.activeContractIndex === 0)?mainContractLineSplit.join('\n'):text;
@@ -238,26 +250,28 @@ function CodeEditor({ data, substate }){
     };
 
     let numberSideBar = <div className="lineNumbers" id="lineNumbers" >{boxxcont}</div>
-    return (<div className='LayerUpldBox' style={{padding:"20px"}}>
-        <BoxTitle data={{divClass:"contractEditorTitle", textType:'h2', text:'NFT Contract ( ERC721 )'}}/>
-        <BoxTitle data={{divClass:"contractEditorTitle", textType:'span', text:'Default contract courtesy of openzeppelin. Before editing/changing contract, ensure that you understand the code to avoid being scammed.'}}/>
-        <div className="contractEditorToolBar" >
-            <div className="toolBarElement" onClick={(e)=>{let contract = state.formVals.contract; contract[ state.formVals.activeContractIndex ].contract = document.getElementById("solidityEditor").value; setState((prev)=>({...prev, data:{...prev.data, contracts:contract}, formVals:{...prev.formVals, contract, } }) )}}>
-                <img src='./save_icon.svg' alt='' />
-                <span> save </span>
+    return (
+        <div className='LayerUpldBox' style={{padding:"20px"}}>
+            <button className='closeBox' onClick={()=> setState( (prev)=>({...prev, state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null }) ) }>X</button>
+            {/* <BoxTitle data={{divClass:"contractEditorTitle", textType:'h2', text:'NFT Contract ( ERC721 )'}}/> */}
+            <BoxTitle data={{divClass:"contractEditorTitle", textType:'span', text:'Edit Resume Below'}}/>
+            <div className="contractEditorToolBar" >
+                <div className="toolBarElement" onClick={(e)=>{let contract = state.formVals.contract; contract[ state.formVals.activeContractIndex ].contract = document.getElementById("solidityEditor").value; setState((prev)=>({...prev, data:{...prev.data, contracts:contract}, formVals:{...prev.formVals, contract, } }) )}}>
+                    <img src='./save_icon.svg' alt='' />
+                    <span> save </span>
+                </div>
+                <label className="toolBarElement" id="addSolFile" htmlFor='contractUpld' onClick={(e)=>( state.formVals.addContract?.active )?'':handleContractUpload()}>
+                    <input type={"file"} name="contractUpld" id="contractUpld" onChange={(e)=> addNewContract(e) } hidden/>
+                    <h2>+</h2>
+                    <span> New Resume </span>
+                </label>
             </div>
-            <label className="toolBarElement" id="addSolFile" htmlFor='contractUpld' onClick={(e)=>( state.formVals.addContract?.active )?'':handleContractUpload()}>
-                <input type={"file"} name="contractUpld" id="contractUpld" onChange={(e)=> addNewContract(e) } hidden/>
-                <h2>+</h2>
-                <span> new contract (.sol) </span>
-            </label>
+            <div className='solTabsWrapper'>{bbx}</div>
+            <div className="editor" id="editor" >
+                {numberSideBar}
+                <textarea className='solidityEditor' id='solidityEditor' onKeyUp={(e)=>{ if( e.key === "Enter" || e.key === "Backspace" || e.key === "Delete" || e.ctrlKey ){ return setNumbers( e, e.target.value ) }}} onChange={(e)=>state.formVals.contract[ state.formVals.activeContractIndex ].contract = e.target.value } />
+            </div>
         </div>
-        <div className='solTabsWrapper'>{bbx}</div>
-        <div className="editor" id="editor" >
-            {numberSideBar}
-            <textarea className='solidityEditor' id='solidityEditor' onKeyUp={(e)=>{ if( e.key === "Enter" || e.key === "Backspace" || e.key === "Delete" || e.ctrlKey ){ return setNumbers( e, e.target.value ) }}} onChange={(e)=>state.formVals.contract[ state.formVals.activeContractIndex ].contract = e.target.value } />
-        </div>
-    </div>
     )
 }
 

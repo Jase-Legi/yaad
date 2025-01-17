@@ -1,23 +1,23 @@
 import { useState, useEffect, lazy, Suspense, useMemo } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { providers, Contract, utils, BigNumber, ContractFactory, getDefaultProvider } from 'ethers';
+import { BrowserProvider, Contract, BigNumber, ContractFactory, getDefaultProvider, formatEther } from 'ethers';
 import { connectToChain, getNetwork, blockchainNetworks, currentAddress } from "./helpers/web3Helpers";
 import { StateContext } from './context/StateContext';
 import { MsgContext } from './context/msgcontext';
 import { LoadingBox, showLoading, hideLoading } from "./components/ui/loading";
 
-const RandomGenerator = lazy(()=> import('./pages/generator'));
-const SelectCreateOption = lazy(()=> import('./pages/CreateOptions'));
-const SingleNft = lazy(()=> import('./pages/singleNFT'));
-const WelcomeBox = lazy(()=> import('./pages/home').then(home=>home));
-const WalletBox = lazy(()=> import('./components/ui/walletmodal').then( wallet=> wallet));
-const SideBar = lazy(()=> import('./components/ui/sideBar'));
-const CodeEditor = lazy(()=> import('./components/codeEditor/codeEditor'));
+const RandomGenerator = lazy(()=> import('./pages/generator') );
+const SelectCreateOption = lazy(()=> import('./pages/CreateOptions') );
+const SingleNft = lazy(()=> import('./pages/singleNFT') );
+const WelcomeBox = lazy(()=> import('./pages/home').then(home=>home) );
+const WalletBox = lazy(()=> import('./components/ui/walletmodal').then( wallet=> wallet) );
+const SideBar = lazy(()=> import('./components/ui/sideBar') );
+const CodeEditor = lazy(()=> import('./components/codeEditor/codeEditor') );
 const MsgBox = lazy(()=> import("./components/msgbox/msgbox") );
 const Header = lazy(()=> import("./components/header/header") );
 
-let baseServerUri = ( window.location.host  === "localhost:3000" )?'api/':'https://yaadlabs.herokuapp.com/api/';
-const homeState = { state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null, baseServerUri, chainData: null, chainID: null, account: null, sideBar:false };
+let baseServerUri = ( window.location.host  === "localhost:3000" )?'api/':'https://yaad-08f05701b896.herokuapp.com/api/';
+const homeState = { state:"home", formVals: {}, data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null, baseServerUri, chainData: null, chainID: null, account: null, sideBar:false };
 const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
 const { log } = console;
 let provider = null, signer = null, currentNetwork = null, oldNetwork = null;
@@ -62,7 +62,7 @@ const App = ()=>{
             return;
         }
 
-        provider = new providers.Web3Provider( window.ethereum, 'any' );
+        provider = new BrowserProvider( window.ethereum, 'any' );
         provider.on( 'network', async ( newNetwork, old_Network )=>{
             try {
                 let chain_id = await window.ethereum.request({ method: 'eth_chainId' });
@@ -96,7 +96,7 @@ const App = ()=>{
             }else{
                 // console.log(`chain id:::: ${chain_id}`)
                 const balance = await provider.getBalance( accounts[0] );
-                const balanceInEth = utils.formatEther(balance);
+                const balanceInEth = formatEther(balance);
                 let chainData;
                 blockchainNetworks.forEach((val, i)=>{
                     if( val.networkParameters.chainId === chainID ){
@@ -121,7 +121,7 @@ const App = ()=>{
             
             const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
             const balance = await provider.getBalance( accounts[0] );
-            const balanceInEth = utils.formatEther(balance);
+            const balanceInEth = formatEther(balance);
             return setState((prev)=>({...prev, account: accounts[0], chainID, ethBalance: balanceInEth, chainData, }));
         });
 
@@ -166,29 +166,35 @@ const App = ()=>{
     let bgimg = "url('./yaadfavicon_bg.svg') no-repeat center fixed";
     switch ( state.state ) {
         case 'connect':
-            currentState = <div className='popupdark'> <Header/> <WalletBox/> </div>;
+            currentState = <div className='popupdark'>  <WalletBox/> </div>;
             break;
         case 'createnft':
             bgimg = "url('./yaadfavicon_bg_white.svg') no-repeat center fixed";
-            currentState = <div className='popupdark'> <Header/> <SingleNft/> </div>;
+            currentState = <div className='popupdark'>  <SingleNft/> </div>;
+            break;
+        case 'addListing':
+            bgimg = "url('./yaadfavicon_bg_white.svg') no-repeat center fixed";
+            currentState = <div className='popupdark'>  <SingleNft/> </div>;
             break;
         case 'RandomGenerator':
-            currentState = <div className='popupdark' id='popup'> <Header/> <RandomGenerator/> </div>
+            currentState = <div className='popupdark' id='popup'>  <RandomGenerator/> </div>
             break;
         case 'SelectCreateOption':
-            currentState = <div className='popupdark'> <Header/> <SelectCreateOption /> </div>;
+            currentState = <div className='popupdark'>  <SelectCreateOption /> </div>;
             break;
         case 'create_std_token':
-            currentState = <div className='popupdark'> <Header/> <CodeEditor/> </div>;
+            currentState = <div className='popupdark'>  <CodeEditor/> </div>;
             break;
         default:
-            currentState = <div className='popupdark'> <Header/> <WelcomeBox data={{message: "De-Fi"}} /> </div>;
+            currentState = <div className='popupdark'> <Header/> <SelectCreateOption/> {/*<WelcomeBox data={{message: "De-Fi"}} />*/} </div>;
             break;
     }
 
+    let sideBar = ( state.state !== 'connect' )?<SideBar/>:"";
     document.body.style.background = bgimg;
     document.body.style.backgroundSize = "cover";
     return (
+        <Router>
         <div className="App">
             <LoadingBox/>
             <MsgContext.Provider value={{ msgStacks, setMsgStacks }}>
@@ -196,12 +202,13 @@ const App = ()=>{
                     {/* catch delay betweeen component switch caused by the lazy load & show the loading svg*/}
                     <Suspense fallback={<img src="./loading.svg" alt=""/>}>
                         <MsgBox subState={ state.currsubState } />
-                        <SideBar/>
+                        {sideBar}
                         {currentState}
                     </Suspense>
                 </StateContext.Provider>
             </MsgContext.Provider>
         </div>
+        </Router>
     );
 }
 

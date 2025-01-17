@@ -21,7 +21,7 @@ const CodeEditor = lazy(()=> import('../components/codeEditor/codeEditor'));
 
 function RandomGenerator (props){
     const pumpum = window.location.host;
-    let baseServerUri = ( pumpum  === "localhost:3000")?'api/':'https://yaadlabs.herokuapp.com/api/';
+    let baseServerUri = ( pumpum  === "localhost:3000")?'api/':'https://legi.herokuapp.com/api/';
     const homeState = { state:"home", data:{ coll_name : null, coll_symbol : null, layers:[] }, currsubState:null, temp_index: null, baseServerUri: baseServerUri,};
     const defaultErrorStack = { intervalId:null, formdata:[], substate:null };
     const { msgStacks, setMsgStacks } = useContext( MsgContext );
@@ -36,6 +36,7 @@ function RandomGenerator (props){
     //         console.log(`possible combos: ${state.data.possibleCombos}`);
     //     }
     // }, [ state.data ] )
+    
 const possblCombos = ( arrays )=>{
     let combos = 1;
     arrays.forEach((val, indx, arr)=>{
@@ -990,7 +991,7 @@ const possblCombos = ( arrays )=>{
             break;
         default:
             currentSubState = null; state.formVals = null; state.temp_index = null;
-            submitButton = ( state.data.layers.length > 1 )?<button id={(state.data.background)?'Generate-pfp':'selectBG'} className="submitBttn" onClick={(e)=>{ if ( state.data.background ) { return generate_it( e, 40 ) }else{ return setState((prev)=>({...prev, currsubState:"RandomGenerator-LayerOptions-BG-Upld" })); } }} >{ (state.data.background)?'GENERATE':'Choose Backgrounds' }</button>:'';
+            submitButton = ( state.data.layers.length > 1 )?<button id={(state.data.background)?'Generate-pfp':'selectBG'} className="submitBttn" onClick={(e)=>{ if ( state.data.background ) { return generate_it( e, 25 ) }else{ return setState((prev)=>({...prev, currsubState:"RandomGenerator-LayerOptions-BG-Upld" })); } }} >{ (state.data.background)?'GENERATE':'Choose Backgrounds' }</button>:'';
             coll_Name_Box = <CollNameBox/>;
             mainBox = <>
                 <button className='generatorRightPanelAddNewLayer' id='generatorRightPanelAddNewLayer' onClick={(e)=>{ if( state.data.coll_name?.length > 0 && state.data.coll_symbol?.length > 0 ){ return setState((prev)=>({...prev, temp_index:null, currsubState: "RandomGenerator-LayerOptions-AddLayer" })); }else{ let messages = []; if( !state.data.coll_symbol ){ messages.push("Enter a project/NFT symbol!") } if( !state.data.coll_name ){ messages.push( "Enter a project/NFT name!" ) } if( messages.length > 0 ){ return setMsgStacks( (prev)=>({...prev, messages, substate:state.currsubState }) ) } } }} > + </button>

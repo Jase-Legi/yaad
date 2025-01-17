@@ -6,9 +6,9 @@ const multer  = require('multer');
 const {canvas, createCanvas, loadImage} = require("canvas");
 const {basename, dirname, normalize, sep} = require('path')
 const {readFileSync, createReadStream, unlinkSync, existsSync, writeFileSync} = require('fs');
-const {ethers, BigNumber, Contract, ContractFactory, getDefaultProvider, Signer, Wallet, utils, errors, version, VoidSigner, providers} =  require('ethers');
+const { ethers, BigNumber, Contract, ContractFactory, getDefaultProvider, Signer, Wallet, errors, version, VoidSigner, providers, HDNodeWallet } =  require('ethers');
 const solc = require('solc');
-const { HDNode, defaultPath, hexlify, isHexString, getAddress, serializeTransaction, formatEther, formatUnits } = require('ethers/lib/utils');
+// const { HDNode, defaultPath, hexlify, isHexString, getAddress, serializeTransaction, formatEther, formatUnits } = require('ethers/lib/utils');
 const { MongoClient } = require('mongodb');
 const privateKey = process.env.P_KEY;
 const phrase = process.env.phraseSS;
@@ -50,7 +50,9 @@ const compileContract = async ()=>{
     try{
         const etherProvider = new providers.JsonRpcProvider(providerOrUrl);
         // const signer =etherProvider.getSigner();
-        const hDNode = HDNode.fromMnemonic(phrase);
+        
+        // const hDNode = HDNode.fromMnemonic(phrase);
+        const hDNode = HDNodeWallet.fromMnemonic(phrase);
         const numOfNodes = 100;
         // const walletMnemonic = new Wallet.fromMnemonic(myMnemonic);
         // const walletMnemonic = new Wallet('56d97a1a682e98616d1313f012b47bb411ccd6e52841f8d2926f1fc1c0914f3b');
@@ -184,8 +186,9 @@ const ethersCreatePair = async ()=>{
         // etherProvider.on("block", (rez)=>{console.log(`Block: ${(JSON.stringify(rez))}`)});
         await legitoken.contractEthBalance().then((rez)=>{console.log(`contract Eth Balance: ${rez}`)});
         // legitoken.on('withdrawn', (addy, balan)=>{console.log(`address: ${addy}, balance: ${balan}`)});mj
-        await legitoken.approve(pancakeRouter, ethers.utils.parseEther('15'));
-        await token_Two.approve(pancakeRouter, ethers.utils.parseEther('15'));
+        
+        await legitoken.approve(pancakeRouter, ethers.parseEther('15'));
+        await token_Two.approve(pancakeRouter, ethers.parseEther('15'));
         const theWETH = await router.WETH();
         // const factoryAddy = await factory;
         // console.log(factoryAddy);        

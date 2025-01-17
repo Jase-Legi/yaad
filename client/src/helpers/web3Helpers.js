@@ -1,10 +1,10 @@
-import { providers, Contract, utils, BigNumber, ContractFactory, getDefaultProvider } from 'ethers';
+import { BrowserProvider, Contract, parseEther } from 'ethers';
 
 let provider = null, signer = null, currentNetwork = null, oldNetwork = null;
 
 // Check for web 3 injected global variable 
 if ( typeof window.ethereum !== 'undefined' ) {
-    provider = new providers.Web3Provider( window.ethereum, 'any' );
+    provider = new BrowserProvider( window.ethereum, 'any' );
     // Wait for network connection
     provider.on('network', (newNetwork, old_Network) => {
         currentNetwork = newNetwork;
@@ -254,8 +254,8 @@ const mintNFT = async (uri, tokenAddress, tokenAbi, signer )=>{
         console.log(`uri: ${JSON.stringify(uri)}`);
         const gasNow = await getGas(signer).finally((eee)=>eee).catch((err)=>err);
         console.log(`gas:: ${gasNow}`);
-
-        let options = { gasLimit: BigNumber.from(gasNow).add(5000000), value:utils.parseEther('.015') };
+        /* global BigInt */
+        let options = { gasLimit: BigInt(gasNow).add(5000000), value: parseEther('.015') };
         
         try {
             const etherToken = new Contract( tokenAddress, tokenAbi, signer );

@@ -13,7 +13,7 @@ const WalletBox = ( )=>{
     
     const setChain = async ( e, chosenNetwork, index )=>{
         showLoading();
-        
+        //
         const chainID = await connectToChain( chosenNetwork );
         if ( chainID.code ){
             hideLoading();
@@ -66,7 +66,7 @@ const WalletBox = ( )=>{
                     <span>Brave Browser</span>
                 </div>
                 <div className='walletElement'>
-                    <img src='./walletconnect.svg' alt='' style={{ height:'35px', width:'35px', borderRadius:'7.5px' }}/>
+                <img src='./walletconnect.svg' alt='' style={{ height:'35px', width:'35px', borderRadius:'7.5px' }}/>
                     <span>Wallet Connect</span>
                 </div> */}
             </div>

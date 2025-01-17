@@ -153,16 +153,16 @@ function SingleNft (props){
     function SingleNFTDetailsForm (props){
         return(
             <>
-                <label className='popupBoxEleDetailsLabel' id='createSingleBoxPreview' htmlFor="createSingleAssetUpld" onClick={ ()=>{ document.querySelector('#single_asset').click() } }>
+                {/* <label className='popupBoxEleDetailsLabel' id='createSingleBoxPreview' htmlFor="createSingleAssetUpld" onClick={ ()=>{ document.querySelector('#single_asset').click() } }>
                     <div className='popupBoxEleDetails' style={{padding:( state.data?.path )?'0px':'30px', boxSizing:'border-box'}}> <img src={( state.data?.path )? `data:image/${state.data?.ext};base64,${state.data?.path}`:'uploadimg.svg' } style={{objectFit:"cover", height: "100%", width:"100%"}} alt=""/> </div>
-                </label>
+                </label> */}
                 <input type="file" id='single_asset' name='single_asset' style={{opacity:100, zIndex:1}} onChange={handlesingleUpload} hidden/>
                 <input className='popupBoxTextEle' placeholder={ ( state.data?.name )?state.data?.name:'Name' } type="text" name='name' id='singleNFTName' onChange={ handleTextInputChanges } onClick={(e)=>e.target.value = (!state.data.name)?"":state.data.name } style={ {opacity:100, zIndex:1 } } />
-                <DaInput data={{ typeId:'singleNFTDesc', typeClass:'popupBoxTextAreaEle', name:'desc', placeholder:( state.data?.description )?state.data?.description:'Description', type:'textarea', onChange:handleTextInputChanges } } />
-                <input className='popupBoxTextEle' placeholder={ ( state.data?.collection )?state.data?.collection:'Collection' } type="text" name='collection' id='singleNFTColl' onChange={ handleTextInputChanges }  style={{opacity:100, zIndex:1}} />
+                <DaInput data={{ typeId:'singleNFTDesc', typeClass:'popupBoxTextAreaEle', name:'desc', placeholder:( state.data?.description )?state.data?.description:'Job Title', type:'textarea', onChange:handleTextInputChanges } } />
+                <input className='popupBoxTextEle' placeholder={ ( state.data?.collection )?state.data?.collection:'Sill Level Required' } type="text" name='collection' id='singleNFTColl' onChange={ handleTextInputChanges }  style={{opacity:100, zIndex:1}} />
                 <div style={{ flexDirection:"row", maxWidth:'600px', width: '100%', margin: '0px auto' }}>
-                    <input className='popupBoxSmallTextAreaLeftEle' placeholder={ ( state.data?.price )?state.data?.price:'Price' } type="number" name='price' id='singleNFTPrice' onChange={ handleTextInputChanges }  style={{opacity:100, zIndex:1}} />
-                    <input className='popupBoxSmallTextAreaRightEle' placeholder={ ( state.data?.royalties )?state.data?.royalties:'Royalties: max 50%' } type="number" name='royalties' id='singleNFTRoyalty' onChange={handleTextInputChanges} style={{opacity:100, zIndex:1}} />
+                    <input className='popupBoxSmallTextAreaLeftEle' placeholder={ ( state.data?.price )?state.data?.price:'Hourly Rate' } type="number" name='price' id='singleNFTPrice' onChange={ handleTextInputChanges }  style={{opacity:100, zIndex:1}} />
+                    <input className='popupBoxSmallTextAreaRightEle' placeholder={ ( state.data?.royalties )?state.data?.royalties:'Time' } type="number" name='royalties' id='singleNFTRoyalty' onChange={handleTextInputChanges} style={{opacity:100, zIndex:1}} />
                 </div>
                 <Buttonz data={ { class:"popupBoxEle", id:'createBox', value:'create', func:createNFT } } />
             </>

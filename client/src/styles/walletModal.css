@@ -329,7 +329,6 @@
     
     .networkElement {
         flex-direction:row !important;
-        /* display: inline-block; */
         height: 54.2px !important;
         padding: 10px 4px;
         width: calc( 50% - 10px ) !important;
@@ -349,9 +348,8 @@
     }
 
     .networkElement > img {
-        /* display: inline; */
         height:30px !important;
-        display: inline-box;
+        display: inline-box !important;
         width: 30px !important;
         margin: 0px 5px 0px 0px !important;
     }

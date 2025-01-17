@@ -34,7 +34,7 @@
     z-index: 50000;
     overflow-y: scroll;
 }
-
+ 
 .closeSideBar{
     position: relative;
     display: block;
