@@ -33,7 +33,9 @@ const Header = ()=>{
     }
     
     function HomeLogo (){
-        const homeLogo = <div className='headerElementlogo'><img src='./yaad.svg' alt='home'/></div>
+        const homeLogo = <div onClick={()=>{
+            return setState((prev)=>({...prev, data: {...prev.data, state:"home", currsubState:null, temp_index: null, chainData: prev.data.chainData, chainID: prev.data.chainID, account: prev.data.account, sideBar:false} }));
+        }} className='headerElementlogo'><img src='./yaad.svg' alt='home'/></div>
         return(<>{homeLogo}</>)
     }
 

@@ -142,18 +142,18 @@ const blockchainNetworks = [
     //     logo: 'celo.svg'
     // },
     {
-        name: 'Goerli',
+        name: 'Sepolia',
         chainType: 'EVM',
         networkParameters: {
-            chainId: '0x5',
-            chainName: 'Goerli',
+            chainId: '0xaa36a7',
+            chainName: 'Sepolia Test Network',
             nativeCurrency: {
-                name: 'GoerliETH',
-                symbol: 'GoerliETH',
+                name: 'SepoliaETH',
+                symbol: 'SepoliaETH',
                 decimals: 18
             },
-            rpcUrls: ['https://goerli.infura.io/v3/'],
-            blockExplorerUrls: ['https://goerli.etherscan.io']
+            rpcUrls: ['https://1rpc.io/sepolia'],
+            blockExplorerUrls: ['https://sepolia.etherscan.io/']
         },
         logo:'eth_testnet.svg'
     }
