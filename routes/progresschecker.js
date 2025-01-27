@@ -77,4 +77,5 @@ index.get("/generator/:addi", (req, res, next) => {
     
 });
 
+// running a new test becase cache isnt updating
 module.exports = index;

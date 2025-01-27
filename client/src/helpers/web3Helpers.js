@@ -77,22 +77,6 @@ const blockchainNetworks = [
         },
         logo:'avalanche.svg'
     },
-    // {
-    //     name: 'Optimism',
-    //     chainType: 'EVM',
-    //     networkParameters: {
-    //         chainId: '0xa',//10,
-    //         chainName: 'Optimism',
-    //         nativeCurrency: {
-    //             name:'Ether',
-    //             symbol: 'ETH',
-    //             decimals: 18
-    //         },
-    //         rpcUrls: ['https://mainnet.optimism.io/', 'https://mainnet-optimism.brave.com/' ],
-    //         blockExplorerUrls: ['https://optimistic.etherscan.io']
-    //     },
-    //     logo:'optimism.svg'
-    // },
     {
         name: 'Polygon',
         chainType: 'EVM',
@@ -125,22 +109,6 @@ const blockchainNetworks = [
         },
         logo:'fantom.svg'
     },
-    // {
-    //     name: 'Celo',
-    //     chainType: 'EVM',
-    //     networkParameters: {
-    //         chainId: '0xa4ec',
-    //         chainName: 'Celo Mainnet',
-    //         nativeCurrency: {
-    //             name: 'CELO',
-    //             symbol: 'CELO',
-    //             decimals: 18
-    //         },
-    //         rpcUrls: [ 'https://forno.celo.org/' ],
-    //         blockExplorerUrls: [ 'https://explorer.celo.org' ]
-    //     },
-    //     logo: 'celo.svg'
-    // },
     {
         name: 'Sepolia',
         chainType: 'EVM',
